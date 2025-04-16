@@ -72,10 +72,12 @@
 <body>
   
   
+  
+  
   <div class="header">
     <h1>Digital Dashh | Event Dashboard</h1>
     <div class="right">
-      <a href="index.html">🏠 Home</a>
+      <a href="index.html" class="home-button">🏠 Home</a>
       <span id="current-date"></span> |
       <span id="countdown"></span>
     </div>
@@ -89,6 +91,53 @@
     <a href="sponsors.html">Sponsor Tracker</a>
     <a href="merch.html">Merch Inventory</a>
   </div>
+
+  <style>
+    .header {
+      background-color: #1c1c3a;
+      color: #fff;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .header .right {
+      text-align: right;
+    }
+    .header .home-button {
+      background-color: #ffe066;
+      color: #1c1c3a;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 5px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .menu {
+      background-color: #ffffff;
+      padding: 10px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .menu a {
+      background-color: #6c79db;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+  </style>
+
+
 
   </div>
 

@@ -9,11 +9,94 @@
   <style>
     body {
       font-family: 'Barlow', sans-serif;
+      background-color: #f0f4f8;
       margin: 0;
       padding: 0;
-      background-color: #f0f4f8;
       color: #1c1c3a;
     }
+    .header {
+      background-color: #1c1c3a;
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: auto;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    table th {
+      background-color: #f4f4f4;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    input[type="file"] {
+      padding: 6px;
+    }
+    button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  
+  
+  
+  
+  <div class="header">
+    <h1>Digital Dashh | Event Dashboard</h1>
+    <div class="right">
+      <a href="index.html" class="home-button">🏠 Home</a>
+      <span id="current-date"></span> |
+      <span id="countdown"></span>
+    </div>
+  </div>
+
+  <div class="menu">
+    <a href="overview.html">Overview</a>
+    <a href="venues.html">Venues</a>
+    <a href="av.html">AV Production</a>
+    <a href="content.html">Creative Content</a>
+    <a href="sponsors.html">Sponsor Tracker</a>
+    <a href="merch.html">Merch Inventory</a>
+  </div>
+
+  <style>
     .header {
       background-color: #1c1c3a;
       color: #fff;
@@ -30,7 +113,7 @@
     .header .right {
       text-align: right;
     }
-    .header a {
+    .header .home-button {
       background-color: #ffe066;
       color: #1c1c3a;
       text-decoration: none;
@@ -56,52 +139,10 @@
       border-radius: 6px;
       font-weight: bold;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-    }
-    .card h3 {
-      margin-top: 0;
-      font-size: 18px;
-      color: #1c1c3a;
-    }
-    .card p {
-      margin: 8px 0;
-      word-break: break-word;
-    }
   </style>
-</head>
-<body>
-  <div class="header">
-    <h1>Digital Dashh | Event Dashboard</h1>
-    <div class="right">
-      <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
-    </div>
-  </div>
 
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsors.html">Sponsor Tracker</a>
-    <a href="merch.html">Merch Inventory</a>
+
+
   </div>
 
 
