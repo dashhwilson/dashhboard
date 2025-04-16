@@ -9,9 +9,9 @@
   <style>
     body {
       font-family: 'Barlow', sans-serif;
-      background-color: #f0f4f8;
       margin: 0;
       padding: 0;
+      background-color: #f0f4f8;
       color: #1c1c3a;
     }
     .header {
@@ -39,7 +39,24 @@
       margin-right: 10px;
       font-weight: bold;
     }
-    .dashboard {
+    .menu {
+      background-color: #ffffff;
+      padding: 10px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .menu a {
+      background-color: #6c79db;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
@@ -52,34 +69,16 @@
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      overflow: auto;
     }
     .card h3 {
       margin-top: 0;
-      color: #1c1c3a;
     }
     .card p {
-      margin: 5px 0;
-    }
-    .status-select, .editable {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 6px;
-    }
-    .timeline-list, .deadline-list {
-      list-style: none;
-      padding-left: 0;
-    }
-    .timeline-list li, .deadline-list li {
-      padding: 5px 0;
-      border-bottom: 1px solid #eee;
+      margin: 6px 0;
     }
   </style>
 </head>
 <body>
-  
   <div class="header">
     <h1>Digital Dashh | Event Dashboard</h1>
     <div class="right">
@@ -89,61 +88,50 @@
     </div>
   </div>
 
+  <div class="menu">
+    <a href="overview.html">Overview</a>
+    <a href="venues.html">Venues</a>
+    <a href="av.html">AV Production</a>
+    <a href="content.html">Creative Content</a>
+    <a href="sponsors.html">Sponsor Tracker</a>
+    <a href="merch.html">Merch Inventory</a>
   </div>
 
-  <div class="dashboard">
+  <div class="grid">
     <div class="card">
       <h3>📌 Event Details</h3>
-      <p><strong>Event:</strong> <span class="editable">Digital Dashh Conference 2025</span></p>
-      <p><strong>Location:</strong> <span class="editable">Austin, TX</span></p>
-      <p><strong>Dates:</strong> <span class="editable">May 10–12, 2025</span></p>
-      <p><strong>Event Manager:</strong> <span class="editable">D'Ashley Wilson</span></p>
+      <p><strong>Name:</strong> Digital Dashh Conference 2025</p>
+      <p><strong>Location:</strong> Austin, TX</p>
+      <p><strong>Dates:</strong> May 10–12, 2025</p>
+      <p><strong>Event Manager:</strong> D'Ashley Wilson</p>
     </div>
 
     <div class="card">
       <h3>📊 Status</h3>
-      <select class="status-select">
-        <option>On Track</option>
-        <option>At Risk</option>
-        <option>Needs Attention</option>
-      </select>
-      <p><strong>Last Updated:</strong> Apr 16</p>
+      <p><strong>Current:</strong> On Track</p>
+      <p><strong>Notes:</strong> All teams tracking well. AV and content finalizing this week.</p>
     </div>
 
     <div class="card">
-      <h3>📅 Timeline</h3>
-      <ul class="timeline-list">
-        <li>Kickoff Meeting – Apr 18</li>
-        <li>Venue Walkthrough – Apr 25</li>
-        <li>Content Finalization – May 2</li>
-        <li>Rehearsal – May 9</li>
-        <li>Event Go-Live – May 10</li>
-      </ul>
+      <h3>📅 Key Milestones</h3>
+      <p>Kickoff: Apr 18</p>
+      <p>Walkthrough: Apr 25</p>
+      <p>Final Content: May 2</p>
+      <p>Rehearsal: May 9</p>
+      <p>Go-Live: May 10</p>
     </div>
 
     <div class="card">
-      <h3>💰 Budget Snapshot</h3>
+      <h3>💰 Budget Overview</h3>
       <p><strong>Total Budget:</strong> $150,000</p>
       <p><strong>Spent:</strong> $45,000</p>
-    </div>
-
-    <div class="card">
-      <h3>🧭 Quick Links</h3>
-      <ul class="timeline-list">
-        <li><a href="venues.html">Venues</a></li>
-        <li><a href="av.html">AV Production</a></li>
-        <li><a href="content.html">Creative Content</a></li>
-        <li><a href="sponsors.html">Sponsor Tracker</a></li>
-        <li><a href="merch.html">Merch Inventory</a></li>
-      </ul>
+      <p><strong>Remaining:</strong> $105,000</p>
     </div>
 
     <div class="card">
       <h3>📌 Upcoming Deadlines</h3>
-      <ul class="deadline-list">
-        <li>Finalize stage design – Apr 22</li>
-        <li>Confirm food vendor – Apr 24</li>
-      </ul>
+      <p>Finalize stage design – Apr 22</p>
+      <p>Confirm food vendor – Apr 24</p>
     </div>
   </div>
 
