@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Creative Content | Digital Dashh</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  
   <style>
     body {
       font-family: 'Barlow', sans-serif;
-      background-color: #f0f4f8;
       margin: 0;
       padding: 0;
+      background-color: #f0f4f8;
       color: #1c1c3a;
     }
     .header {
@@ -39,6 +40,23 @@
       margin-right: 10px;
       font-weight: bold;
     }
+    .menu {
+      background-color: #ffffff;
+      padding: 10px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .menu a {
+      background-color: #6c79db;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -51,10 +69,19 @@
       background-color: #fff;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    h2 {
+    .card h3, .card h2 {
+      font-size: 18px;
       margin-top: 0;
+      margin-bottom: 12px;
+      color: #1c1c3a;
+    }
+    .card p, .card label, .card input, .card textarea {
+      font-size: 14px;
     }
     input, textarea, select {
       width: 100%;
@@ -63,6 +90,7 @@
       margin-bottom: 12px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-family: 'Barlow', sans-serif;
     }
     table {
       width: 100%;
@@ -73,6 +101,7 @@
       border: 1px solid #ccc;
       padding: 8px;
       text-align: left;
+      font-size: 14px;
     }
     table th {
       background-color: #f4f4f4;
@@ -85,22 +114,34 @@
       border-radius: 6px;
       cursor: pointer;
       margin-top: 10px;
+      font-weight: bold;
     }
   </style>
+
 </head>
 <body>
+  
   <div class="header">
-    <h1>Digital Dashh | Creative Content</h1>
+    <h1>Digital Dashh | Event Dashboard</h1>
     <div class="right">
       <a href="index.html">🏠 Home</a>
       <span id="current-date"></span> |
       <span id="countdown"></span>
     </div>
   </div>
+  <div class="menu">
+    <a href="overview.html">Overview</a>
+    <a href="venues.html">Venues</a>
+    <a href="av.html">AV Production</a>
+    <a href="content.html">Creative Content</a>
+    <a href="sponsors.html">Sponsor Tracker</a>
+    <a href="merch.html">Merch Inventory</a>
+  </div>
+
 
   <div class="grid">
     <div class="card">
-      <h2>📁 Speaker Decks</h2>
+      <h3>📁 Speaker Decks</h3>
       <label>Speaker Name</label>
       <input type="text" placeholder="Jane Doe" />
       <label>Deck Title</label>
@@ -111,7 +152,7 @@
     </div>
 
     <div class="card">
-      <h2>🎥 Pre-Recorded Videos</h2>
+      <h3>🎥 Pre-Recorded Videos</h3>
       <label>Video Title</label>
       <input type="text" placeholder="Opening Remarks" />
       <label>Upload File</label>
@@ -122,7 +163,7 @@
     </div>
 
     <div class="card">
-      <h2>🎨 Graphics & Signage</h2>
+      <h3>🎨 Graphics & Signage</h3>
       <label>Asset Description</label>
       <input type="text" placeholder="Welcome Sign, Wayfinding Arrows..." />
       <label>Upload Asset</label>
@@ -133,7 +174,7 @@
     </div>
 
     <div class="card">
-      <h2>🎙️ Speaker Info</h2>
+      <h3>🎙️ Speaker Info</h3>
       <label>Speaker Bio</label>
       <textarea placeholder="Paste short speaker bio here..."></textarea>
       <label>Upload Headshot</label>
@@ -144,7 +185,7 @@
     </div>
 
     <div class="card">
-      <h2>🗂️ Content Status Tracker</h2>
+      <h3>🗂️ Content Status Tracker</h3>
       <table>
         <thead><tr><th>Item</th><th>Status</th></tr></thead>
         <tbody>
@@ -156,6 +197,7 @@
     </div>
   </div>
 
+  
   <script>
     const today = new Date();
     const dateString = today.toLocaleDateString(undefined, {
@@ -168,5 +210,6 @@
     const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
     document.getElementById('countdown').textContent = `${daysLeft} days until event`;
   </script>
+
 </body>
 </html>
