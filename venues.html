@@ -3,77 +3,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Venues | Digital Dashh</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
     body {
       font-family: 'Barlow', sans-serif;
       background-color: #f0f4f8;
-      color: #1c1c3a;
       margin: 0;
       padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    h1, h2, h3 {
       color: #1c1c3a;
     }
-    .tab-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .tab-buttons button {
-      font-weight: bold;
-      padding: 10px 20px;
-      border: none;
-      background-color: #ffe066;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .tab-buttons button.active {
+    .header {
       background-color: #1c1c3a;
       color: #fff;
+      padding: 30px;
+      text-align: center;
     }
-    .tab-content {
-      display: none;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
     }
-    .tab-content.active {
-      display: block;
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: auto;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 500;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    input[type="file"] {
-      padding: 6px;
-    }
-    button.submit {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    h2 {
+      margin-top: 0;
     }
     table {
       width: 100%;
@@ -82,109 +45,133 @@
     }
     table th, table td {
       border: 1px solid #ccc;
-      padding: 10px;
+      padding: 8px;
       text-align: left;
     }
     table th {
       background-color: #f4f4f4;
     }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    input[type="file"] {
+      padding: 6px;
+    }
+    button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Venues Dashboard</h1>
-    <p>Manage Room Blocks, BEO/F&B Details, and Venue Provisions</p>
-
-    <div class="tab-buttons">
-      <button class="tab-link active" onclick="showTab('room-blocks', event)">Room Blocks</button>
-      <button class="tab-link" onclick="showTab('beo-fnb', event)">BEO / F&B</button>
-      <button class="tab-link" onclick="showTab('venue-provided', event)">Venue Provided</button>
-      <button class="tab-link" onclick="showTab('venue-budget', event)">Venue Budget</button>
+  
+  <div class="header">
+    <h1>Digital Dashh | Event Dashboard</h1>
+    <div class="right">
+      <a href="index.html">🏠 Home</a>
+      <span id="current-date"></span> |
+      <span id="countdown"></span>
     </div>
+  </div>
 
-    <div id="room-blocks" class="tab-content active">
-      <h2>Room Block Management</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h2>🏨 Room Blocks</h2>
       <label>Hotel Name</label>
-      <input type="text" placeholder="Enter hotel name" />
+      <input type="text" placeholder="e.g. Grand Hyatt Austin" />
       <label>Room Block Details</label>
-      <textarea placeholder="Enter room types, dates, and quantities"></textarea>
+      <textarea placeholder="Room types, dates, quantities, links"></textarea>
       <label>Upload Room Block File</label>
       <input type="file" />
-      <button class="submit">Save Room Block Info</button>
+      <button>Save Room Blocks</button>
     </div>
 
-    <div id="beo-fnb" class="tab-content">
-      <h2>Banquet Event Orders & F&B</h2>
-      <h3>Food Allergies by Guest</h3>
+    <div class="card">
+      <h2>🍽️ BEO & F&B</h2>
+      <h4>Allergies</h4>
       <table>
-        <thead>
-          <tr><th>Guest Name</th><th>Allergy</th><th>Room Number</th></tr>
-        </thead>
+        <thead><tr><th>Guest</th><th>Allergy</th><th>Room</th></tr></thead>
         <tbody>
           <tr><td>Alex Morgan</td><td>Shellfish</td><td>504</td></tr>
           <tr><td>Jamie Fox</td><td>Tree Nuts</td><td>312</td></tr>
         </tbody>
       </table>
-
-      <h3>Meal Service Schedule</h3>
+      <h4>Meal Service</h4>
       <table>
-        <thead>
-          <tr><th>Day</th><th>Meal Type</th><th>Time</th><th>Description</th></tr>
-        </thead>
+        <thead><tr><th>Day</th><th>Type</th><th>Time</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td>Day 1</td><td>Breakfast</td><td>8:00 AM</td><td>Continental Breakfast with fruit, pastries, and coffee</td></tr>
-          <tr><td>Day 1</td><td>Lunch</td><td>12:00 PM</td><td>Buffet style with sandwich options, salads, and beverages</td></tr>
-          <tr><td>Day 1</td><td>Dinner</td><td>6:30 PM</td><td>Southern Comfort: fried chicken, mashed potatoes, green beans</td></tr>
-          <tr><td>Day 2</td><td>Breakfast</td><td>7:30 AM</td><td>Scrambled eggs, bacon, toast, and fruit medley</td></tr>
+          <tr><td>Day 1</td><td>Breakfast</td><td>8:00 AM</td><td>Continental breakfast, coffee, fruit</td></tr>
+          <tr><td>Day 1</td><td>Lunch</td><td>12:00 PM</td><td>Buffet with sandwiches and salad</td></tr>
+          <tr><td>Day 1</td><td>Dinner</td><td>6:30 PM</td><td>Plated 3-course southern dinner</td></tr>
         </tbody>
       </table>
-
       <label>Upload BEO/Menu</label>
       <input type="file" />
       <label>Upload Floor Plan</label>
       <input type="file" />
-      <button class="submit">Save BEO / F&B Info</button>
+      <button>Save BEO & F&B</button>
     </div>
 
-    <div id="venue-provided" class="tab-content">
-      <h2>Venue Provided Services</h2>
-      <label>AV Provided</label><textarea></textarea>
-      <label>Furniture Included</label><textarea></textarea>
-      <label>Negotiated Concessions</label><textarea></textarea>
-      <label>Contract Notes</label><textarea></textarea>
-      <label>Upload Related Files</label><input type="file" />
+    <div class="card">
+      <h2>🛠️ Venue Provided</h2>
+      <label>AV Provided</label>
+      <textarea></textarea>
+      <label>Furniture Included</label>
+      <textarea></textarea>
+      <label>Negotiated Concessions</label>
+      <textarea></textarea>
+      <label>Contract Notes</label>
+      <textarea></textarea>
+      <button>Save Venue Services</button>
+    </div>
 
-      <h3>Venue Contacts</h3>
+    <div class="card">
+      <h2>📇 Contacts</h2>
       <table>
-        <thead><tr><th>Name</th><th>Role / Title</th><th>Email</th><th>Phone Number</th></tr></thead>
+        <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Phone</th></tr></thead>
         <tbody>
           <tr><td>Jordan Williams</td><td>Banquet Manager</td><td>jordan@example.com</td><td>(123) 456-7890</td></tr>
-          <tr><td>Taylor Smith</td><td>AV Tech Lead</td><td>taylor@example.com</td><td>(234) 567-8901</td></tr>
+          <tr><td>Taylor Smith</td><td>AV Lead</td><td>taylor@example.com</td><td>(234) 567-8901</td></tr>
         </tbody>
       </table>
-
-      <button class="submit">Save Venue Info</button>
     </div>
 
-    <div id="venue-budget" class="tab-content">
-      <h2>Venue Budget Breakdown</h2>
-      <label>Total Venue Cost</label><input type="number" placeholder="$0.00" />
-      <label>F&B Estimate</label><input type="number" placeholder="$0.00" />
-      <label>AV Estimate</label><input type="number" placeholder="$0.00" />
-      <label>Room Block Estimate</label><input type="number" placeholder="$0.00" />
-      <button class="submit">Save Budget Info</button>
+    <div class="card">
+      <h2>💰 Budget Breakdown</h2>
+      <label>Total Venue Cost</label>
+      <input type="number" placeholder="$0.00" />
+      <label>F&B Estimate</label>
+      <input type="number" placeholder="$0.00" />
+      <label>AV Estimate</label>
+      <input type="number" placeholder="$0.00" />
+      <label>Room Block Estimate</label>
+      <input type="number" placeholder="$0.00" />
+      <button>Save Budget</button>
     </div>
   </div>
-
-  <script>
-    function showTab(tabId, event) {
-      const tabs = document.querySelectorAll('.tab-content');
-      const buttons = document.querySelectorAll('.tab-link');
-      tabs.forEach(tab => tab.classList.remove('active'));
-      buttons.forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
-    }
-  </script>
 </body>
 </html>
+
+  <script>
+    const today = new Date();
+    const dateString = today.toLocaleDateString(undefined, {
+      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+    });
+    document.getElementById('current-date').textContent = dateString;
+
+    const eventDate = new Date('2025-05-10T00:00:00');
+    const diff = eventDate - today;
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  </script>

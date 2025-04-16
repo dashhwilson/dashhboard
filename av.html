@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AV Production | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      color: #1c1c3a;
+    }
+    .header {
+      background-color: #1c1c3a;
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    table th {
+      background-color: #f4f4f4;
+    }
+    button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="header">
+    <h1>Digital Dashh | Event Dashboard</h1>
+    <div class="right">
+      <a href="index.html">🏠 Home</a>
+      <span id="current-date"></span> |
+      <span id="countdown"></span>
+    </div>
+  </div>
+
+
+  <div class="grid">
+    <div class="card">
+      <h2>📋 AV Orders</h2>
+      <label>Room/Location</label>
+      <input type="text" placeholder="Main Stage, Breakout 1..." />
+      <label>Equipment Needed</label>
+      <textarea placeholder="LED wall, wireless mics, confidence monitor..."></textarea>
+      <label>Upload Spec Sheet</label>
+      <input type="file" />
+      <button>Save AV Order</button>
+    </div>
+
+    <div class="card">
+      <h2>👷 Tech Assignments</h2>
+      <table>
+        <thead><tr><th>Name</th><th>Role</th><th>Assigned Room</th></tr></thead>
+        <tbody>
+          <tr><td>Jordan Lee</td><td>Audio Engineer</td><td>Main Stage</td></tr>
+          <tr><td>Chris Moore</td><td>TD</td><td>Breakout 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>🧭 Load-In / Load-Out</h2>
+      <label>Vendor Arrival</label>
+      <input type="datetime-local" />
+      <label>AV Setup Time</label>
+      <input type="datetime-local" />
+      <label>Strike Time</label>
+      <input type="datetime-local" />
+      <label>Special Notes</label>
+      <textarea></textarea>
+      <button>Save Schedule</button>
+    </div>
+
+    <div class="card">
+      <h2>📁 File Uploads</h2>
+      <label>Run of Show</label>
+      <input type="file" />
+      <label>Graphics Deck</label>
+      <input type="file" />
+      <button>Upload Files</button>
+    </div>
+  </div>
+</body>
+</html>
+
+  <script>
+    const today = new Date();
+    const dateString = today.toLocaleDateString(undefined, {
+      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+    });
+    document.getElementById('current-date').textContent = dateString;
+
+    const eventDate = new Date('2025-05-10T00:00:00');
+    const diff = eventDate - today;
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  </script>

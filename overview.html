@@ -11,151 +11,153 @@
       font-family: 'Barlow', sans-serif;
       background-color: #f0f4f8;
       margin: 0;
-      padding: 30px;
+      padding: 0;
       color: #1c1c3a;
     }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    h1, h2 {
-      color: #1c1c3a;
-    }
-    .section {
-      margin-bottom: 30px;
-    }
-    label {
-      font-weight: 500;
-      display: block;
-      margin-top: 10px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .quick-links {
+    .header {
+      background-color: #1c1c3a;
+      color: #fff;
+      padding: 20px 30px;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
     }
-    .quick-links a {
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .header .right {
+      text-align: right;
+    }
+    .header a {
       background-color: #ffe066;
-      padding: 10px 20px;
-      text-decoration: none;
-      border-radius: 6px;
       color: #1c1c3a;
-      font-weight: bold;
-      display: inline-block;
-    }
-    .status-box {
-      padding: 10px;
-      background-color: #f9fafc;
-      border: 1px solid #ccc;
+      text-decoration: none;
+      padding: 6px 14px;
       border-radius: 5px;
+      margin-right: 10px;
+      font-weight: bold;
     }
-    .timeline-item, .deadline-item {
-      margin-bottom: 10px;
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      overflow: auto;
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #1c1c3a;
+    }
+    .card p {
+      margin: 5px 0;
+    }
+    .status-select, .editable {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+    }
+    .timeline-list, .deadline-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .timeline-list li, .deadline-list li {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Event Overview</h1>
+  
+  <div class="header">
+    <h1>Digital Dashh | Event Dashboard</h1>
+    <div class="right">
+      <a href="index.html">🏠 Home</a>
+      <span id="current-date"></span> |
+      <span id="countdown"></span>
+    </div>
+  </div>
 
-    <div class="section">
-      <h2>📌 Event Details</h2>
-      <label>Event Name</label>
-      <input type="text" placeholder="Digital Dashh Conference 2025" />
-      <label>Location</label>
-      <input type="text" placeholder="Austin, TX" />
-      <label>Event Dates</label>
-      <input type="text" placeholder="May 10-12, 2025" />
-      <label>Event Manager</label>
-      <input type="text" placeholder="D'Ashley Wilson" />
+  </div>
+
+  <div class="dashboard">
+    <div class="card">
+      <h3>📌 Event Details</h3>
+      <p><strong>Event:</strong> <span class="editable">Digital Dashh Conference 2025</span></p>
+      <p><strong>Location:</strong> <span class="editable">Austin, TX</span></p>
+      <p><strong>Dates:</strong> <span class="editable">May 10–12, 2025</span></p>
+      <p><strong>Event Manager:</strong> <span class="editable">D'Ashley Wilson</span></p>
     </div>
 
-    <div class="section">
-      <h2>📊 Status Snapshot</h2>
-      <label>Overall Status</label>
-      <select>
+    <div class="card">
+      <h3>📊 Status</h3>
+      <select class="status-select">
         <option>On Track</option>
         <option>At Risk</option>
         <option>Needs Attention</option>
       </select>
-      <label>Notes</label>
-      <textarea placeholder="Add any high-level concerns or updates here."></textarea>
+      <p><strong>Last Updated:</strong> Apr 16</p>
     </div>
 
-    <div class="section">
-      <h2>📅 Timeline</h2>
-      <div class="timeline-item">
-        <label>Kickoff Meeting</label>
-        <input type="date" />
-      </div>
-      <div class="timeline-item">
-        <label>Venue Walkthrough</label>
-        <input type="date" />
-      </div>
-      <div class="timeline-item">
-        <label>Content Finalization</label>
-        <input type="date" />
-      </div>
-      <div class="timeline-item">
-        <label>Show Rehearsal</label>
-        <input type="date" />
-      </div>
-      <div class="timeline-item">
-        <label>Event Go-Live</label>
-        <input type="date" />
-      </div>
+    <div class="card">
+      <h3>📅 Timeline</h3>
+      <ul class="timeline-list">
+        <li>Kickoff Meeting – Apr 18</li>
+        <li>Venue Walkthrough – Apr 25</li>
+        <li>Content Finalization – May 2</li>
+        <li>Rehearsal – May 9</li>
+        <li>Event Go-Live – May 10</li>
+      </ul>
     </div>
 
-    <div class="section">
-      <h2>🧭 Quick Links</h2>
-      <div class="quick-links">
-        <a href="venues.html">Venues</a>
-        <a href="av.html">AV Production</a>
-        <a href="content.html">Creative Content</a>
-        <a href="sponsors.html">Sponsor Tracker</a>
-        <a href="merch.html">Merch Inventory</a>
-      </div>
+    <div class="card">
+      <h3>💰 Budget Snapshot</h3>
+      <p><strong>Total Budget:</strong> $150,000</p>
+      <p><strong>Spent:</strong> $45,000</p>
     </div>
 
-    <div class="section">
-      <h2>💰 Budget Overview</h2>
-      <label>Total Budget</label>
-      <input type="number" placeholder="$150000" />
-      <label>Budget Spent</label>
-      <input type="number" placeholder="$45000" />
+    <div class="card">
+      <h3>🧭 Quick Links</h3>
+      <ul class="timeline-list">
+        <li><a href="venues.html">Venues</a></li>
+        <li><a href="av.html">AV Production</a></li>
+        <li><a href="content.html">Creative Content</a></li>
+        <li><a href="sponsors.html">Sponsor Tracker</a></li>
+        <li><a href="merch.html">Merch Inventory</a></li>
+      </ul>
     </div>
 
-    <div class="section">
-      <h2>📌 Upcoming Deadlines</h2>
-      <div class="deadline-item">
-        <label>Task</label>
-        <input type="text" placeholder="Finalize stage design" />
-        <label>Due Date</label>
-        <input type="date" />
-        <label>Assigned To</label>
-        <input type="text" placeholder="Production Team" />
-      </div>
-      <div class="deadline-item">
-        <label>Task</label>
-        <input type="text" placeholder="Confirm food vendor" />
-        <label>Due Date</label>
-        <input type="date" />
-        <label>Assigned To</label>
-        <input type="text" placeholder="Logistics Team" />
-      </div>
+    <div class="card">
+      <h3>📌 Upcoming Deadlines</h3>
+      <ul class="deadline-list">
+        <li>Finalize stage design – Apr 22</li>
+        <li>Confirm food vendor – Apr 24</li>
+      </ul>
     </div>
   </div>
+
+  <script>
+    const today = new Date();
+    const dateString = today.toLocaleDateString(undefined, {
+      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+    });
+    document.getElementById('current-date').textContent = dateString;
+
+    const eventDate = new Date('2025-05-10T00:00:00');
+    const diff = eventDate - today;
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  </script>
 </body>
 </html>
