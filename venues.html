@@ -75,6 +75,19 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background-color: #f4f4f4;
+    }
   </style>
 </head>
 <body>
@@ -86,6 +99,7 @@
       <button class="tab-link active" onclick="showTab('room-blocks', event)">Room Blocks</button>
       <button class="tab-link" onclick="showTab('beo-fnb', event)">BEO / F&B</button>
       <button class="tab-link" onclick="showTab('venue-provided', event)">Venue Provided</button>
+      <button class="tab-link" onclick="showTab('venue-budget', event)">Venue Budget</button>
     </div>
 
     <div id="room-blocks" class="tab-content active">
@@ -101,14 +115,30 @@
 
     <div id="beo-fnb" class="tab-content">
       <h2>Banquet Event Orders & F&B</h2>
-      <label>Venue Name</label>
-      <input type="text" />
-      <label>Food & Beverage Plan</label>
-      <textarea></textarea>
-      <label>Food Allergies</label>
-      <textarea></textarea>
-      <label>Service Timeline</label>
-      <textarea></textarea>
+      <h3>Food Allergies by Guest</h3>
+      <table>
+        <thead>
+          <tr><th>Guest Name</th><th>Allergy</th><th>Room Number</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Alex Morgan</td><td>Shellfish</td><td>504</td></tr>
+          <tr><td>Jamie Fox</td><td>Tree Nuts</td><td>312</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Meal Service Schedule</h3>
+      <table>
+        <thead>
+          <tr><th>Day</th><th>Meal Type</th><th>Time</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Day 1</td><td>Breakfast</td><td>8:00 AM</td><td>Continental Breakfast with fruit, pastries, and coffee</td></tr>
+          <tr><td>Day 1</td><td>Lunch</td><td>12:00 PM</td><td>Buffet style with sandwich options, salads, and beverages</td></tr>
+          <tr><td>Day 1</td><td>Dinner</td><td>6:30 PM</td><td>Southern Comfort: fried chicken, mashed potatoes, green beans</td></tr>
+          <tr><td>Day 2</td><td>Breakfast</td><td>7:30 AM</td><td>Scrambled eggs, bacon, toast, and fruit medley</td></tr>
+        </tbody>
+      </table>
+
       <label>Upload BEO/Menu</label>
       <input type="file" />
       <label>Upload Floor Plan</label>
@@ -118,37 +148,31 @@
 
     <div id="venue-provided" class="tab-content">
       <h2>Venue Provided Services</h2>
-      <label>AV Provided</label>
-      <textarea></textarea>
-      <label>Furniture Included</label>
-      <textarea></textarea>
-      <label>Negotiated Concessions</label>
-      <textarea></textarea>
-      <label>Contract Notes</label>
-      <textarea></textarea>
-      <label>Upload Related Files</label>
-      <input type="file" />
+      <label>AV Provided</label><textarea></textarea>
+      <label>Furniture Included</label><textarea></textarea>
+      <label>Negotiated Concessions</label><textarea></textarea>
+      <label>Contract Notes</label><textarea></textarea>
+      <label>Upload Related Files</label><input type="file" />
 
       <h3>Venue Contacts</h3>
-      <label>Contact Name</label>
-      <input type="text" />
-      <label>Role / Title</label>
-      <input type="text" />
-      <label>Email</label>
-      <input type="email" />
-      <label>Phone Number</label>
-      <input type="tel" />
+      <table>
+        <thead><tr><th>Name</th><th>Role / Title</th><th>Email</th><th>Phone Number</th></tr></thead>
+        <tbody>
+          <tr><td>Jordan Williams</td><td>Banquet Manager</td><td>jordan@example.com</td><td>(123) 456-7890</td></tr>
+          <tr><td>Taylor Smith</td><td>AV Tech Lead</td><td>taylor@example.com</td><td>(234) 567-8901</td></tr>
+        </tbody>
+      </table>
 
-      <h3>Venue Budget Breakdown</h3>
-      <label>Total Venue Cost</label>
-      <input type="number" />
-      <label>F&B Estimate</label>
-      <input type="number" />
-      <label>AV Estimate</label>
-      <input type="number" />
-      <label>Room Block Estimate</label>
-      <input type="number" />
       <button class="submit">Save Venue Info</button>
+    </div>
+
+    <div id="venue-budget" class="tab-content">
+      <h2>Venue Budget Breakdown</h2>
+      <label>Total Venue Cost</label><input type="number" placeholder="$0.00" />
+      <label>F&B Estimate</label><input type="number" placeholder="$0.00" />
+      <label>AV Estimate</label><input type="number" placeholder="$0.00" />
+      <label>Room Block Estimate</label><input type="number" placeholder="$0.00" />
+      <button class="submit">Save Budget Info</button>
     </div>
   </div>
 
