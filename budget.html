@@ -173,28 +173,44 @@
     </div>
   </div>
 
-  <div class="table-section">
-    <h3>🗂️ Category Breakdown</h3>
-    <table>
-      <thead><tr><th>Category</th><th>Budgeted</th><th>Actual</th><th>Remaining</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Venue</td>
-          <td><input value="$15,000"></td>
-          <td><input value="$12,000"></td>
-          <td><input value="$3,000"></td>
-          <td><textarea rows="3">Deposit paid, final due on-site</textarea></td>
-        </tr>
-        <tr>
-          <td>Catering</td>
-          <td><input value="$10,000"></td>
-          <td><input value="$7,500"></td>
-          <td><input value="$2,500"></td>
-          <td><textarea rows="3">Menu set, bar TBD</textarea></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="card">
+  <h3>🗂️ Category Breakdown</h3>
+  <table id="budgetTable">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Budgeted</th>
+        <th>Actual</th>
+        <th>Remaining</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Venue</td>
+        <td><input type="number" value="15000" class="budgeted"></td>
+        <td><input type="number" value="12000" class="actual"></td>
+        <td class="remaining"></td>
+      </tr>
+      <tr>
+        <td>Catering</td>
+        <td><input type="number" value="10000" class="budgeted"></td>
+        <td><input type="number" value="7500" class="actual"></td>
+        <td class="remaining"></td>
+      </tr>
+      <tr>
+        <td>Travel</td>
+        <td><input type="number" value="5000" class="budgeted"></td>
+        <td><input type="number" value="5500" class="actual"></td>
+        <td class="remaining"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>📊 Expense Breakdown Chart</h3>
+  <canvas id="budgetChart" height="200"></canvas>
+</div>
 
   <div class="grid">
     <div class="card">
@@ -223,6 +239,66 @@
     const diff = eventDate - today;
     const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
     document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const table = document.getElementById("budgetTable");
+  const budgetInputs = table.querySelectorAll(".budgeted");
+  const actualInputs = table.querySelectorAll(".actual");
+  const remainingCells = table.querySelectorAll(".remaining");
+
+  const chartCtx = document.getElementById("budgetChart").getContext("2d");
+  const chartData = {
+    labels: ["Venue", "Catering", "Travel"],
+    datasets: [{
+      label: "Budgeted",
+      backgroundColor: "#6c79db",
+      data: [15000, 10000, 5000]
+    }, {
+      label: "Actual",
+      backgroundColor: "#ffe066",
+      data: [12000, 7500, 5500]
+    }]
+  };
+
+  const budgetChart = new Chart(chartCtx, {
+    type: "bar",
+    data: chartData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Category Spend vs Budget' }
+      }
+    }
+  });
+
+  function updateChartAndTable() {
+    let newBudgeted = [];
+    let newActual = [];
+
+    budgetInputs.forEach((input, index) => {
+      const budget = parseFloat(input.value) || 0;
+      const actual = parseFloat(actualInputs[index].value) || 0;
+      const remaining = budget - actual;
+
+      newBudgeted.push(budget);
+      newActual.push(actual);
+
+      remainingCells[index].textContent = "$" + remaining.toLocaleString();
+      remainingCells[index].style.color = remaining < 0 ? "red" : "#1c1c3a";
+    });
+
+    budgetChart.data.datasets[0].data = newBudgeted;
+    budgetChart.data.datasets[1].data = newActual;
+    budgetChart.update();
+  }
+
+  budgetInputs.forEach(input => input.addEventListener("input", updateChartAndTable));
+  actualInputs.forEach(input => input.addEventListener("input", updateChartAndTable));
+
+  updateChartAndTable();
+</script>
+  
   </script>
 </body>
 </html>
