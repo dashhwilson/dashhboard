@@ -1,19 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Budget Management | Digital Dashh</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Barlow', sans-serif;
-      margin: 0;
-      padding: 0;
       background-color: #f0f4f8;
       color: #1c1c3a;
-      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     .header {
       background-color: #1c1c3a;
@@ -72,29 +72,17 @@
       max-width: 1200px;
       margin: auto;
     }
-   .card {
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-th, td {
-  font-size: 13px;
-  padding: 8px;
-}
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
     }
     .card h3 {
       font-size: 18px;
       margin-top: 0;
       margin-bottom: 12px;
-      color: #1c1c3a;
-    }
-    .table-section {
-      max-width: 1200px;
-      margin: 20px auto;
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     table {
       width: 100%;
@@ -103,45 +91,65 @@ th, td {
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-      font-size: 14px;
-      vertical-align: top;
+      padding: 8px;
+      font-size: 13px;
     }
-    th {
-      background-color: #f4f4f4;
+    input[type=number], input[type=text] {
+      height: 24px !important;
+      padding: 4px 6px !important;
+      font-size: 13px !important;
+      box-sizing: border-box !important;
+      line-height: 1.2 !important;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
-  input, textarea {
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-family: 'Barlow', sans-serif;
-  font-size: 13px;
-  box-sizing: border-box;
-  background-color: #fff;
-  color: #1c1c3a;
-}
+
+    td:first-child input[type=text] {
+      height: 26px !important;
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
+      line-height: 1.3 !important;
+      display: block;
+      width: 100%;
+    }
+
+    input {
+      height: 22px !important;
+      padding: 2px 4px !important;
+      font-size: 13px !important;
+      box-sizing: border-box !important;
+      line-height: 1.2 !important;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    input {
+      height: 34px;
+      width: 100%;
+      padding: 6px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
     button {
       background-color: #6c79db;
       color: white;
       border: none;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
       font-weight: bold;
+      margin-top: 10px;
     }
-    img.placeholder { max-width: 100%; border-radius: 8px; }
-    .low { color: red; }
+    .remove-btn {
+      background-color: #e63946;
+    }
     .card img {
-  width: 100%;
-  height: auto;
-  max-height: 220px;
-  object-fit: contain;
-  border-radius: 8px;
-  display: block;
-}
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -153,6 +161,7 @@ th, td {
       <span id="countdown"></span>
     </div>
   </div>
+
   <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="venues.html">Venues</a>
@@ -171,61 +180,112 @@ th, td {
       <p><strong>Remaining:</strong> $28,000</p>
       <p><strong>Usage:</strong> 44%</p>
     </div>
-
     <div class="card">
       <h3>📤 Upload Budget Sheet</h3>
       <p><a href="https://docs.google.com/spreadsheets/d/1kYv-template-link" target="_blank">📥 Open Google Sheet Template</a></p>
-      <input type="file" />
-      <button>Upload Budget File</button>
+      <style>
+        .upload-flex {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 8px;
+        }
+        .upload-button {
+          background-color: #6c79db;
+          color: white;
+          padding: 8px 14px;
+          border: none;
+          border-radius: 6px;
+          font-size: 14px;
+          font-family: 'Barlow', sans-serif;
+          font-weight: bold;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+        }
+        input[type="file"] {
+          display: none;
+        }
+        .file-label {
+          background-color: #6c79db;
+          color: white;
+          padding: 8px 14px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-family: 'Barlow', sans-serif;
+          font-size: 14px;
+          font-weight: bold;
+          display: inline-block;
+        }
+        #fileName {
+          font-size: 13px;
+          font-family: 'Barlow', sans-serif;
+          color: #1c1c3a;
+        }
+      </style>
+      <div class="upload-flex">
+        <label for="budgetFileInput" class="file-label">📁 Choose File</label>
+        <input type="file" id="budgetFileInput">
+        <span id="fileName">No file selected</span>
+        <button class="upload-button">Upload Budget File</button>
+      </div>
+      <script>
+        document.getElementById("budgetFileInput").addEventListener("change", function() {
+          const name = this.files.length > 0 ? this.files[0].name : "No file selected";
+          document.getElementById("fileName").textContent = name;
+        });
+      </script>
     </div>
   </div>
 
-<div class="card">
-  <h3>🗂️ Category Breakdown</h3>
-  <table id="budgetTable">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Budgeted</th>
-        <th>Actual</th>
-        <th>Remaining</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Venue</td>
-        <td><input type="number" value="15000" class="budgeted"></td>
-        <td><input type="number" value="12000" class="actual"></td>
-        <td class="remaining"></td>
-      </tr>
-      <tr>
-        <td>Catering</td>
-        <td><input type="number" value="10000" class="budgeted"></td>
-        <td><input type="number" value="7500" class="actual"></td>
-        <td class="remaining"></td>
-      </tr>
-      <tr>
-        <td>Travel</td>
-        <td><input type="number" value="5000" class="budgeted"></td>
-        <td><input type="number" value="5500" class="actual"></td>
-        <td class="remaining"></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="card">
-  <h3>📊 Expense Breakdown Chart</h3>
-  <canvas id="budgetChart" height="150"></canvas>
-</div>
+  <div class="card">
+    <h3>🗂️ Category Breakdown</h3>
+    <div style="margin-bottom: 10px;">
+      <button onclick="addRow()">➕ Add Row</button>
+      <button onclick="exportCSV()">📤 Export CSV</button>
+    </div>
+    <table id="budgetTable">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Budgeted</th>
+          <th>Actual</th>
+          <th>Remaining</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input value="Venue"></td>
+          <td><input type="number" value="15000" class="budgeted"></td>
+          <td><input type="number" value="12000" class="actual"></td>
+          <td class="remaining"></td>
+          <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
+        </tr>
+        <tr>
+          <td><input value="Catering"></td>
+          <td><input type="number" value="10000" class="budgeted"></td>
+          <td><input type="number" value="7500" class="actual"></td>
+          <td class="remaining"></td>
+          <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
+        </tr>
+        <tr>
+          <td><input value="Travel"></td>
+          <td><input type="number" value="5000" class="budgeted"></td>
+          <td><input type="number" value="5500" class="actual"></td>
+          <td class="remaining"></td>
+          <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <canvas id="budgetChart" height="150" style="margin-top: 30px;"></canvas>
+  </div>
 
   <div class="grid">
     <div class="card">
-      <h3>📈 Expense Breakdown </h3>
+      <h3>📈 Expense Breakdown</h3>
       <img src="https://static.wixstatic.com/media/8267b6_6da8bd52ce7646e397d5eb147828605c~mv2.png" alt="Expense Breakdown Pie Chart" />
-      
     </div>
-
     <div class="card">
       <h3>🚨 Flagged Overages</h3>
       <ul>
@@ -237,75 +297,99 @@ th, td {
 
   <script>
     const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
+    const dateString = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
     document.getElementById('current-date').textContent = dateString;
 
     const eventDate = new Date('2025-05-10T00:00:00');
     const diff = eventDate - today;
     const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
     document.getElementById('countdown').textContent = `${daysLeft} days until event`;
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const table = document.getElementById("budgetTable");
-  const budgetInputs = table.querySelectorAll(".budgeted");
-  const actualInputs = table.querySelectorAll(".actual");
-  const remainingCells = table.querySelectorAll(".remaining");
 
-  const chartCtx = document.getElementById("budgetChart").getContext("2d");
-  const chartData = {
-    labels: ["Venue", "Catering", "Travel"],
-    datasets: [{
-      label: "Budgeted",
-      backgroundColor: "#6c79db",
-      data: [15000, 10000, 5000]
-    }, {
-      label: "Actual",
-      backgroundColor: "#ffe066",
-      data: [12000, 7500, 5500]
-    }]
-  };
-
-  const budgetChart = new Chart(chartCtx, {
-    type: "bar",
-    data: chartData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        title: { display: true, text: 'Category Spend vs Budget' }
+    const ctx = document.getElementById("budgetChart").getContext("2d");
+    const budgetChart = new Chart(ctx, {
+      type: "bar",
+      data: { labels: [], datasets: [
+        { label: "Budgeted", backgroundColor: "#6c79db", data: [] },
+        { label: "Actual", backgroundColor: "#ffe066", data: [] }
+      ]},
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'Category Spend vs Budget' }
+        }
       }
-    }
-  });
-
-  function updateChartAndTable() {
-    let newBudgeted = [];
-    let newActual = [];
-
-    budgetInputs.forEach((input, index) => {
-      const budget = parseFloat(input.value) || 0;
-      const actual = parseFloat(actualInputs[index].value) || 0;
-      const remaining = budget - actual;
-
-      newBudgeted.push(budget);
-      newActual.push(actual);
-
-      remainingCells[index].textContent = "$" + remaining.toLocaleString();
-      remainingCells[index].style.color = remaining < 0 ? "red" : "#1c1c3a";
     });
 
-    budgetChart.data.datasets[0].data = newBudgeted;
-    budgetChart.data.datasets[1].data = newActual;
-    budgetChart.update();
-  }
+    function updateChartAndTable() {
+      const rows = document.querySelectorAll("#budgetTable tbody tr");
+      const labels = [], budgeted = [], actual = [];
 
-  budgetInputs.forEach(input => input.addEventListener("input", updateChartAndTable));
-  actualInputs.forEach(input => input.addEventListener("input", updateChartAndTable));
+      rows.forEach(row => {
+        const category = row.querySelector("td:nth-child(1) input").value;
+        const bud = parseFloat(row.querySelector(".budgeted")?.value) || 0;
+        const act = parseFloat(row.querySelector(".actual")?.value) || 0;
+        const remaining = bud - act;
 
-  updateChartAndTable();
-</script>
-  
+        row.querySelector(".remaining").textContent = "$" + remaining.toLocaleString();
+        row.querySelector(".remaining").style.color = remaining < 0 ? "red" : "#1c1c3a";
+
+        labels.push(category);
+        budgeted.push(bud);
+        actual.push(act);
+      });
+
+      budgetChart.data.labels = labels;
+      budgetChart.data.datasets[0].data = budgeted;
+      budgetChart.data.datasets[1].data = actual;
+      budgetChart.update();
+    }
+
+    function addRow() {
+      const table = document.querySelector("#budgetTable tbody");
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input value="New Category"></td>
+        <td><input type="number" class="budgeted" value="0"></td>
+        <td><input type="number" class="actual" value="0"></td>
+        <td class="remaining"></td>
+        <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>`;
+      table.appendChild(row);
+      attachListeners(row);
+      updateChartAndTable();
+    }
+
+    function removeRow(button) {
+      button.closest("tr").remove();
+      updateChartAndTable();
+    }
+
+    function exportCSV() {
+      let csv = "Category,Budgeted,Actual,Remaining\n";
+      document.querySelectorAll("#budgetTable tbody tr").forEach(row => {
+        const category = row.querySelector("td:nth-child(1) input").value;
+        const budget = row.querySelector("td:nth-child(2) input").value;
+        const act = row.querySelector("td:nth-child(3) input").value;
+        const remaining = row.querySelector(".remaining").textContent;
+        csv += `${category},${budget},${act},${remaining}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "category_breakdown.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function attachListeners(row) {
+      row.querySelector(".budgeted").addEventListener("input", updateChartAndTable);
+      row.querySelector(".actual").addEventListener("input", updateChartAndTable);
+    }
+
+    document.querySelectorAll("#budgetTable tbody tr").forEach(attachListeners);
+    updateChartAndTable();
   </script>
 </body>
 </html>
