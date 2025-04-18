@@ -130,38 +130,18 @@
     <a href="budget.html">Budget</a>
   </div>
 
-  <div class="grid">
-    <div class="card">
+  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+<div class="card" style="max-width: 500px;">
       <h3>📊 Budget Summary</h3>
       <p><strong>Total Budget:</strong> $50,000</p>
       <p><strong>Spent to Date:</strong> $22,000</p>
       <p><strong>Remaining:</strong> $28,000</p>
       <p><strong>Usage:</strong> 44%</p>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>🗂️ Category Breakdown</h3>
-      <table>
-        <thead><tr><th>Category</th><th>Budgeted</th><th>Actual</th><th>Remaining</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Venue</td>
-            <td><input value="$15,000"></td>
-            <td><input value="$12,000"></td>
-            <td><input value="$3,000"></td>
-            <td><input value="Deposit paid, final due on-site"></td>
-          </tr>
-          <tr>
-            <td>Catering</td>
-            <td><input value="$10,000"></td>
-            <td><input value="$7,500"></td>
-            <td><input value="$2,500"></td>
-            <td><input value="Menu set, bar TBD"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
+  
+  <div class="grid">
     <div class="card">
       <h3>📤 Upload Budget Sheet</h3>
       <p><a href="https://docs.google.com/spreadsheets/d/1kYv-template-link" target="_blank">📥 Open Google Sheet Template</a></p>
@@ -169,9 +149,32 @@
       <button>Upload Budget File</button>
     </div>
 
+  <div class="table-section">
+    <h3>🗂️ Category Breakdown</h3>
+    <table>
+      <thead><tr><th>Category</th><th>Budgeted</th><th>Actual</th><th>Remaining</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Venue</td>
+          <td><input value="$15,000"></td>
+          <td><input value="$12,000"></td>
+          <td><input value="$3,000"></td>
+          <td><textarea rows="3">Deposit paid, final due on-site</textarea></td>
+        </tr>
+        <tr>
+          <td>Catering</td>
+          <td><input value="$10,000"></td>
+          <td><input value="$7,500"></td>
+          <td><input value="$2,500"></td>
+          <td><textarea rows="3">Menu set, bar TBD</textarea></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
     <div class="card">
       <h3>📈 Expense Breakdown (Pie Chart)</h3>
-      <img class="placeholder" src="https://via.placeholder.com/300x200.png?text=Pie+Chart+Placeholder" alt="Pie Chart Placeholder" />
+      <img class="placeholder" src="https://drive.google.com/file/d/1-kU5EX9yITwMuuVWsWGhIFmAmstg6QOz/view?usp=share_link" />
     </div>
 
     <div class="card">
@@ -182,6 +185,7 @@
       </ul>
     </div>
   </div>
+
 
   <script>
     const today = new Date();
