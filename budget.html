@@ -72,11 +72,15 @@
       max-width: 1200px;
       margin: auto;
     }
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+   .card {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+th, td {
+  font-size: 13px;
+  padding: 8px;
+}
     }
     .card h3 {
       font-size: 18px;
@@ -210,7 +214,7 @@
 
 <div class="card">
   <h3>📊 Expense Breakdown Chart</h3>
-  <canvas id="budgetChart" height="200"></canvas>
+  <canvas id="budgetChart" height="150"></canvas>
 </div>
 
   <div class="grid">
@@ -240,7 +244,7 @@
     const diff = eventDate - today;
     const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
     document.getElementById('countdown').textContent = `${daysLeft} days until event`;
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const table = document.getElementById("budgetTable");
   const budgetInputs = table.querySelectorAll(".budgeted");
