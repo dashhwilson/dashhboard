@@ -126,7 +126,14 @@
       font-weight: bold;
     }
     .low { color: red; }
-    img.placeholder { max-width: 100%; border-radius: 8px; }
+    .card img {
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
   </style>
 </head>
 <body>
@@ -191,7 +198,7 @@
   <div class="grid">
     <div class="card">
       <h3>📈 Expense Breakdown </h3>
-      <img src="https://static.wixstatic.com/media/8267b6_6da8bd52ce7646e397d5eb147828605c~mv2.png">
+      <img src="https://static.wixstatic.com/media/8267b6_6da8bd52ce7646e397d5eb147828605c~mv2.png" alt="Expense Breakdown Pie Chart" />
       
     </div>
 
