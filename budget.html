@@ -12,6 +12,7 @@
       padding: 0;
       background-color: #f0f4f8;
       color: #1c1c3a;
+      box-sizing: border-box;
     }
     .header {
       background-color: #1c1c3a;
@@ -55,6 +56,13 @@
       border-radius: 6px;
       font-weight: bold;
     }
+    .summary-upload-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 30px auto;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -75,6 +83,14 @@
       margin-bottom: 12px;
       color: #1c1c3a;
     }
+    .table-section {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -82,20 +98,22 @@
     }
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 10px;
       text-align: left;
       font-size: 14px;
+      vertical-align: top;
     }
     th {
       background-color: #f4f4f4;
     }
-    input {
+    input, textarea {
       width: 100%;
-      padding: 6px;
-      margin: 4px 0;
+      padding: 8px;
       border-radius: 4px;
       border: 1px solid #ccc;
       font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
     }
     button {
       background-color: #6c79db;
@@ -108,7 +126,7 @@
       font-weight: bold;
     }
     .low { color: red; }
-    
+    img.placeholder { max-width: 100%; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -130,28 +148,23 @@
     <a href="budget.html">Budget</a>
   </div>
 
-<div class="card">
+  <div class="summary-upload-row">
+    <div class="card">
       <h3>📊 Budget Summary</h3>
       <p><strong>Total Budget:</strong> $50,000</p>
       <p><strong>Spent to Date:</strong> $22,000</p>
       <p><strong>Remaining:</strong> $28,000</p>
       <p><strong>Usage:</strong> 44%</p>
     </div>
-  </div>
 
-  <div class="grid">
     <div class="card">
       <h3>📤 Upload Budget Sheet</h3>
       <p><a href="https://docs.google.com/spreadsheets/d/1kYv-template-link" target="_blank">📥 Open Google Sheet Template</a></p>
       <input type="file" />
       <button>Upload Budget File</button>
     </div>
+  </div>
 
-
-
-
-
-  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">  
   <div class="table-section">
     <h3>🗂️ Category Breakdown</h3>
     <table>
@@ -174,14 +187,11 @@
       </tbody>
     </table>
   </div>
-  </div>
 
-
-
-    
+  <div class="grid">
     <div class="card">
       <h3>📈 Expense Breakdown (Pie Chart)</h3>
-      <img src="https://drive.google.com/file/d/1-kU5EX9yITwMuuVWsWGhIFmAmstg6QOz/view?usp=share_link">
+      <img class="placeholder" src="https://via.placeholder.com/300x200.png?text=Pie+Chart+Placeholder" alt="Pie Chart Placeholder" />
     </div>
 
     <div class="card">
@@ -192,7 +202,6 @@
       </ul>
     </div>
   </div>
-
 
   <script>
     const today = new Date();
