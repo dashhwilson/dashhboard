@@ -164,12 +164,12 @@
 
   <div class="menu">
     <a href="overview.html">Overview</a>
+    <a href="budget.html">Budget</a>
     <a href="venues.html">Venues</a>
     <a href="av.html">AV Production</a>
     <a href="content.html">Creative Content</a>
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
-    <a href="budget.html">Budget</a>
   </div>
 
   <div class="summary-upload-row">
@@ -287,12 +287,11 @@
       <img src="https://static.wixstatic.com/media/8267b6_6da8bd52ce7646e397d5eb147828605c~mv2.png" alt="Expense Breakdown Pie Chart" />
     </div>
     <div class="card">
-      <h3>🚨 Flagged Overages</h3>
-      <ul>
-        <li>⚠️ AV Equipment – Actual exceeds budget by $1,200</li>
-        <li>⚠️ Travel – Actual exceeds budget by $800</li>
-      </ul>
-    </div>
+  <h3>🚨 Flagged Overages</h3>
+  <ul id="overagesList">
+    <!-- Overages will populate here dynamically -->
+  </ul>
+</div>
   </div>
 
   <script>
@@ -390,6 +389,74 @@
 
     document.querySelectorAll("#budgetTable tbody tr").forEach(attachListeners);
     updateChartAndTable();
+  
+  <script>
+function updateFlaggedOverages() {
+  const table = document.getElementById("budgetTable");
+  const rows = table.querySelectorAll("tbody tr");
+  const overagesList = document.getElementById("overagesList");
+  overagesList.innerHTML = ""; // Clear current overages list
+
+  rows.forEach((row) => {
+    const categoryInput = row.cells[0].querySelector("input");
+    const budgetedInput = row.querySelector(".budgeted");
+    const actualInput = row.querySelector(".actual");
+
+    const category = categoryInput.value.trim();
+    const budgeted = parseFloat(budgetedInput.value) || 0;
+    const actual = parseFloat(actualInput.value) || 0;
+
+    if (actual > budgeted) {
+      const over = (actual - budgeted).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD"
+      });
+
+      const li = document.createElement("li");
+      li.textContent = `⚠️ ${category} – Actual exceeds budget by ${over}`;
+      overagesList.appendChild(li);
+    }
+  });
+}
+
+// Attach input listeners to update overages dynamically
+function attachOverageListeners() {
+  const table = document.getElementById("budgetTable");
+  const rows = table.querySelectorAll("tbody tr");
+
+  rows.forEach(row => {
+    const budgetedInput = row.querySelector(".budgeted");
+    const actualInput = row.querySelector(".actual");
+
+    budgetedInput.addEventListener("input", updateFlaggedOverages);
+    actualInput.addEventListener("input", updateFlaggedOverages);
+  });
+}
+
+// Call on page load
+document.addEventListener("DOMContentLoaded", function () {
+  attachOverageListeners();
+  updateFlaggedOverages();
+});
+
+// Also call after adding a new row
+function addRow() {
+  const table = document.getElementById("budgetTable").querySelector("tbody");
+  const newRow = document.createElement("tr");
+
+  newRow.innerHTML = `
+    <td><input value=""></td>
+    <td><input type="number" value="0" class="budgeted"></td>
+    <td><input type="number" value="0" class="actual"></td>
+    <td class="remaining"></td>
+    <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
+  `;
+  table.appendChild(newRow);
+  attachOverageListeners(); // reattach listeners for new row
+  updateFlaggedOverages();  // ensure it checks again
+}
+</script>
+  
   </script>
 </body>
 </html>
