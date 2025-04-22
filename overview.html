@@ -1,47 +1,25 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Overview | Digital Dashh</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
-  
   <style>
     body {
       font-family: 'Barlow', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f0f4f8;
-      color: #1c1c3a;
     }
     .header {
       background-color: #1c1c3a;
-      color: #fff;
+      color: white;
       padding: 20px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    .header .right {
-      text-align: right;
-    }
-    .header a {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
     }
     .menu {
-      background-color: #ffffff;
+      background-color: white;
       padding: 10px 30px;
       display: flex;
       flex-wrap: wrap;
@@ -50,86 +28,77 @@
       border-bottom: 1px solid #ddd;
     }
     .menu a {
-      background-color: #6c79db;
+      background-color: var(--accent-color, #6c79db);
       color: white;
-      text-decoration: none;
       padding: 8px 16px;
       border-radius: 6px;
+      text-decoration: none;
       font-weight: bold;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
+    .view-toggle-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      background-color: #e9e9f2;
+      border-bottom: 1px solid #ccc;
+    }
+    .view-toggle-bar button {
+      font-family: 'Barlow', sans-serif;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: var(--accent-color);
+      color: white;
+    }
+    .view-toggle-bar button.active {
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--accent-color);
     }
     .card {
-      background-color: #fff;
-      border-radius: 12px;
+      background: white;
+      margin: 30px auto;
       padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    .card h3, .card h2 {
-      font-size: 18px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      color: #1c1c3a;
+
+    /* THEMES */
+    body.production-theme {
+      background-color: #eef1fb;
+      --accent-color: #8da5e2;
     }
-    .card p, .card label, .card input, .card textarea {
-      font-size: 14px;
+    body.client-theme {
+      background-color: #e9edf3;
+      --accent-color: #2c3e50;
     }
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
+    body.partner-theme {
+      background-color: #fdf1f5;
+      --accent-color: #f8a9c4;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+
+    [data-view] {
+      display: none;
     }
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
-    }
-    table th {
-      background-color: #f4f4f4;
-    }
-    button {
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
+
+    body.production-theme [data-view="production"],
+    body.client-theme [data-view="client"],
+    body.partner-theme [data-view="partner"] {
+      display: block;
     }
   </style>
-
 </head>
 <body>
-  
-  
   <div class="header">
-    <h1>Digital Dashh | Event Dashboard</h1>
-    <div class="right">
+    <h1>Digital Dashh | Overview</h1>
+    <div>
       <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
     </div>
   </div>
+
   <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
@@ -138,60 +107,53 @@
     <a href="content.html">Creative Content</a>
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
-    
   </div>
 
-
-
-  <div class="grid">
-    <div class="card">
-      <h3>📌 Event Details</h3>
-      <p><strong>Name:</strong> Digital Dashh Conference 2025</p>
-      <p><strong>Location:</strong> Austin, TX</p>
-      <p><strong>Dates:</strong> May 10–12, 2025</p>
-      <p><strong>Event Manager:</strong> D'Ashley Wilson</p>
-    </div>
-
-    <div class="card">
-      <h3>📊 Status</h3>
-      <p><strong>Current:</strong> On Track</p>
-      <p><strong>Notes:</strong> All teams tracking well. AV and content finalizing this week.</p>
-    </div>
-
-    <div class="card">
-      <h3>📅 Key Milestones</h3>
-      <p>Kickoff: Apr 18</p>
-      <p>Walkthrough: Apr 25</p>
-      <p>Final Content: May 2</p>
-      <p>Rehearsal: May 9</p>
-      <p>Go-Live: May 10</p>
-    </div>
-
-    <div class="card">
-      <h3>💰 Budget Overview</h3>
-      <p><strong>Total Budget:</strong> $150,000</p>
-      <p><strong>Spent:</strong> $45,000</p>
-      <p><strong>Remaining:</strong> $105,000</p>
-    </div>
-
-    <div class="card">
-      <h3>📌 Upcoming Deadlines</h3>
-      <p>Finalize stage design – Apr 22</p>
-      <p>Confirm food vendor – Apr 24</p>
-    </div>
+  <!-- 🔀 View Toggle -->
+  <div class="view-toggle-bar">
+    <button onclick="setView('production')" id="btn-production">Production View</button>
+    <button onclick="setView('client')" id="btn-client">Client View</button>
+    <button onclick="setView('partner')" id="btn-partner">Partner View</button>
   </div>
 
+  <!-- 🔍 Sample Cards per View -->
+  <div class="card" data-view="production">
+    <h3>🛠 Internal Team Notes</h3>
+    <p>This section is only visible in the Production View.</p>
+  </div>
+
+  <div class="card" data-view="client">
+    <h3>📄 Client Summary</h3>
+    <p>This section is only visible in the Client View.</p>
+  </div>
+
+  <div class="card" data-view="partner">
+    <h3>🤝 Partner Highlights</h3>
+    <p>This section is only visible in the Partner View.</p>
+  </div>
+
+  <!-- 🌈 Theme / View Script -->
   <script>
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
-    document.getElementById('current-date').textContent = dateString;
+    function setView(view) {
+      const body = document.body;
+      const views = ['production', 'client', 'partner'];
 
-    const eventDate = new Date('2025-05-10T00:00:00');
-    const diff = eventDate - today;
-    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+      views.forEach(v => body.classList.remove(`${v}-theme`));
+      body.classList.add(`${view}-theme`);
+      localStorage.setItem('dashhboardView', view);
+
+      views.forEach(v => {
+        const btn = document.getElementById(`btn-${v}`);
+        if (btn) btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(`btn-${view}`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const savedView = localStorage.getItem('dashhboardView') || 'production';
+      setView(savedView);
+    });
   </script>
 </body>
 </html>
