@@ -294,169 +294,122 @@
 </div>
   </div>
 
-  <script>
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
-    document.getElementById('current-date').textContent = dateString;
+ <script>
+  // Set current date and countdown
+  const today = new Date();
+  const dateString = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+  document.getElementById('current-date').textContent = dateString;
 
-    const eventDate = new Date('2025-05-10T00:00:00');
-    const diff = eventDate - today;
-    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  const eventDate = new Date('2025-05-10T00:00:00');
+  const diff = eventDate - today;
+  const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  document.getElementById('countdown').textContent = `${daysLeft} days until event`;
 
-    const ctx = document.getElementById("budgetChart").getContext("2d");
-    const budgetChart = new Chart(ctx, {
-      type: "bar",
-      data: { labels: [], datasets: [
+  // Chart setup
+  const ctx = document.getElementById("budgetChart").getContext("2d");
+  const budgetChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: [],
+      datasets: [
         { label: "Budgeted", backgroundColor: "#6c79db", data: [] },
         { label: "Actual", backgroundColor: "#ffe066", data: [] }
-      ]},
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'Category Spend vs Budget' }
-        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Category Spend vs Budget' }
+      }
+    }
+  });
+
+  // Update chart, remaining, and flagged overages
+  function updateChartAndTable() {
+    const rows = document.querySelectorAll("#budgetTable tbody tr");
+    const labels = [], budgeted = [], actual = [];
+
+    const overagesList = document.getElementById("overagesList");
+    overagesList.innerHTML = ""; // Clear old overages
+
+    rows.forEach(row => {
+      const category = row.querySelector("td:nth-child(1) input").value;
+      const budInput = row.querySelector(".budgeted");
+      const actInput = row.querySelector(".actual");
+
+      const bud = parseFloat(budInput?.value) || 0;
+      const act = parseFloat(actInput?.value) || 0;
+      const remaining = bud - act;
+
+      row.querySelector(".remaining").textContent = "$" + remaining.toLocaleString();
+      row.querySelector(".remaining").style.color = remaining < 0 ? "red" : "#1c1c3a";
+
+      labels.push(category);
+      budgeted.push(bud);
+      actual.push(act);
+
+      if (act > bud) {
+        const over = (act - bud).toLocaleString("en-US", { style: "currency", currency: "USD" });
+        const li = document.createElement("li");
+        li.textContent = `⚠️ ${category} – Actual exceeds budget by ${over}`;
+        overagesList.appendChild(li);
       }
     });
 
-    function updateChartAndTable() {
-      const rows = document.querySelectorAll("#budgetTable tbody tr");
-      const labels = [], budgeted = [], actual = [];
+    budgetChart.data.labels = labels;
+    budgetChart.data.datasets[0].data = budgeted;
+    budgetChart.data.datasets[1].data = actual;
+    budgetChart.update();
+  }
 
-      rows.forEach(row => {
-        const category = row.querySelector("td:nth-child(1) input").value;
-        const bud = parseFloat(row.querySelector(".budgeted")?.value) || 0;
-        const act = parseFloat(row.querySelector(".actual")?.value) || 0;
-        const remaining = bud - act;
-
-        row.querySelector(".remaining").textContent = "$" + remaining.toLocaleString();
-        row.querySelector(".remaining").style.color = remaining < 0 ? "red" : "#1c1c3a";
-
-        labels.push(category);
-        budgeted.push(bud);
-        actual.push(act);
-      });
-
-      budgetChart.data.labels = labels;
-      budgetChart.data.datasets[0].data = budgeted;
-      budgetChart.data.datasets[1].data = actual;
-      budgetChart.update();
-    }
-
-    function addRow() {
-      const table = document.querySelector("#budgetTable tbody");
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td><input value="New Category"></td>
-        <td><input type="number" class="budgeted" value="0"></td>
-        <td><input type="number" class="actual" value="0"></td>
-        <td class="remaining"></td>
-        <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>`;
-      table.appendChild(row);
-      attachListeners(row);
-      updateChartAndTable();
-    }
-
-    function removeRow(button) {
-      button.closest("tr").remove();
-      updateChartAndTable();
-    }
-
-    function exportCSV() {
-      let csv = "Category,Budgeted,Actual,Remaining\n";
-      document.querySelectorAll("#budgetTable tbody tr").forEach(row => {
-        const category = row.querySelector("td:nth-child(1) input").value;
-        const budget = row.querySelector("td:nth-child(2) input").value;
-        const act = row.querySelector("td:nth-child(3) input").value;
-        const remaining = row.querySelector(".remaining").textContent;
-        csv += `${category},${budget},${act},${remaining}\n`;
-      });
-
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "category_breakdown.csv";
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function attachListeners(row) {
-      row.querySelector(".budgeted").addEventListener("input", updateChartAndTable);
-      row.querySelector(".actual").addEventListener("input", updateChartAndTable);
-    }
-
-    document.querySelectorAll("#budgetTable tbody tr").forEach(attachListeners);
+  function addRow() {
+    const table = document.querySelector("#budgetTable tbody");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><input value="New Category"></td>
+      <td><input type="number" class="budgeted" value="0"></td>
+      <td><input type="number" class="actual" value="0"></td>
+      <td class="remaining"></td>
+      <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
+    `;
+    table.appendChild(row);
+    attachListeners(row);
     updateChartAndTable();
-  
-  <script>
-function updateFlaggedOverages() {
-  const table = document.getElementById("budgetTable");
-  const rows = table.querySelectorAll("tbody tr");
-  const overagesList = document.getElementById("overagesList");
-  overagesList.innerHTML = ""; // Clear current overages list
+  }
 
-  rows.forEach((row) => {
-    const categoryInput = row.cells[0].querySelector("input");
-    const budgetedInput = row.querySelector(".budgeted");
-    const actualInput = row.querySelector(".actual");
+  function removeRow(button) {
+    button.closest("tr").remove();
+    updateChartAndTable();
+  }
 
-    const category = categoryInput.value.trim();
-    const budgeted = parseFloat(budgetedInput.value) || 0;
-    const actual = parseFloat(actualInput.value) || 0;
+  function exportCSV() {
+    let csv = "Category,Budgeted,Actual,Remaining\n";
+    document.querySelectorAll("#budgetTable tbody tr").forEach(row => {
+      const category = row.querySelector("td:nth-child(1) input").value;
+      const budget = row.querySelector("td:nth-child(2) input").value;
+      const act = row.querySelector("td:nth-child(3) input").value;
+      const remaining = row.querySelector(".remaining").textContent;
+      csv += `${category},${budget},${act},${remaining}\n`;
+    });
 
-    if (actual > budgeted) {
-      const over = (actual - budgeted).toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD"
-      });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "category_breakdown.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 
-      const li = document.createElement("li");
-      li.textContent = `⚠️ ${category} – Actual exceeds budget by ${over}`;
-      overagesList.appendChild(li);
-    }
-  });
-}
+  function attachListeners(row) {
+    row.querySelector(".budgeted").addEventListener("input", updateChartAndTable);
+    row.querySelector(".actual").addEventListener("input", updateChartAndTable);
+  }
 
-// Attach input listeners to update overages dynamically
-function attachOverageListeners() {
-  const table = document.getElementById("budgetTable");
-  const rows = table.querySelectorAll("tbody tr");
-
-  rows.forEach(row => {
-    const budgetedInput = row.querySelector(".budgeted");
-    const actualInput = row.querySelector(".actual");
-
-    budgetedInput.addEventListener("input", updateFlaggedOverages);
-    actualInput.addEventListener("input", updateFlaggedOverages);
-  });
-}
-
-// Call on page load
-document.addEventListener("DOMContentLoaded", function () {
-  attachOverageListeners();
-  updateFlaggedOverages();
-});
-
-// Also call after adding a new row
-function addRow() {
-  const table = document.getElementById("budgetTable").querySelector("tbody");
-  const newRow = document.createElement("tr");
-
-  newRow.innerHTML = `
-    <td><input value=""></td>
-    <td><input type="number" value="0" class="budgeted"></td>
-    <td><input type="number" value="0" class="actual"></td>
-    <td class="remaining"></td>
-    <td><button class="remove-btn" onclick="removeRow(this)">Remove</button></td>
-  `;
-  table.appendChild(newRow);
-  attachOverageListeners(); // reattach listeners for new row
-  updateFlaggedOverages();  // ensure it checks again
-}
+  // Attach listeners to initial rows
+  document.querySelectorAll("#budgetTable tbody tr").forEach(attachListeners);
+  updateChartAndTable();
 </script>
-  
-  </script>
 </body>
 </html>
