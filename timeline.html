@@ -1,313 +1,225 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Timeline | Digital Dashh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Dashh | Event Timeline</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Barlow', sans-serif;
+      background-color: #f0f4f8;
       margin: 0;
       padding: 0;
-      background-color: #f0f4f8;
       color: #1c1c3a;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
     }
     .header {
       background-color: #1c1c3a;
       color: #fff;
-      padding: 20px 30px;
+      padding: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .header a {
+    .nav-buttons {
       background-color: #ffe066;
-      color: #1c1c3a;
+      padding: 10px 30px;
+      display: flex;
+      gap: 10px;
+    }
+    .nav-buttons a {
+      background-color: #6c79db;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
       text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
       font-weight: bold;
     }
     .main {
       display: flex;
-      flex: 1;
-      overflow: hidden;
     }
     .sidebar {
-      width: 250px;
-      background-color: #ffffff;
+      width: 200px;
       padding: 20px;
-      border-right: 1px solid #ddd;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-    }
-    .sidebar h3 {
-      font-size: 16px;
-      margin-top: 0;
-      margin-bottom: 10px;
+      background-color: #e9ecf3;
     }
     .sidebar button {
       width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      margin-bottom: 10px;
+      padding: 10px;
       background-color: #6c79db;
       color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
     }
     .content {
       flex: 1;
-      padding: 30px;
-      overflow-y: auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      max-width: 1200px;
-      margin: auto;
+      padding: 30px;
     }
     .card {
-      background-color: #ffffff;
-      padding: 20px;
+      background-color: #fff;
       border-radius: 12px;
+      padding: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card h3 {
-      margin-top: 0;
     }
     input, select, textarea {
       width: 100%;
-      margin-top: 8px;
-      margin-bottom: 12px;
       padding: 8px;
-      font-size: 14px;
+      margin: 6px 0;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
+      font-family: 'Barlow', sans-serif;
     }
-    .timeline-item {
-      border-left: 4px solid #6c79db;
-      padding-left: 15px;
-      margin-bottom: 15px;
-      position: relative;
-    }
-    .timeline-item strong {
-      display: block;
-    }
-    .status {
-      display: inline-block;
-      padding: 2px 8px;
-      font-size: 12px;
+    .note-item {
+      background: #f5f5f5;
       border-radius: 8px;
-      margin-left: 8px;
+      padding: 10px;
+      margin-top: 10px;
     }
-    .complete { background-color: #e0f2f1; color: #388e3c; }
-    .in-progress { background-color: #fff3e0; color: #f57c00; }
-    .upcoming { background-color: #e0f7fa; color: #00796b; }
-    .actions button {
+    .note-item button {
       margin-right: 5px;
-      background-color: #ccc;
+    }
+    .event-item {
+      border-left: 4px solid #6c79db;
+      padding-left: 10px;
+      margin-top: 10px;
+    }
+    .status-label {
+      border-radius: 12px;
+      padding: 2px 10px;
       font-size: 12px;
-      padding: 5px 8px;
+      font-weight: bold;
+      margin-left: 10px;
     }
-    .actions button.save {
-      background-color: #6c79db;
-      color: white;
-    }
-    .actions button.delete {
-      background-color: #e63946;
-      color: white;
-    }
-    .note-card {
-      background-color: #fdfdfd;
-      border: 1px solid #ccc;
-      padding: 12px;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      min-height: 80px;
-      margin-top: 12px;
-      position: relative;
-    }
-    .note-actions {
-      margin-top: 8px;
-      text-align: right;
-    }
-    .note-actions button {
-      font-size: 12px;
-      padding: 6px 10px;
-      margin-left: 8px;
-    }
+    .Complete { background-color: #b8e0c9; }
+    .In\ Progress { background-color: #f9cc9d; }
+    .Upcoming { background-color: #c6e2e9; }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Digital Dashh | Event Timeline</h1>
-    <a href="index.html">🏠 Home</a>
+    <a href="index.html" style="background-color: #ffe066; color: #1c1c3a; padding: 10px 16px; border-radius: 5px; text-decoration: none; font-weight: bold;">🏠 Home</a>
   </div>
-
+  <div class="nav-buttons">
+    <a href="overview.html">Overview</a>
+    <a href="budget.html">Budget</a>
+    <a href="venues.html">Venues</a>
+    <a href="av.html">AV Production</a>
+    <a href="content.html">Creative Content</a>
+    <a href="sponsor-tracker.html">Sponsor Tracker</a>
+    <a href="merch-inventory.html">Merch Inventory</a>
+  </div>
   <div class="main">
     <div class="sidebar">
-      <h3>Quick Actions</h3>
-      <button onclick="filterPhases('all')">Show All</button>
-      <button onclick="filterPhases('complete')">Complete</button>
-      <button onclick="filterPhases('in-progress')">In Progress</button>
-      <button onclick="filterPhases('upcoming')">Upcoming</button>
+      <button onclick="filterStatus('all')">Show All</button>
+      <button onclick="filterStatus('Complete')">Complete</button>
+      <button onclick="filterStatus('In Progress')">In Progress</button>
+      <button onclick="filterStatus('Upcoming')">Upcoming</button>
     </div>
-
     <div class="content">
       <div class="card">
         <h3>Add New Phase</h3>
-        <input type="text" id="phaseTitle" placeholder="e.g. Kickoff Call">
-        <input type="date" id="phaseDate">
+        <input id="phaseTitle" type="text" placeholder="e.g. Kickoff Call">
+        <input id="phaseDate" type="date">
         <select id="phaseStatus">
-          <option value="complete">Complete</option>
-          <option value="in-progress">In Progress</option>
-          <option value="upcoming" selected>Upcoming</option>
+          <option value="Upcoming">Upcoming</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Complete">Complete</option>
         </select>
         <button onclick="addPhase()">Add Phase</button>
       </div>
-
       <div class="card">
         <h3>📊 Status Tracker</h3>
-        <ul id="statusList"></ul>
+        <ul id="statusTracker">
+          <li><strong>Complete:</strong> Kickoff Call</li>
+          <li><strong>In Progress:</strong> Venue Walkthrough</li>
+          <li><strong>Upcoming:</strong> Final Content Submission</li>
+        </ul>
       </div>
-
       <div class="card">
         <h3>📝 Notes</h3>
-        <textarea id="noteInput" rows="3" placeholder="Write a new note..."></textarea>
+        <textarea id="noteInput" placeholder="Write a new note..."></textarea>
         <button onclick="addNote()">Add Note</button>
-        <div id="notesContainer"></div>
+        <div id="noteList"></div>
       </div>
-
-      <div class="card" style="grid-column: span 2;">
+      <div class="card" style="grid-column: span 3;">
         <h3>📅 Event Phases</h3>
-        <div id="timeline"></div>
+        <div id="eventPhases">
+          <div class="event-item">
+            <strong>Kickoff Call</strong> – Apr 09, 2025 <span class="status-label Complete">Complete</span>
+          </div>
+          <div class="event-item">
+            <strong>Venue Walkthrough</strong> – Apr 24, 2025 <span class="status-label In\ Progress">In Progress</span>
+          </div>
+          <div class="event-item">
+            <strong>Final Content Submission</strong> – Apr 30, 2025 <span class="status-label Upcoming">Upcoming</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    let phases = [];
-    let filterStatus = 'all';
-
-    function addPhase() {
-      const title = document.getElementById('phaseTitle').value;
-      const date = document.getElementById('phaseDate').value;
-      const status = document.getElementById('phaseStatus').value;
-      if (!title || !date) return alert("Please fill in all fields.");
-      phases.push({ title, date, status });
-      renderPhases();
-      document.getElementById('phaseTitle').value = '';
-      document.getElementById('phaseDate').value = '';
-      document.getElementById('phaseStatus').value = 'upcoming';
-    }
-
-    function filterPhases(status) {
-      filterStatus = status;
-      renderPhases();
-    }
-
-    function renderPhases() {
-      const timeline = document.getElementById('timeline');
-      const statusList = document.getElementById('statusList');
-      timeline.innerHTML = '';
-      statusList.innerHTML = '';
-      const statuses = { complete: [], 'in-progress': [], upcoming: [] };
-
-      phases.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      phases.forEach((phase, index) => {
-        if (filterStatus !== 'all' && phase.status !== filterStatus) return;
-        const div = document.createElement('div');
-        div.className = 'timeline-item';
-        div.innerHTML = `
-          <strong contenteditable="true" oninput="editPhase(${index}, 'title', this.innerText)">${phase.title}</strong>
-          <span contenteditable="true" oninput="editPhase(${index}, 'date', this.innerText)">${new Date(phase.date).toLocaleDateString()}</span>
-          <span class="status ${phase.status}">${formatStatus(phase.status)}</span>
-          <div class="actions">
-            <button class="save" onclick="changeStatus(${index})">Change Status</button>
-            <button class="delete" onclick="deletePhase(${index})">Delete</button>
-          </div>
-        `;
-        timeline.appendChild(div);
-        statuses[phase.status].push(phase.title);
-      });
-
-      for (const key in statuses) {
-        if (statuses[key].length > 0) {
-          const li = document.createElement('li');
-          li.innerHTML = `<strong>${formatStatus(key)}:</strong> ${statuses[key].join(', ')}`;
-          statusList.appendChild(li);
-        }
-      }
-    }
-
-    function editPhase(index, key, value) {
-      if (key === 'date') {
-        phases[index][key] = new Date(value).toISOString().split('T')[0];
-      } else {
-        phases[index][key] = value;
-      }
-    }
-
-    function changeStatus(index) {
-      const current = phases[index].status;
-      const next = current === 'complete' ? 'in-progress' : current === 'in-progress' ? 'upcoming' : 'complete';
-      phases[index].status = next;
-      renderPhases();
-    }
-
-    function deletePhase(index) {
-      phases.splice(index, 1);
-      renderPhases();
-    }
-
     function addNote() {
-      const noteInput = document.getElementById('noteInput');
+      const noteInput = document.getElementById("noteInput");
+      const noteList = document.getElementById("noteList");
       const noteText = noteInput.value.trim();
       if (!noteText) return;
-      const noteCard = document.createElement('div');
-      noteCard.className = 'note-card';
-      noteCard.setAttribute('contenteditable', 'false');
-      noteCard.innerText = noteText;
 
-      const actions = document.createElement('div');
-      actions.className = 'note-actions';
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "note-item";
+      const span = document.createElement("span");
+      span.textContent = noteText;
 
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      const saveBtn = document.createElement("button");
+      saveBtn.textContent = "Save";
+      saveBtn.style.display = "none";
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remove";
+
       editBtn.onclick = () => {
-        noteCard.setAttribute('contenteditable', 'true');
-        noteCard.focus();
+        const input = document.createElement("textarea");
+        input.value = span.textContent;
+        noteDiv.replaceChild(input, span);
+        span = input;
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline";
       };
 
-      const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Save';
       saveBtn.onclick = () => {
-        noteCard.setAttribute('contenteditable', 'false');
+        const updatedText = span.value.trim();
+        const newSpan = document.createElement("span");
+        newSpan.textContent = updatedText;
+        noteDiv.replaceChild(newSpan, span);
+        span = newSpan;
+        editBtn.style.display = "inline";
+        saveBtn.style.display = "none";
       };
 
-      actions.appendChild(editBtn);
-      actions.appendChild(saveBtn);
-      noteCard.appendChild(actions);
+      removeBtn.onclick = () => noteDiv.remove();
 
-      document.getElementById('notesContainer').appendChild(noteCard);
-      noteInput.value = '';
+      noteDiv.appendChild(span);
+      noteDiv.appendChild(editBtn);
+      noteDiv.appendChild(saveBtn);
+      noteDiv.appendChild(removeBtn);
+
+      noteList.appendChild(noteDiv);
+      noteInput.value = "";
     }
 
-    function formatStatus(status) {
-      return status === 'complete' ? 'Complete' :
-             status === 'in-progress' ? 'In Progress' :
-             status === 'upcoming' ? 'Upcoming' : '';
-    }
+    // Prefilled note
+    window.onload = () => {
+      document.getElementById("noteInput").value = "AV team to confirm stage layout measurements";
+      addNote();
+    };
   </script>
 </body>
 </html>
