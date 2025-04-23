@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,9 @@
       padding: 0;
       background-color: #f0f4f8;
       color: #1c1c3a;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
     .header {
       background-color: #1c1c3a;
@@ -20,14 +24,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    .header .right {
-      text-align: right;
     }
     .header a {
       background-color: #ffe066;
@@ -35,108 +31,283 @@
       text-decoration: none;
       padding: 6px 14px;
       border-radius: 5px;
-      margin-right: 10px;
       font-weight: bold;
     }
-    .menu {
-      background-color: #ffffff;
-      padding: 10px 30px;
+    .main {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
+      flex: 1;
+      overflow: hidden;
     }
-    .menu a {
+    .sidebar {
+      width: 250px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-right: 1px solid #ddd;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    }
+    .sidebar h3 {
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .sidebar button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
       background-color: #6c79db;
       color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
+    .content {
+      flex: 1;
       padding: 30px;
-      max-width: 800px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
       margin: auto;
     }
     .card {
-      background-color: #fff;
-      border-radius: 12px;
+      background-color: #ffffff;
       padding: 20px;
+      border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .card h3 {
       margin-top: 0;
     }
+    input, select, textarea {
+      width: 100%;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
     .timeline-item {
+      border-left: 4px solid #6c79db;
+      padding-left: 15px;
       margin-bottom: 15px;
+      position: relative;
     }
     .timeline-item strong {
       display: block;
-      font-size: 16px;
-      margin-bottom: 4px;
     }
-    .timeline-item span {
-      font-size: 14px;
-      color: #5c5c7a;
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 8px;
+      margin-left: 8px;
+    }
+    .complete { background-color: #e0f2f1; color: #388e3c; }
+    .in-progress { background-color: #fff3e0; color: #f57c00; }
+    .upcoming { background-color: #e0f7fa; color: #00796b; }
+    .actions button {
+      margin-right: 5px;
+      background-color: #ccc;
+      font-size: 12px;
+      padding: 5px 8px;
+    }
+    .actions button.save {
+      background-color: #6c79db;
+      color: white;
+    }
+    .actions button.delete {
+      background-color: #e63946;
+      color: white;
+    }
+    .note-card {
+      background-color: #fdfdfd;
+      border: 1px solid #ccc;
+      padding: 12px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      min-height: 80px;
+      margin-top: 12px;
+      position: relative;
+    }
+    .note-actions {
+      margin-top: 8px;
+      text-align: right;
+    }
+    .note-actions button {
+      font-size: 12px;
+      padding: 6px 10px;
+      margin-left: 8px;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Digital Dashh | Event Timeline</h1>
-    <div class="right">
-      <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span>
+    <a href="index.html">🏠 Home</a>
+  </div>
+
+  <div class="main">
+    <div class="sidebar">
+      <h3>Quick Actions</h3>
+      <button onclick="filterPhases('all')">Show All</button>
+      <button onclick="filterPhases('complete')">Complete</button>
+      <button onclick="filterPhases('in-progress')">In Progress</button>
+      <button onclick="filterPhases('upcoming')">Upcoming</button>
     </div>
-  </div>
 
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
-  </div>
+    <div class="content">
+      <div class="card">
+        <h3>Add New Phase</h3>
+        <input type="text" id="phaseTitle" placeholder="e.g. Kickoff Call">
+        <input type="date" id="phaseDate">
+        <select id="phaseStatus">
+          <option value="complete">Complete</option>
+          <option value="in-progress">In Progress</option>
+          <option value="upcoming" selected>Upcoming</option>
+        </select>
+        <button onclick="addPhase()">Add Phase</button>
+      </div>
 
-  <div class="grid">
-    <div class="card">
-      <h3>📅 Milestones</h3>
-      <div class="timeline-item">
-        <strong>Kickoff</strong>
-        <span>April 18, 2025</span>
+      <div class="card">
+        <h3>📊 Status Tracker</h3>
+        <ul id="statusList"></ul>
       </div>
-      <div class="timeline-item">
-        <strong>Site Walkthrough</strong>
-        <span>April 25, 2025</span>
+
+      <div class="card">
+        <h3>📝 Notes</h3>
+        <textarea id="noteInput" rows="3" placeholder="Write a new note..."></textarea>
+        <button onclick="addNote()">Add Note</button>
+        <div id="notesContainer"></div>
       </div>
-      <div class="timeline-item">
-        <strong>Final Content Due</strong>
-        <span>May 2, 2025</span>
-      </div>
-      <div class="timeline-item">
-        <strong>Rehearsal</strong>
-        <span>May 9, 2025</span>
-      </div>
-      <div class="timeline-item">
-        <strong>Go Live</strong>
-        <span>May 10, 2025</span>
+
+      <div class="card" style="grid-column: span 2;">
+        <h3>📅 Event Phases</h3>
+        <div id="timeline"></div>
       </div>
     </div>
   </div>
 
   <script>
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
-    document.getElementById('current-date').textContent = dateString;
+    let phases = [];
+    let filterStatus = 'all';
+
+    function addPhase() {
+      const title = document.getElementById('phaseTitle').value;
+      const date = document.getElementById('phaseDate').value;
+      const status = document.getElementById('phaseStatus').value;
+      if (!title || !date) return alert("Please fill in all fields.");
+      phases.push({ title, date, status });
+      renderPhases();
+      document.getElementById('phaseTitle').value = '';
+      document.getElementById('phaseDate').value = '';
+      document.getElementById('phaseStatus').value = 'upcoming';
+    }
+
+    function filterPhases(status) {
+      filterStatus = status;
+      renderPhases();
+    }
+
+    function renderPhases() {
+      const timeline = document.getElementById('timeline');
+      const statusList = document.getElementById('statusList');
+      timeline.innerHTML = '';
+      statusList.innerHTML = '';
+      const statuses = { complete: [], 'in-progress': [], upcoming: [] };
+
+      phases.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      phases.forEach((phase, index) => {
+        if (filterStatus !== 'all' && phase.status !== filterStatus) return;
+        const div = document.createElement('div');
+        div.className = 'timeline-item';
+        div.innerHTML = `
+          <strong contenteditable="true" oninput="editPhase(${index}, 'title', this.innerText)">${phase.title}</strong>
+          <span contenteditable="true" oninput="editPhase(${index}, 'date', this.innerText)">${new Date(phase.date).toLocaleDateString()}</span>
+          <span class="status ${phase.status}">${formatStatus(phase.status)}</span>
+          <div class="actions">
+            <button class="save" onclick="changeStatus(${index})">Change Status</button>
+            <button class="delete" onclick="deletePhase(${index})">Delete</button>
+          </div>
+        `;
+        timeline.appendChild(div);
+        statuses[phase.status].push(phase.title);
+      });
+
+      for (const key in statuses) {
+        if (statuses[key].length > 0) {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${formatStatus(key)}:</strong> ${statuses[key].join(', ')}`;
+          statusList.appendChild(li);
+        }
+      }
+    }
+
+    function editPhase(index, key, value) {
+      if (key === 'date') {
+        phases[index][key] = new Date(value).toISOString().split('T')[0];
+      } else {
+        phases[index][key] = value;
+      }
+    }
+
+    function changeStatus(index) {
+      const current = phases[index].status;
+      const next = current === 'complete' ? 'in-progress' : current === 'in-progress' ? 'upcoming' : 'complete';
+      phases[index].status = next;
+      renderPhases();
+    }
+
+    function deletePhase(index) {
+      phases.splice(index, 1);
+      renderPhases();
+    }
+
+    function addNote() {
+      const noteInput = document.getElementById('noteInput');
+      const noteText = noteInput.value.trim();
+      if (!noteText) return;
+      const noteCard = document.createElement('div');
+      noteCard.className = 'note-card';
+      noteCard.setAttribute('contenteditable', 'false');
+      noteCard.innerText = noteText;
+
+      const actions = document.createElement('div');
+      actions.className = 'note-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => {
+        noteCard.setAttribute('contenteditable', 'true');
+        noteCard.focus();
+      };
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.onclick = () => {
+        noteCard.setAttribute('contenteditable', 'false');
+      };
+
+      actions.appendChild(editBtn);
+      actions.appendChild(saveBtn);
+      noteCard.appendChild(actions);
+
+      document.getElementById('notesContainer').appendChild(noteCard);
+      noteInput.value = '';
+    }
+
+    function formatStatus(status) {
+      return status === 'complete' ? 'Complete' :
+             status === 'in-progress' ? 'In Progress' :
+             status === 'upcoming' ? 'Upcoming' : '';
+    }
   </script>
 </body>
 </html>
