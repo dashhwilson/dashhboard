@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Digital Dashh | Event Timeline</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Barlow', sans-serif;
@@ -21,92 +21,97 @@
       justify-content: space-between;
       align-items: center;
     }
-    .home-btn {
+    .menu {
       background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .nav-bar {
-      background-color: #ffe066;
-      padding: 10px 30px;
+      padding: 10px 20px;
       display: flex;
-      gap: 10px;
       justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .nav-bar a {
+    .menu a {
       background-color: #6c79db;
       color: white;
+      text-decoration: none;
       padding: 8px 16px;
       border-radius: 6px;
       font-weight: bold;
-      text-decoration: none;
     }
     .container {
       display: flex;
-    }
-    .sidebar {
       padding: 20px;
     }
+    .sidebar {
+      width: 180px;
+      margin-right: 20px;
+    }
     .sidebar button {
-      display: block;
-      margin-bottom: 10px;
-      width: 120px;
-      padding: 8px;
+      width: 100%;
       background-color: #6c79db;
-      color: white;
       border: none;
-      border-radius: 5px;
+      color: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
       cursor: pointer;
     }
     .main-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
     .card {
-      background-color: #fff;
-      border-radius: 12px;
+      background: #fff;
       padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      flex: 1;
+      min-width: 280px;
     }
-    input, textarea, select {
-      width: calc(100% - 20px);
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
+    .status-label {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: white;
+      margin-left: 10px;
+    }
+    .complete { background-color: #70c48f; }
+    .inprogress { background-color: #f4a259; }
+    .upcoming { background-color: #5bc0de; }
+    .note { background-color: #f8f8f8; padding: 10px; margin-top: 10px; border-radius: 6px; }
+    .note textarea { width: 100%; border-radius: 4px; padding: 6px; margin-top: 6px; font-family: 'Barlow', sans-serif; }
+    .note button { margin-top: 5px; margin-right: 5px; padding: 5px 10px; background-color: #6c79db; border: none; color: #fff; border-radius: 5px; }
+    .event-phase {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .event-phase .actions button {
+      margin-left: 5px;
+      padding: 4px 8px;
+      font-size: 13px;
+      border: none;
       border-radius: 5px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-    }
-    button {
       background-color: #6c79db;
       color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 5px;
-      font-weight: bold;
-      margin-right: 8px;
       cursor: pointer;
-    }
-    .note-box {
-      background: #f4f4f4;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Digital Dashh | Event Timeline</h1>
-    <a class="home-btn" href="index.html">🏠 Home</a>
+    <a href="index.html" style="background-color:#ffe066; color:#1c1c3a; padding:6px 14px; border-radius:6px; text-decoration:none;">🏠 Home</a>
   </div>
-  <div class="nav-bar">
+
+  <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
     <a href="venues.html">Venues</a>
@@ -115,149 +120,155 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
+
   <div class="container">
     <div class="sidebar">
-      <button>Show All</button>
-      <button>Complete</button>
-      <button>In Progress</button>
-      <button>Upcoming</button>
+      <button onclick="filterPhases('all')">Show All</button>
+      <button onclick="filterPhases('Complete')">Complete</button>
+      <button onclick="filterPhases('In Progress')">In Progress</button>
+      <button onclick="filterPhases('Upcoming')">Upcoming</button>
     </div>
+
     <div class="main-content">
-      <div class="card">
-        <h3>Add New Phase</h3>
-        <input type="text" id="phaseTitle" placeholder="e.g. Kickoff Call" />
-        <input type="date" id="phaseDate" />
-        <select id="phaseStatus">
-          <option value="Upcoming">Upcoming</option>
-          <option value="InProgress">In Progress</option>
-          <option value="Complete">Complete</option>
-        </select>
-        <button onclick="addPhase()">Add Phase</button>
-      </div>
+      <div class="row">
+        <div class="card">
+          <h3>Add New Phase</h3>
+          <input type="text" id="phaseTitle" placeholder="e.g. Kickoff Call" />
+          <input type="date" id="phaseDate" />
+          <select id="phaseStatus">
+            <option>Upcoming</option>
+            <option>In Progress</option>
+            <option>Complete</option>
+          </select>
+          <button onclick="addPhase()">Add Phase</button>
+        </div>
 
-      <div class="card">
-        <h3>📊 Status Tracker</h3>
-        <ul id="statusList">
-          <li><strong>Complete:</strong> Kickoff Call</li>
-          <li><strong>In Progress:</strong> Venue Walkthrough</li>
-          <li><strong>Upcoming:</strong> Final Content Submission</li>
-        </ul>
-      </div>
+        <div class="card">
+          <h3>📊 Status Tracker</h3>
+          <ul id="statusList"></ul>
+        </div>
 
-      <div class="card">
-        <h3>📝 Notes</h3>
-        <textarea id="noteInput" placeholder="Write a new note..."></textarea>
-        <button onclick="addNote()">Add Note</button>
-        <div id="notes">
-          <!-- Notes will appear here -->
+        <div class="card">
+          <h3>📝 Notes</h3>
+          <textarea id="noteText" placeholder="Write a new note..."></textarea>
+          <button onclick="addNote()">Add Note</button>
+          <div id="notesContainer"></div>
         </div>
       </div>
 
-      <div class="card" style="grid-column: span 3;">
+      <div class="card">
         <h3>📅 Event Phases</h3>
-        <div id="phases">
-          <!-- Prefilled examples -->
-        </div>
+        <div id="phaseList"></div>
       </div>
     </div>
   </div>
 
   <script>
     const statusList = document.getElementById('statusList');
-    const phasesDiv = document.getElementById('phases');
-    const notesDiv = document.getElementById('notes');
+    const phaseList = document.getElementById('phaseList');
+    const notesContainer = document.getElementById('notesContainer');
 
-    const prefilledPhases = [
-      { title: 'Kickoff Call', date: '2025-04-08', status: 'Complete' },
-      { title: 'Venue Walkthrough', date: '2025-04-23', status: 'InProgress' },
-      { title: 'Final Content Submission', date: '2025-04-29', status: 'Upcoming' },
+    let phases = [
+      { title: 'Kickoff Call', date: '2025-04-07', status: 'Complete' },
+      { title: 'Venue Walkthrough', date: '2025-04-22', status: 'In Progress' },
+      { title: 'Final Content Submission', date: '2025-04-28', status: 'Upcoming' }
     ];
+    let notes = ['AV team to confirm stage layout measurements'];
 
-    const prefilledNotes = ["AV team to confirm stage layout measurements"];
+    function renderPhases() {
+      phaseList.innerHTML = '';
+      statusList.innerHTML = '';
+      phases.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'event-phase';
+        div.setAttribute('data-status', p.status);
+        div.innerHTML = `<strong>${p.title}</strong> – ${new Date(p.date).toDateString()} 
+          <span class="status-label ${p.status.toLowerCase().replace(' ', '')}">${p.status}</span>
+          <div class="actions">
+            <button onclick="changeStatus(${i})">Change Status</button>
+            <button onclick="deletePhase(${i})">Delete</button>
+          </div>`;
+        phaseList.appendChild(div);
+      });
 
-    window.onload = function () {
-      prefilledPhases.forEach(phase => renderPhase(phase.title, phase.date, phase.status));
-      prefilledNotes.forEach(note => renderNote(note));
-    }
-
-    function renderPhase(title, date, status) {
-      const container = document.createElement('div');
-      container.innerHTML = `
-        <p><strong>${title}</strong> – ${new Date(date).toDateString()} <span class="${status.toLowerCase()}">${status}</span></p>
-        <button onclick="changeStatus(this)">Change Status</button>
-        <button onclick="this.parentElement.remove(); updateStatusTracker();">Delete</button>
-      `;
-      container.setAttribute('data-status', status);
-      container.setAttribute('data-title', title);
-      phasesDiv.appendChild(container);
-      updateStatusTracker();
+      const grouped = { 'Complete': [], 'In Progress': [], 'Upcoming': [] };
+      phases.forEach(p => grouped[p.status]?.push(p.title));
+      for (const [status, items] of Object.entries(grouped)) {
+        if (items.length) {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${status}:</strong> ${items.join(', ')}`;
+          statusList.appendChild(li);
+        }
+      }
     }
 
     function addPhase() {
       const title = document.getElementById('phaseTitle').value;
       const date = document.getElementById('phaseDate').value;
       const status = document.getElementById('phaseStatus').value;
-      if (!title || !date) return;
-      renderPhase(title, date, status);
-      document.getElementById('phaseTitle').value = '';
-      document.getElementById('phaseDate').value = '';
-    }
-
-    function changeStatus(btn) {
-      const statuses = ['Upcoming', 'InProgress', 'Complete'];
-      const phase = btn.parentElement;
-      let currentStatus = phase.getAttribute('data-status');
-      let index = statuses.indexOf(currentStatus);
-      let newStatus = statuses[(index + 1) % statuses.length];
-      phase.setAttribute('data-status', newStatus);
-      phase.querySelector('span').textContent = newStatus;
-      phase.querySelector('span').className = newStatus.toLowerCase();
-      updateStatusTracker();
-    }
-
-    function updateStatusTracker() {
-      statusList.innerHTML = '';
-      const allPhases = phasesDiv.children;
-      const grouped = {};
-      for (let phase of allPhases) {
-        let status = phase.getAttribute('data-status');
-        let title = phase.getAttribute('data-title');
-        if (!grouped[status]) grouped[status] = [];
-        grouped[status].push(title);
+      if (title && date) {
+        phases.push({ title, date, status });
+        renderPhases();
+        document.getElementById('phaseTitle').value = '';
+        document.getElementById('phaseDate').value = '';
       }
-      Object.keys(grouped).forEach(status => {
-        grouped[status].forEach(title => {
-          const item = document.createElement('li');
-          item.innerHTML = `<strong>${status}:</strong> ${title}`;
-          statusList.appendChild(item);
-        });
+    }
+
+    function deletePhase(index) {
+      phases.splice(index, 1);
+      renderPhases();
+    }
+
+    function changeStatus(index) {
+      const statuses = ['Complete', 'In Progress', 'Upcoming'];
+      const current = phases[index].status;
+      const next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
+      phases[index].status = next;
+      renderPhases();
+    }
+
+    function filterPhases(filter) {
+      const items = phaseList.querySelectorAll('.event-phase');
+      items.forEach(el => {
+        el.style.display = (filter === 'all' || el.getAttribute('data-status') === filter) ? 'flex' : 'none';
       });
     }
 
-    function renderNote(content) {
-      const noteCard = document.createElement('div');
-      noteCard.className = 'note-box';
-      const textarea = document.createElement('textarea');
-      textarea.value = content;
-      textarea.style.width = '100%';
-      noteCard.appendChild(textarea);
-      const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Save';
-      const removeBtn = document.createElement('button');
-      removeBtn.textContent = 'Remove';
-      saveBtn.onclick = () => textarea.disabled = true;
-      removeBtn.onclick = () => notesDiv.removeChild(noteCard);
-      noteCard.appendChild(saveBtn);
-      noteCard.appendChild(removeBtn);
-      notesDiv.appendChild(noteCard);
+    function renderNotes() {
+      notesContainer.innerHTML = '';
+      notes.forEach((note, index) => {
+        const div = document.createElement('div');
+        div.className = 'note';
+        div.innerHTML = `
+          <textarea>${note}</textarea>
+          <button onclick="saveNote(${index}, this)">Save</button>
+          <button onclick="removeNote(${index})">Remove</button>`;
+        notesContainer.appendChild(div);
+      });
     }
 
     function addNote() {
-      const content = document.getElementById('noteInput').value;
-      if (!content) return;
-      renderNote(content);
-      document.getElementById('noteInput').value = '';
+      const text = document.getElementById('noteText').value;
+      if (text) {
+        notes.push(text);
+        document.getElementById('noteText').value = '';
+        renderNotes();
+      }
     }
+
+    function saveNote(index, btn) {
+      const textarea = btn.parentElement.querySelector('textarea');
+      notes[index] = textarea.value;
+    }
+
+    function removeNote(index) {
+      notes.splice(index, 1);
+      renderNotes();
+    }
+
+    // Initial render
+    renderPhases();
+    renderNotes();
   </script>
 </body>
 </html>
