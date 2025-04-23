@@ -125,6 +125,34 @@
       font-size: 12px;
       display: inline-block;
     }
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.summary-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.summary-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+}
+
+    
   </style>
 </head>
 <body>
@@ -146,34 +174,39 @@
     Select a section to manage event details.
   </div>
 
-<a href="budget.html" style="text-decoration: none; color: inherit;">
-  <div class="summary-card" style="cursor: pointer;">
-    <h3>Total Budget</h3>
-    <div class="highlight">$150,000</div>
-    <p>Spent: $45,000 • Remaining: $105,000</p>
-  </div>
-</a>
-    <a href="timeline.html" style="text-decoration: none; color: inherit;">
-  <div class="summary-card" style="cursor: pointer;">
-    <h3>Event Timeline</h3>
-    <div class="highlight">17 days</div>
-    <p>Until Event: May 10, 2025</p>
-  </div>
-</a>
-    <a href="registration.html" style="text-decoration: none; color: inherit;">
-  <div class="summary-card" style="cursor: pointer;">
-    <h3>Registration</h3>
-    <div class="highlight">850 / 1000</div>
-    <p>85% complete</p>
-  </div>
-</a>
-    <a href="tasks.html" style="text-decoration: none; color: inherit;">
-  <div class="summary-card" style="cursor: pointer;">
-    <h3>Tasks</h3>
-    <div class="highlight">32 / 45</div>
-    <p>71% complete</p>
-  </div>
-</a>
+<div class="summary-grid">
+  <a href="budget.html" class="summary-link">
+    <div class="summary-card">
+      <h3>Total Budget</h3>
+      <div class="highlight">$150,000</div>
+      <p>Spent: $45,000 • Remaining: $105,000</p>
+    </div>
+  </a>
+
+  <a href="timeline.html" class="summary-link">
+    <div class="summary-card">
+      <h3>Event Timeline</h3>
+      <div class="highlight">17 days</div>
+      <p>Until Event: May 10, 2025</p>
+    </div>
+  </a>
+
+  <a href="registration.html" class="summary-link">
+    <div class="summary-card">
+      <h3>Registration</h3>
+      <div class="highlight">850 / 1000</div>
+      <p>85% complete</p>
+    </div>
+  </a>
+
+  <a href="tasks.html" class="summary-link">
+    <div class="summary-card">
+      <h3>Tasks</h3>
+      <div class="highlight">32 / 45</div>
+      <p>71% complete</p>
+    </div>
+  </a>
+</div>
   </div>
 
   <div class="dashboard-grid">
