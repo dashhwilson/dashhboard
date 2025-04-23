@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Dashh | Event Dashboard Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Dashh | Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -40,9 +39,23 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .menu-buttons button.active {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+    }
+    .welcome-banner {
+      background: #ffffff;
+      color: #1c1c3a;
+      padding: 16px 30px;
+      font-size: 16px;
+      font-weight: 500;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 20px;
       padding: 30px;
       max-width: 1200px;
@@ -51,23 +64,66 @@
     .card {
       background-color: #fff;
       border-radius: 12px;
-      padding: 30px 20px;
+      padding: 20px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
       transition: transform 0.2s ease;
+      cursor: pointer;
     }
     .card:hover {
       transform: translateY(-4px);
     }
     .card h2 {
-      font-size: 20px;
-      margin: 10px 0 5px;
-      color: #1c1c3a;
+      font-size: 18px;
+      margin-top: 0;
     }
     .card p {
       font-size: 14px;
       color: #5c5c7a;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      padding: 20px 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .summary-card {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .summary-card h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #1c1c3a;
+    }
+    .highlight {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0 5px;
+    }
+    .dual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    ul, li {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .tag {
+      background: #e0ecf8;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      display: inline-block;
     }
   </style>
 </head>
@@ -79,10 +135,37 @@
 
   <div class="menu-bar">
     <div class="menu-buttons">
-      <button onclick="filterView('all')">All Views</button>
-      <button onclick="filterView('production')">Production</button>
-      <button onclick="filterView('client')">Client</button>
-      <button onclick="filterView('partner')">Partner</button>
+      <button onclick="filterView('all')" id="btn-all" class="active">All Views</button>
+      <button onclick="filterView('production')" id="btn-production">Production</button>
+      <button onclick="filterView('client')" id="btn-client">Client</button>
+      <button onclick="filterView('partner')" id="btn-partner">Partner</button>
+    </div>
+  </div>
+
+  <div class="welcome-banner">
+    👋 Welcome back, Dashh! Let’s make event magic happen.
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Total Budget</h3>
+      <div class="highlight">$150,000</div>
+      <p>Spent: $45,000 • Remaining: $105,000</p>
+    </div>
+    <div class="summary-card">
+      <h3>Event Timeline</h3>
+      <div class="highlight">17 days</div>
+      <p>Until Event: May 10, 2025</p>
+    </div>
+    <div class="summary-card">
+      <h3>Registration</h3>
+      <div class="highlight">850 / 1000</div>
+      <p>85% complete</p>
+    </div>
+    <div class="summary-card">
+      <h3>Tasks</h3>
+      <div class="highlight">32 / 45</div>
+      <p>71% complete</p>
     </div>
   </div>
 
@@ -105,9 +188,34 @@
     </div>
   </div>
 
+  <div class="dual-grid">
+    <div class="summary-card">
+      <h3>Recent Updates</h3>
+      <ul>
+        <li>📌 AV setup updated — <span class="tag">Today</span></li>
+        <li>📦 Catering confirmed — <span class="tag">Yesterday</span></li>
+        <li>🗓️ Keynote speaker locked — <span class="tag">Sep 3</span></li>
+      </ul>
+    </div>
+    <div class="summary-card">
+      <h3>Upcoming Deadlines</h3>
+      <ul>
+        <li>🛠️ Final AV Order — <span class="tag">Tomorrow</span></li>
+        <li>🪑 Furniture Layout — <span class="tag">3 days</span></li>
+        <li>👥 Attendee Count — <span class="tag">7 days</span></li>
+      </ul>
+    </div>
+  </div>
+
   <script>
     function filterView(view) {
       const cards = document.querySelectorAll('.card');
+      const buttons = document.querySelectorAll('.menu-buttons button');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById('btn-' + view)?.classList.add('active');
+      if (view === 'all') document.getElementById('btn-all').classList.add('active');
+
       cards.forEach(card => {
         const cardView = card.getAttribute('data-view');
         card.style.display = (view === 'all' || cardView === view) ? 'block' : 'none';
