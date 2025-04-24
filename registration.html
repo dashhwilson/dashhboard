@@ -110,6 +110,22 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    .action-btn {
+      font-size: 12px;
+      margin-left: 6px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background-color: #e57373;
+      color: white;
+    }
+    .toggle-btn {
+      background-color: #64b5f6;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -133,6 +149,14 @@
 
   <div class="grid">
     <div class="card">
+      <h3>📈 Registration Summary</h3>
+      <p><strong>Total Registered:</strong> <span id="totalCount">2</span></p>
+      <p><strong>Capacity:</strong> 1000</p>
+      <p><strong>Checked In:</strong> <span id="checkedIn">0</span></p>
+      <p><strong>Remaining:</strong> <span id="remaining">998</span></p>
+    </div>
+
+    <div class="card">
       <h3>🧾 Attendee List</h3>
       <form id="attendeeForm">
         <input type="text" id="name" placeholder="Full Name" required />
@@ -152,21 +176,13 @@
       </form>
       <table id="attendeeTable">
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td></tr>
-          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td></tr>
+          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td><td></td></tr>
+          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td><td></td></tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="card">
-      <h3>📈 Registration Summary</h3>
-      <p><strong>Total Registered:</strong> <span id="totalCount">2</span></p>
-      <p><strong>Capacity:</strong> 1000</p>
-      <p><strong>Checked In:</strong> <span id="checkedIn">0</span></p>
-      <p><strong>Remaining:</strong> <span id="remaining">998</span></p>
     </div>
   </div>
 
@@ -190,6 +206,34 @@
       remaining.textContent = 1000 - total;
     }
 
+    function createRow(name, email, type, status) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${name}</td><td>${email}</td><td>${type}</td><td><span class="tag">${status}</span></td><td></td>`;
+
+      const actionCell = row.querySelector('td:last-child');
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'action-btn toggle-btn';
+      toggleBtn.textContent = 'Toggle Status';
+      toggleBtn.onclick = () => {
+        const tag = row.querySelector('.tag');
+        tag.textContent = tag.textContent === 'Confirmed' ? 'Pending' : 'Confirmed';
+        updateSummary();
+      };
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'action-btn remove-btn';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = () => {
+        row.remove();
+        updateSummary();
+      };
+
+      actionCell.appendChild(toggleBtn);
+      actionCell.appendChild(removeBtn);
+      return row;
+    }
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       const name = document.getElementById('name').value;
@@ -197,11 +241,19 @@
       const type = document.getElementById('type').value;
       const status = document.getElementById('status').value;
 
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${name}</td><td>${email}</td><td>${type}</td><td><span class="tag">${status}</span></td>`;
-      table.appendChild(row);
+      const newRow = createRow(name, email, type, status);
+      table.appendChild(newRow);
       form.reset();
       updateSummary();
+    });
+
+    [...table.querySelectorAll('tr')].forEach(row => {
+      const name = row.children[0].textContent;
+      const email = row.children[1].textContent;
+      const type = row.children[2].textContent;
+      const status = row.querySelector('.tag').textContent;
+      const actions = createRow(name, email, type, status).querySelector('td:last-child').innerHTML;
+      row.insertCell(4).innerHTML = actions;
     });
 
     updateSummary();
