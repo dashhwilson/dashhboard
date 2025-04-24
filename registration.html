@@ -92,6 +92,24 @@
       border-radius: 8px;
       font-size: 12px;
     }
+    form input, form select {
+      padding: 8px;
+      width: 100%;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: 'Barlow', sans-serif;
+    }
+    form button {
+      background-color: #6c79db;
+      color: white;
+      font-weight: bold;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -116,7 +134,23 @@
   <div class="grid">
     <div class="card">
       <h3>🧾 Attendee List</h3>
-      <table>
+      <form id="attendeeForm">
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input type="email" id="email" placeholder="Email Address" required />
+        <select id="type" required>
+          <option value="">Select Type</option>
+          <option value="General">General</option>
+          <option value="VIP">VIP</option>
+          <option value="Panelist">Panelist</option>
+        </select>
+        <select id="status" required>
+          <option value="">Select Status</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Pending">Pending</option>
+        </select>
+        <button type="submit">Add Attendee</button>
+      </form>
+      <table id="attendeeTable">
         <thead>
           <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th></tr>
         </thead>
@@ -129,19 +163,48 @@
 
     <div class="card">
       <h3>📈 Registration Summary</h3>
-      <p><strong>Total Registered:</strong> 850</p>
+      <p><strong>Total Registered:</strong> <span id="totalCount">2</span></p>
       <p><strong>Capacity:</strong> 1000</p>
-      <p><strong>Checked In:</strong> 620</p>
-      <p><strong>Remaining:</strong> 150</p>
+      <p><strong>Checked In:</strong> <span id="checkedIn">0</span></p>
+      <p><strong>Remaining:</strong> <span id="remaining">998</span></p>
     </div>
   </div>
 
   <script>
     const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
+    document.getElementById('current-date').textContent = today.toLocaleDateString(undefined, {
       weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
     });
-    document.getElementById('current-date').textContent = dateString;
+
+    const form = document.getElementById('attendeeForm');
+    const table = document.getElementById('attendeeTable').querySelector('tbody');
+    const totalCount = document.getElementById('totalCount');
+    const checkedIn = document.getElementById('checkedIn');
+    const remaining = document.getElementById('remaining');
+
+    function updateSummary() {
+      const total = table.querySelectorAll('tr').length;
+      const checked = [...table.querySelectorAll('tr')].filter(tr => tr.innerHTML.includes('Confirmed')).length;
+      totalCount.textContent = total;
+      checkedIn.textContent = checked;
+      remaining.textContent = 1000 - total;
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const type = document.getElementById('type').value;
+      const status = document.getElementById('status').value;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${name}</td><td>${email}</td><td>${type}</td><td><span class="tag">${status}</span></td>`;
+      table.appendChild(row);
+      form.reset();
+      updateSummary();
+    });
+
+    updateSummary();
   </script>
 </body>
 </html>
