@@ -226,19 +226,16 @@ uploadForm.addEventListener('submit', function(event) {
   files.push({ name: fileName, category });
   renderFiles();
 
-  fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      filename: fileName,
-      category: category,
-      timestamp: new Date().toISOString()
-    })
-  }).then(() => {
-    fileInput.value = '';
-  }).catch(error => {
-    console.error("Upload to Google Sheets failed:", error);
+fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
+  method: "POST",
+  body: new URLSearchParams({
+    fileName: file.name,
+    category: selectedCategory
+  })
+})
+.then(response => response.text())
+.then(result => console.log("Success:", result))
+.catch(error => console.error("Error:", error));
   });
 });
   </script>
