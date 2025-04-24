@@ -22,15 +22,23 @@
       font-size: 24px;
       font-weight: bold;
     }
-    .home-btn {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
+    .home-button {
+  background-color: #ffe066;
+  color: #1c1c3a;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
+}
+.home-button:hover {
+  background-color: #ffda44;
     }
     .menu {
       background-color: #ffe066;
@@ -104,7 +112,7 @@
 <body>
   <div class="header">
     <div>📁 All Uploaded Files</div>
-    <a class="home-btn" href="index.html">🏠 Home</a>
+    <a href="index.html" class="home-button">🏠 Home</a>
   </div>
   <div class="menu">
     <a href="overview.html">Overview</a>
