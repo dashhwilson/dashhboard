@@ -135,11 +135,21 @@
       <button onclick="filterFiles('merch')"><i class="fas fa-box"></i> Merch</button>
     </div>
     <div class="main-content">
-      <div class="card">
-        <h3>Upload New File</h3>
-        <input type="file" id="fileInput">
-        <button onclick="uploadFile()">Upload</button>
-      </div>
+    <div class="card">
+  <h3>Upload New File</h3>
+  <form id="uploadForm">
+    <input type="file" id="fileInput" required>
+    <select id="fileCategory">
+      <option value="budget">Budget</option>
+      <option value="av">AV</option>
+      <option value="content">Creative</option>
+      <option value="venues">Venues</option>
+      <option value="sponsor">Sponsor</option>
+      <option value="merch">Merch</option>
+    </select>
+    <button type="submit">Upload</button>
+  </form>
+</div>
       <div class="card">
         <h3>Uploaded Files</h3>
         <div id="fileList"></div>
