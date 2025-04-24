@@ -118,19 +118,25 @@
       font-weight: bold;
       color: green;
     }
-.sheet-button {
+.view-sheet-button {
   background-color: #6c79db;
   color: white;
-  padding: 8px 14px;
   font-weight: bold;
-  text-decoration: none;
+  padding: 8px 16px;
+  font-size: 14px;
   border-radius: 6px;
-  display: inline-block;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
   margin-top: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.sheet-button:hover {
-  background-color: #5a68c7;
+
+.view-sheet-button:hover {
+  background-color: #5a68c9;
 }
 
     .download-button {
@@ -202,7 +208,7 @@
           <button class="download-button" onclick="downloadCSV()">⬇️ Download CSV</button>
           <a href="https://docs.google.com/spreadsheets/d/1sTUZ0Eezf0c_mMXFBk0oNbArQKbi-M8FEVjZFHZXCx8/edit" 
    target="_blank" 
-   class="sheet-button">📄 View Google Sheet</a>
+   class="view-sheet-button">📄 View Google Sheet</a>
         </div>
       </div>
     </div>
