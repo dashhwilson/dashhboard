@@ -198,17 +198,56 @@
     });
   }
 
-  function uploadFile() {
-    const file = fileInput.files[0];
-    if (!file) return;
+ function renderFiles(category = 'all') {
+  fileList.innerHTML = '';
+  const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
+  visibleFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'file-entry';
 
-    const category = "uncategorized"; // You can replace this with dropdown value if available
+    const input = document.createElement('input');
+    input.value = file.name;
+    input.disabled = true;
 
-    // Add to local view
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => {
+      input.disabled = false;
+      input.focus();
+    };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => {
+      files[index].name = input.value;
+      input.disabled = true;
+    };
+
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.onclick = () => {
+      files.splice(index, 1);
+      renderFiles();
+    };
+
+    div.appendChild(input);
+    div.appendChild(editBtn);
+    div.appendChild(saveBtn);
+    div.appendChild(removeBtn);
+    fileList.appendChild(div);
+  });
+}
+
+function uploadFile() {
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+  if (file) {
+    const category = 'uncategorized';
     files.push({ name: file.name, category });
     renderFiles();
+    fileInput.value = ""; // Clear the input field after upload
 
-    // Send to Google Sheets
+    // Google Sheets Integration
     fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
       method: "POST",
       body: new URLSearchParams({
@@ -216,10 +255,11 @@
         category: category
       })
     })
-    .then(res => res.text())
-    .then(result => console.log("Sheet updated:", result))
-    .catch(err => console.error("Google Sheets Error:", err));
+    .then(response => response.text())
+    .then(result => console.log("Sheet Success:", result))
+    .catch(error => console.error("Sheet Error:", error));
   }
+}
 
   function filterFiles(category) {
     renderFiles(category);
