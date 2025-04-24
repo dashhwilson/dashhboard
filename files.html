@@ -231,21 +231,26 @@
       uploadMsg.textContent = "Uploading...";
 
       fetch("https://script.google.com/macros/s/AKfycbwhf2rZA-kCrYtWtj0jy8BpdVjgfwvdSVXVgjj0-bucLiOW-c0gFBQxrjZlAwvJsJZDAg/exec", {
-        method: "POST",
-        body: new URLSearchParams({
-          fileName,
-          category,
-          uploadDate: date
-        })
-      })
-      .then(res => res.text())
-      .then(response => {
-        uploadMsg.textContent = response.includes("success") ? "File uploaded and logged to sheet." : "Uploaded but not logged.";
-      })
-      .catch(err => {
-        uploadMsg.textContent = "Failed to upload to Google Sheet.";
-        console.error(err);
-      });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({
+    fileName: file.name,
+    category: category
+  })
+})
+.then(response => response.text())
+.then(result => {
+  console.log("Google Sheet Upload:", result);
+  uploadStatus.textContent = result === "Success"
+    ? "✅ Successfully logged in Google Sheet."
+    : "⚠️ Failed to upload to Google Sheet.";
+})
+.catch(error => {
+  console.error("Google Sheets Upload Error:", error);
+  uploadStatus.textContent = "⚠️ Failed to upload to Google Sheet.";
+});
 
       fileInput.value = "";
     });
