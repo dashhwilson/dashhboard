@@ -22,24 +22,21 @@
       font-size: 24px;
       font-weight: bold;
     }
-   .home-button {
-  background-color: #ffe066;
-  color: #1c1c3a;
-  font-size: 14px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  text-decoration: none;
-  margin-top: 8px;
-}
-.home-button:hover {
-  background-color: #ffda44;
+    .home-button {
+      background-color: #ffe066;
+      color: #1c1c3a;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-decoration: none;
+      margin-top: 8px;
     }
     .menu {
       background-color: #ffe066;
@@ -108,6 +105,11 @@
     .file-entry input:disabled {
       background: transparent;
     }
+    .message {
+      margin-left: 12px;
+      font-weight: bold;
+      color: green;
+    }
   </style>
 </head>
 <body>
@@ -135,21 +137,22 @@
       <button onclick="filterFiles('merch')"><i class="fas fa-box"></i> Merch</button>
     </div>
     <div class="main-content">
-    <div class="card">
-  <h3>Upload New File</h3>
-  <form id="uploadForm">
-    <input type="file" id="fileInput" required>
-    <select id="fileCategory">
-      <option value="budget">Budget</option>
-      <option value="av">AV</option>
-      <option value="content">Creative</option>
-      <option value="venues">Venues</option>
-      <option value="sponsor">Sponsor</option>
-      <option value="merch">Merch</option>
-    </select>
-    <button type="submit">Upload</button>
-  </form>
-</div>
+      <div class="card">
+        <h3>Upload New File</h3>
+        <form id="uploadForm">
+          <input type="file" id="fileInput" required>
+          <select id="fileCategory">
+            <option value="budget">Budget</option>
+            <option value="av">AV</option>
+            <option value="content">Creative</option>
+            <option value="venues">Venues</option>
+            <option value="sponsor">Sponsor</option>
+            <option value="merch">Merch</option>
+          </select>
+          <button type="submit">Upload</button>
+          <span class="message" id="uploadMsg"></span>
+        </form>
+      </div>
       <div class="card">
         <h3>Uploaded Files</h3>
         <div id="fileList"></div>
@@ -158,114 +161,96 @@
   </div>
 
   <script>
-  const fileList = document.getElementById("fileList");
-  const fileInput = document.getElementById("fileInput");
-  let files = [
-    { name: "100_0192.JPG", category: "budget" },
-    { name: "VenueMap.pdf", category: "venues" },
-    { name: "SponsorDeck.pptx", category: "sponsor" }
-  ];
+    const fileList = document.getElementById("fileList");
+    const uploadForm = document.getElementById("uploadForm");
+    const fileCategory = document.getElementById("fileCategory");
+    const fileInput = document.getElementById("fileInput");
+    const uploadMsg = document.getElementById("uploadMsg");
 
-  function renderFiles(category = 'all') {
-    fileList.innerHTML = '';
-    const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
-    visibleFiles.forEach((file, index) => {
-      const div = document.createElement('div');
-      div.className = 'file-entry';
+    let files = [
+      { name: "100_0192.JPG", category: "budget" },
+      { name: "VenueMap.pdf", category: "venues" },
+      { name: "SponsorDeck.pptx", category: "sponsor" }
+    ];
 
-      const input = document.createElement('input');
-      input.value = file.name;
-      input.disabled = true;
+    function renderFiles(category = 'all') {
+      fileList.innerHTML = '';
+      const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
+      visibleFiles.forEach((file, index) => {
+        const div = document.createElement('div');
+        div.className = 'file-entry';
 
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
-      editBtn.onclick = () => {
-        input.disabled = false;
-        input.focus();
-      };
-
-      const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Save';
-      saveBtn.onclick = () => {
-        files[index].name = input.value;
+        const input = document.createElement('input');
+        input.value = file.name;
         input.disabled = true;
-      };
 
-      div.appendChild(input);
-      div.appendChild(editBtn);
-      div.appendChild(saveBtn);
-      fileList.appendChild(div);
-    });
-  }
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => {
+          input.disabled = false;
+          input.focus();
+        };
 
- function renderFiles(category = 'all') {
-  fileList.innerHTML = '';
-  const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
-  visibleFiles.forEach((file, index) => {
-    const div = document.createElement('div');
-    div.className = 'file-entry';
+        const saveBtn = document.createElement('button');
+        saveBtn.textContent = 'Save';
+        saveBtn.onclick = () => {
+          files[index].name = input.value;
+          input.disabled = true;
+        };
 
-    const input = document.createElement('input');
-    input.value = file.name;
-    input.disabled = true;
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Remove';
+        deleteBtn.onclick = () => {
+          files.splice(index, 1);
+          renderFiles();
+        };
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.onclick = () => {
-      input.disabled = false;
-      input.focus();
-    };
+        div.appendChild(input);
+        div.appendChild(editBtn);
+        div.appendChild(saveBtn);
+        div.appendChild(deleteBtn);
+        fileList.appendChild(div);
+      });
+    }
 
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
-    saveBtn.onclick = () => {
-      files[index].name = input.value;
-      input.disabled = true;
-    };
+    function filterFiles(category) {
+      renderFiles(category);
+    }
 
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.onclick = () => {
-      files.splice(index, 1);
+    uploadForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const fileName = file.name;
+      const category = fileCategory.value;
+      const date = new Date().toLocaleDateString();
+
+      files.push({ name: fileName, category });
       renderFiles();
-    };
+      uploadMsg.textContent = "Uploading...";
 
-    div.appendChild(input);
-    div.appendChild(editBtn);
-    div.appendChild(saveBtn);
-    div.appendChild(removeBtn);
-    fileList.appendChild(div);
-  });
-}
-
-function uploadFile() {
-  const fileInput = document.getElementById('fileInput');
-  const file = fileInput.files[0];
-  if (file) {
-    const category = 'uncategorized';
-    files.push({ name: file.name, category });
-    renderFiles();
-    fileInput.value = ""; // Clear the input field after upload
-
-    // Google Sheets Integration
-    fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
-      method: "POST",
-      body: new URLSearchParams({
-        fileName: file.name,
-        category: category
+      fetch("https://script.google.com/macros/s/AKfycbwhf2rZA-kCrYtWtj0jy8BpdVjgfwvdSVXVgjj0-bucLiOW-c0gFBQxrjZlAwvJsJZDAg/exec", {
+        method: "POST",
+        body: new URLSearchParams({
+          fileName,
+          category,
+          uploadDate: date
+        })
       })
-    })
-    .then(response => response.text())
-    .then(result => console.log("Sheet Success:", result))
-    .catch(error => console.error("Sheet Error:", error));
-  }
-}
+      .then(res => res.text())
+      .then(response => {
+        uploadMsg.textContent = response.includes("success") ? "File uploaded and logged to sheet." : "Uploaded but not logged.";
+      })
+      .catch(err => {
+        uploadMsg.textContent = "Failed to upload to Google Sheet.";
+        console.error(err);
+      });
 
-  function filterFiles(category) {
-    renderFiles(category);
-  }
+      fileInput.value = "";
+    });
 
-  renderFiles();
-</script>
+    renderFiles();
+  </script>
 </body>
 </html>
