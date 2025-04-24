@@ -109,6 +109,23 @@
     .status-buttons button {
       margin-left: 5px;
     }
+button, .styled-button {
+  background-color: #6c79db;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin: 4px;
+}
+
+button:hover, .styled-button:hover {
+  background-color: #505ecc;
+}
+    
   </style>
 </head>
 <body>
@@ -140,7 +157,7 @@
     <div class="sidebar">
       <button onclick="filterPhases('all')">Show All</button>
       <button onclick="filterPhases('Complete')">Complete</button>
-      <button onclick="filterPhases('InProgress')">In Progress</button>
+      <button onclick="filterPhases('In Progress')">In Progress</button>
       <button onclick="filterPhases('Upcoming')">Upcoming</button>
     </div>
     <div class="main">
@@ -150,7 +167,7 @@
         <input type="date" id="phaseDate">
         <select id="phaseStatus">
           <option>Upcoming</option>
-          <option>InProgress</option>
+          <option>In Progress</option>
           <option>Complete</option>
         </select>
         <button onclick="addPhase()">Add Phase</button>
