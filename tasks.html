@@ -94,10 +94,14 @@
       cursor: pointer;
       font-weight: bold;
     }
+    td.priority, td.status {
+  text-transform: capitalize;
+}
   </style>
 </head>
 <body>
   <div class="header">
+     <a href="index.html">🏠 Home</a>
     <h1>Digital Dashh | Task Manager</h1>
   </div>
   <div class="menu-bar">
@@ -162,6 +166,9 @@
         row.style.display = (priority === 'all' || taskPriority === priority) ? '' : 'none';
       });
     }
+
+    priorityCell.classList.add('priority');
+statusCell.classList.add('status');
   </script>
 </body>
 </html>
