@@ -20,19 +20,17 @@
       text-align: center;
       font-size: 24px;
       font-weight: bold;
+      position: relative;
     }
     .home-button {
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-    }
-    .home-button a {
       background-color: #ffe066;
       color: #1c1c3a;
       padding: 8px 16px;
       border-radius: 6px;
       font-weight: bold;
       text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
     }
     .menu {
       background-color: #ffe066;
@@ -98,15 +96,14 @@
     .note-item textarea {
       width: 100%;
       height: 60px;
-      margin-bottom: 10px;
     }
     .note-buttons button {
       margin-right: 10px;
       background-color: #6c79db;
       color: white;
       border: none;
-      padding: 6px 12px;
       border-radius: 6px;
+      padding: 6px 12px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -132,17 +129,18 @@
       background-color: #6c79db;
       color: white;
       border: none;
-      padding: 6px 12px;
       border-radius: 6px;
+      padding: 6px 12px;
       font-weight: bold;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="header">Digital Dashh | Event Timeline</div>
-  <div class="home-button">
-    <a href="index.html">🏠 Home</a>
+  <div class="header">
+    Digital Dashh | Event Timeline
+    <br>
+    <a class="home-button" href="index.html">🏠 Home</a>
   </div>
   <div class="menu">
     <a href="overview.html">Overview</a>
@@ -176,15 +174,15 @@
         <h3>📊 Status Tracker</h3>
         <ul id="statusList"></ul>
       </div>
-      <div class="card">
+      <div class="card" style="grid-column: span 3;">
+        <h3>📅 Event Phases</h3>
+        <div id="phaseList"></div>
+      </div>
+      <div class="card" style="grid-column: span 3;">
         <h3>📝 Notes</h3>
         <textarea id="noteInput" placeholder="Write a new note..."></textarea>
         <button onclick="addNote()">Add Note</button>
         <div id="notesContainer"></div>
-      </div>
-      <div class="card" style="grid-column: span 3;">
-        <h3>📅 Event Phases</h3>
-        <div id="phaseList"></div>
       </div>
     </div>
   </div>
@@ -194,12 +192,11 @@
     const notesContainer = document.getElementById('notesContainer');
 
     let phases = [
-      { title: 'Kickoff Call', date: '2025-04-04', status: 'Complete' },
+      { title: 'Kickoff Call', date: '2025-04-05', status: 'Complete' },
       { title: 'Venue Walkthrough', date: '2025-04-19', status: 'InProgress' },
       { title: 'Final Content Submission', date: '2025-04-25', status: 'Upcoming' }
     ];
-
-    let notes = ['AV team to confirm stage layout measurements – Nick Santos to confirm'];
+    let notes = ['AV team to confirm stage layout measurements - Nick Santos to confirm'];
 
     function renderPhases() {
       phaseList.innerHTML = '';
@@ -275,14 +272,13 @@
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.disabled = true;
-        const edit = document.createElement('button');
         const save = document.createElement('button');
         const remove = document.createElement('button');
-        edit.textContent = 'Edit';
+        const edit = document.createElement('button');
         save.textContent = 'Save';
         remove.textContent = 'Remove';
+        edit.textContent = 'Edit';
 
-        edit.onclick = () => textarea.disabled = false;
         save.onclick = () => {
           notes[i] = textarea.value;
           textarea.disabled = true;
@@ -291,11 +287,18 @@
           notes.splice(i, 1);
           renderNotes();
         };
+        edit.onclick = () => {
+          textarea.disabled = false;
+        };
+
+        const btnDiv = document.createElement('div');
+        btnDiv.className = 'note-buttons';
+        btnDiv.appendChild(edit);
+        btnDiv.appendChild(save);
+        btnDiv.appendChild(remove);
 
         div.appendChild(textarea);
-        div.appendChild(edit);
-        div.appendChild(save);
-        div.appendChild(remove);
+        div.appendChild(btnDiv);
         notesContainer.appendChild(div);
       });
     }
