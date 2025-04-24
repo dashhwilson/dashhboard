@@ -230,10 +230,10 @@
       renderFiles();
       uploadMsg.textContent = "Uploading...";
 
-      fetch("https://script.google.com/macros/s/AKfycbwhf2rZA-kCrYtWtj0jy8BpdVjgfwvdSVXVgjj0-bucLiOW-c0gFBQxrjZlAwvJsJZDAg/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzB-5AScjwiCc4mktzFb48KsGyDpGdSOCR6CayndOVG0_EnObTkWmJiYfV7EszEZ00/exec", {
   method: "POST",
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
+    "Content-Type": "application/x-www-form-urlencoded",
   },
   body: new URLSearchParams({
     fileName: file.name,
@@ -242,11 +242,15 @@
 })
 .then(response => response.text())
 .then(result => {
-  console.log("Google Sheet Upload:", result);
-  uploadStatus.textContent = result === "Success"
-    ? "✅ Successfully logged in Google Sheet."
-    : "⚠️ Failed to upload to Google Sheet.";
+  console.log("Success:", result);
+  document.getElementById('uploadStatus').textContent = "Uploaded successfully!";
+  document.getElementById('uploadStatus').style.color = "green";
 })
+.catch(error => {
+  console.error("Error:", error);
+  document.getElementById('uploadStatus').textContent = "Failed to upload to Google Sheet.";
+  document.getElementById('uploadStatus').style.color = "red";
+});
 .catch(error => {
   console.error("Google Sheets Upload Error:", error);
   uploadStatus.textContent = "⚠️ Failed to upload to Google Sheet.";
