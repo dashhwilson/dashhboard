@@ -159,6 +159,7 @@
 
   <script>
   const fileList = document.getElementById("fileList");
+  const fileInput = document.getElementById("fileInput");
   let files = [
     { name: "100_0192.JPG", category: "budget" },
     { name: "VenueMap.pdf", category: "venues" },
@@ -197,44 +198,34 @@
     });
   }
 
-  function filterFiles(category) {
-    renderFiles(category);
-  }
-
-  renderFiles();
-
-  // Upload handler
-  const uploadForm = document.getElementById('uploadForm');
-  const fileInput = document.getElementById('fileInput');
-  const fileCategory = document.getElementById('fileCategory');
-
-  uploadForm.addEventListener('submit', function(event) {
-    event.preventDefault();
+  function uploadFile() {
     const file = fileInput.files[0];
     if (!file) return;
 
-    const fileName = file.name;
-    const category = fileCategory.value;
-    const uploadDate = new Date().toLocaleDateString();
+    const category = "uncategorized"; // You can replace this with dropdown value if available
 
-    // Add to visible list
-    files.push({ name: fileName, category });
+    // Add to local view
+    files.push({ name: file.name, category });
     renderFiles();
 
     // Send to Google Sheets
     fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        name: fileName,
-        category: category,
-        date: uploadDate
+        fileName: file.name,
+        category: category
       })
     })
-    .then(response => response.text())
-    .then(result => console.log("Success:", result))
-    .catch(error => console.error("Error:", error));
-  });
+    .then(res => res.text())
+    .then(result => console.log("Sheet updated:", result))
+    .catch(err => console.error("Google Sheets Error:", err));
+  }
+
+  function filterFiles(category) {
+    renderFiles(category);
+  }
+
+  renderFiles();
 </script>
 </body>
 </html>
