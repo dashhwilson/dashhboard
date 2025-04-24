@@ -92,22 +92,28 @@
       border-radius: 8px;
       font-size: 12px;
     }
-    input, select, button {
-      margin: 5px 0;
-      padding: 8px;
-      font-size: 14px;
-      width: 100%;
-      max-width: 400px;
+    form label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
     }
-    button.action {
+    form input, form select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Barlow', sans-serif;
+    }
+    form button {
+      margin-top: 12px;
       background-color: #6c79db;
       color: white;
-      font-weight: bold;
+      padding: 10px 16px;
       border: none;
       border-radius: 6px;
+      font-weight: bold;
       cursor: pointer;
-      margin-right: 5px;
-      padding: 6px 10px;
     }
   </style>
 </head>
@@ -119,6 +125,7 @@
       <span id="current-date"></span>
     </div>
   </div>
+
   <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
@@ -128,105 +135,65 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
+
   <div class="grid">
     <div class="card">
       <h3>📈 Registration Summary</h3>
-      <p><strong>Total Registered:</strong> <span id="totalRegistered">0</span></p>
+      <p><strong>Total Registered:</strong> 850</p>
       <p><strong>Capacity:</strong> 1000</p>
-      <p><strong>Checked In:</strong> <span id="checkedIn">0</span></p>
-      <p><strong>Remaining:</strong> <span id="remaining">0</span></p>
+      <p><strong>Checked In:</strong> 620</p>
+      <p><strong>Remaining:</strong> 150</p>
     </div>
+
     <div class="card">
       <h3>🧾 Attendee List</h3>
-      <input id="nameInput" placeholder="Full Name" />
-      <input id="emailInput" placeholder="Email Address" />
-      <select id="typeInput">
-        <option value="">Select Type</option>
-        <option value="VIP">VIP</option>
-        <option value="Panelist">Panelist</option>
-        <option value="General">General</option>
-      </select>
-      <select id="statusInput">
-        <option value="">Select Attendance</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Pending">Pending</option>
-      </select>
-      <button class="action" onclick="addAttendee()">Add Attendee</button>
-
       <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Attendance</th><th>Actions</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th></tr>
         </thead>
-        <tbody id="attendeeTable"></tbody>
+        <tbody>
+          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td></tr>
+          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td></tr>
+        </tbody>
       </table>
+    </div>
+
+    <div class="card">
+      <h3>🥗 Food & Beverage Details</h3>
+      <form>
+        <label>Allergies:</label>
+        <input type="text" placeholder="e.g. Tree nuts, Shellfish" />
+
+        <label>Requires Hotel Stay?</label>
+        <select>
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+
+        <label>Milk Preference:</label>
+        <select>
+          <option value="">Select</option>
+          <option value="dairy">Dairy</option>
+          <option value="oat">Oat</option>
+          <option value="almond">Almond</option>
+          <option value="soy">Soy</option>
+          <option value="none">None</option>
+        </select>
+
+        <button type="submit">Save F&B Info</button>
+      </form>
     </div>
   </div>
 
   <script>
-    const attendees = [
-      { name: 'Jordan Smith', email: 'jordan@example.com', type: 'VIP', status: 'Confirmed' },
-      { name: 'Taylor Gray', email: 'taylor@example.com', type: 'Panelist', status: 'Pending' }
-    ];
-
-    function updateSummary() {
-      const total = attendees.length;
-      const checkedIn = attendees.filter(a => a.status === 'Confirmed').length;
-      document.getElementById('totalRegistered').textContent = total;
-      document.getElementById('checkedIn').textContent = checkedIn;
-      document.getElementById('remaining').textContent = 1000 - total;
-    }
-
-    function renderAttendees() {
-      const table = document.getElementById('attendeeTable');
-      table.innerHTML = '';
-      attendees.forEach((a, i) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${a.name}</td>
-          <td>${a.email}</td>
-          <td>${a.type}</td>
-          <td><span class="tag">${a.status}</span></td>
-          <td>
-            <button class="action" onclick="toggleStatus(${i})">Toggle</button>
-            <button class="action" onclick="removeAttendee(${i})">Remove</button>
-          </td>
-        `;
-        table.appendChild(row);
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date();
+      const dateString = today.toLocaleDateString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
       });
-      updateSummary();
-    }
-
-    function toggleStatus(index) {
-      attendees[index].status = attendees[index].status === 'Confirmed' ? 'Pending' : 'Confirmed';
-      renderAttendees();
-    }
-
-    function removeAttendee(index) {
-      attendees.splice(index, 1);
-      renderAttendees();
-    }
-
-    function addAttendee() {
-      const name = document.getElementById('nameInput').value;
-      const email = document.getElementById('emailInput').value;
-      const type = document.getElementById('typeInput').value;
-      const status = document.getElementById('statusInput').value;
-
-      if (name && email && type && status) {
-        attendees.push({ name, email, type, status });
-        document.getElementById('nameInput').value = '';
-        document.getElementById('emailInput').value = '';
-        document.getElementById('typeInput').value = '';
-        document.getElementById('statusInput').value = '';
-        renderAttendees();
-      }
-    }
-
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+      document.getElementById('current-date').textContent = dateString;
     });
-
-    renderAttendees();
   </script>
 </body>
 </html>
