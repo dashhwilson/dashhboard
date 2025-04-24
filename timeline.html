@@ -20,18 +20,17 @@
       text-align: center;
       font-size: 24px;
       font-weight: bold;
-      position: relative;
     }
-    .home-btn {
+    .home-link {
+      display: block;
+      margin: 10px auto;
+      width: max-content;
       background-color: #ffe066;
       color: #1c1c3a;
       padding: 8px 16px;
       border-radius: 6px;
       font-weight: bold;
       text-decoration: none;
-      position: absolute;
-      top: 20px;
-      right: 20px;
     }
     .menu {
       background-color: #ffe066;
@@ -88,19 +87,6 @@
       border-radius: 6px;
       font-family: 'Barlow', sans-serif;
     }
-    .styled-button {
-      background-color: #6c79db;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    .styled-button:hover {
-      background-color: #5a66c5;
-    }
     .note-item {
       background: #f9f9f9;
       padding: 10px;
@@ -112,7 +98,7 @@
       height: 60px;
     }
     .note-buttons button {
-      margin-right: 8px;
+      margin-right: 10px;
     }
     .event-phase {
       display: flex;
@@ -131,13 +117,20 @@
     .Complete { background-color: #77dd77; }
     .InProgress { background-color: #ffb347; }
     .Upcoming { background-color: #6ac5fe; }
+    .status-buttons button, .note-buttons button, .card button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    Digital Dashh | Event Timeline
-    <a href="index.html" class="home-btn">🏠 Home</a>
-  </div>
+  <div class="header">Digital Dashh | Event Timeline</div>
+  <a href="index.html" class="home-link">🏠 Home</a>
   <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
@@ -164,7 +157,7 @@
           <option>InProgress</option>
           <option>Complete</option>
         </select>
-        <button class="styled-button" onclick="addPhase()">Add Phase</button>
+        <button onclick="addPhase()">Add Phase</button>
       </div>
       <div class="card">
         <h3>📊 Status Tracker</h3>
@@ -173,11 +166,11 @@
       <div class="card">
         <h3>📝 Notes</h3>
         <textarea id="noteInput" placeholder="Write a new note..."></textarea>
-        <button class="styled-button" onclick="addNote()">Add Note</button>
+        <button onclick="addNote()">Add Note</button>
         <div id="notesContainer"></div>
       </div>
       <div class="card" style="grid-column: span 3;">
-        <h3>🗓 Event Phases</h3>
+        <h3>📅 Event Phases</h3>
         <div id="phaseList"></div>
       </div>
     </div>
@@ -188,11 +181,11 @@
     const notesContainer = document.getElementById('notesContainer');
 
     let phases = [
-      { title: 'Kickoff Call', date: '2025-04-06', status: 'Complete' },
-      { title: 'Venue Walkthrough', date: '2025-04-21', status: 'InProgress' },
-      { title: 'Final Content Submission', date: '2025-04-27', status: 'Upcoming' }
+      { title: 'Kickoff Call', date: '2025-04-05', status: 'Complete' },
+      { title: 'Venue Walkthrough', date: '2025-04-20', status: 'InProgress' },
+      { title: 'Final Content Submission', date: '2025-04-26', status: 'Upcoming' }
     ];
-    let notes = ['AV team to confirm stage layout measurements'];
+    let notes = ['AV team to confirm stage layout measurements - Nick Santos to confirm'];
 
     function renderPhases() {
       phaseList.innerHTML = '';
@@ -204,9 +197,9 @@
             <strong>${p.title}</strong> – ${new Date(p.date).toDateString()} 
             <span class="status-label ${p.status}">${p.status}</span>
           </div>
-          <div>
-            <button class="styled-button" onclick="cycleStatus(${index})">Change Status</button>
-            <button class="styled-button" onclick="deletePhase(${index})">Delete</button>
+          <div class="status-buttons">
+            <button onclick="cycleStatus(${index})">Change Status</button>
+            <button onclick="deletePhase(${index})">Delete</button>
           </div>
         `;
         phaseList.appendChild(div);
@@ -268,26 +261,21 @@
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.disabled = true;
-        const save = document.createElement('button');
-        const remove = document.createElement('button');
         const edit = document.createElement('button');
-        save.textContent = 'Save';
-        remove.textContent = 'Remove';
         edit.textContent = 'Edit';
-        save.className = remove.className = edit.className = 'styled-button';
-
+        edit.onclick = () => textarea.disabled = false;
+        const save = document.createElement('button');
+        save.textContent = 'Save';
         save.onclick = () => {
           notes[i] = textarea.value;
           textarea.disabled = true;
         };
+        const remove = document.createElement('button');
+        remove.textContent = 'Remove';
         remove.onclick = () => {
           notes.splice(i, 1);
           renderNotes();
         };
-        edit.onclick = () => {
-          textarea.disabled = false;
-        };
-
         div.appendChild(textarea);
         div.appendChild(edit);
         div.appendChild(save);
@@ -303,7 +291,7 @@
       }
       const filtered = phases.filter(p => p.status === type);
       phaseList.innerHTML = '';
-      filtered.forEach((p, index) => {
+      filtered.forEach(p => {
         const div = document.createElement('div');
         div.className = 'event-phase';
         div.innerHTML = `
