@@ -92,39 +92,22 @@
       border-radius: 8px;
       font-size: 12px;
     }
-    form input, form select {
+    input, select, button {
+      margin: 5px 0;
       padding: 8px;
+      font-size: 14px;
       width: 100%;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
+      max-width: 400px;
     }
-    form button {
+    button.action {
       background-color: #6c79db;
       color: white;
       font-weight: bold;
-      padding: 10px 16px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-    }
-    .action-btn {
-      font-size: 12px;
-      margin-left: 6px;
-      padding: 4px 10px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .remove-btn {
-      background-color: #e57373;
-      color: white;
-    }
-    .toggle-btn {
-      background-color: #64b5f6;
-      color: white;
+      margin-right: 5px;
+      padding: 6px 10px;
     }
   </style>
 </head>
@@ -136,7 +119,6 @@
       <span id="current-date"></span>
     </div>
   </div>
-
   <div class="menu">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
@@ -146,117 +128,105 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
-
   <div class="grid">
     <div class="card">
       <h3>📈 Registration Summary</h3>
-      <p><strong>Total Registered:</strong> <span id="totalCount">2</span></p>
+      <p><strong>Total Registered:</strong> <span id="totalRegistered">0</span></p>
       <p><strong>Capacity:</strong> 1000</p>
       <p><strong>Checked In:</strong> <span id="checkedIn">0</span></p>
-      <p><strong>Remaining:</strong> <span id="remaining">998</span></p>
+      <p><strong>Remaining:</strong> <span id="remaining">0</span></p>
     </div>
-
     <div class="card">
       <h3>🧾 Attendee List</h3>
-      <form id="attendeeForm">
-        <input type="text" id="name" placeholder="Full Name" required />
-        <input type="email" id="email" placeholder="Email Address" required />
-        <select id="type" required>
-          <option value="">Select Type</option>
-          <option value="General">General</option>
-          <option value="VIP">VIP</option>
-          <option value="Panelist">Panelist</option>
-        </select>
-        <select id="status" required>
-          <option value="">Select Status</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Pending">Pending</option>
-        </select>
-        <button type="submit">Add Attendee</button>
-      </form>
-      <table id="attendeeTable">
+      <input id="nameInput" placeholder="Full Name" />
+      <input id="emailInput" placeholder="Email Address" />
+      <select id="typeInput">
+        <option value="">Select Type</option>
+        <option value="VIP">VIP</option>
+        <option value="Panelist">Panelist</option>
+        <option value="General">General</option>
+      </select>
+      <select id="statusInput">
+        <option value="">Select Attendance</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <button class="action" onclick="addAttendee()">Add Attendee</button>
+
+      <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Type</th><th>Attendance</th><th>Actions</th></tr>
         </thead>
-        <tbody>
-          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td><td></td></tr>
-          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td><td></td></tr>
-        </tbody>
+        <tbody id="attendeeTable"></tbody>
       </table>
     </div>
   </div>
 
   <script>
-    const today = new Date();
-    document.getElementById('current-date').textContent = today.toLocaleDateString(undefined, {
+    const attendees = [
+      { name: 'Jordan Smith', email: 'jordan@example.com', type: 'VIP', status: 'Confirmed' },
+      { name: 'Taylor Gray', email: 'taylor@example.com', type: 'Panelist', status: 'Pending' }
+    ];
+
+    function updateSummary() {
+      const total = attendees.length;
+      const checkedIn = attendees.filter(a => a.status === 'Confirmed').length;
+      document.getElementById('totalRegistered').textContent = total;
+      document.getElementById('checkedIn').textContent = checkedIn;
+      document.getElementById('remaining').textContent = 1000 - total;
+    }
+
+    function renderAttendees() {
+      const table = document.getElementById('attendeeTable');
+      table.innerHTML = '';
+      attendees.forEach((a, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${a.name}</td>
+          <td>${a.email}</td>
+          <td>${a.type}</td>
+          <td><span class="tag">${a.status}</span></td>
+          <td>
+            <button class="action" onclick="toggleStatus(${i})">Toggle</button>
+            <button class="action" onclick="removeAttendee(${i})">Remove</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+      updateSummary();
+    }
+
+    function toggleStatus(index) {
+      attendees[index].status = attendees[index].status === 'Confirmed' ? 'Pending' : 'Confirmed';
+      renderAttendees();
+    }
+
+    function removeAttendee(index) {
+      attendees.splice(index, 1);
+      renderAttendees();
+    }
+
+    function addAttendee() {
+      const name = document.getElementById('nameInput').value;
+      const email = document.getElementById('emailInput').value;
+      const type = document.getElementById('typeInput').value;
+      const status = document.getElementById('statusInput').value;
+
+      if (name && email && type && status) {
+        attendees.push({ name, email, type, status });
+        document.getElementById('nameInput').value = '';
+        document.getElementById('emailInput').value = '';
+        document.getElementById('typeInput').value = '';
+        document.getElementById('statusInput').value = '';
+        renderAttendees();
+      }
+    }
+
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString(undefined, {
       weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
     });
 
-    const form = document.getElementById('attendeeForm');
-    const table = document.getElementById('attendeeTable').querySelector('tbody');
-    const totalCount = document.getElementById('totalCount');
-    const checkedIn = document.getElementById('checkedIn');
-    const remaining = document.getElementById('remaining');
-
-    function updateSummary() {
-      const total = table.querySelectorAll('tr').length;
-      const checked = [...table.querySelectorAll('tr')].filter(tr => tr.innerHTML.includes('Confirmed')).length;
-      totalCount.textContent = total;
-      checkedIn.textContent = checked;
-      remaining.textContent = 1000 - total;
-    }
-
-    function createRow(name, email, type, status) {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${name}</td><td>${email}</td><td>${type}</td><td><span class="tag">${status}</span></td><td></td>`;
-
-      const actionCell = row.querySelector('td:last-child');
-
-      const toggleBtn = document.createElement('button');
-      toggleBtn.className = 'action-btn toggle-btn';
-      toggleBtn.textContent = 'Toggle Status';
-      toggleBtn.onclick = () => {
-        const tag = row.querySelector('.tag');
-        tag.textContent = tag.textContent === 'Confirmed' ? 'Pending' : 'Confirmed';
-        updateSummary();
-      };
-
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'action-btn remove-btn';
-      removeBtn.textContent = 'Remove';
-      removeBtn.onclick = () => {
-        row.remove();
-        updateSummary();
-      };
-
-      actionCell.appendChild(toggleBtn);
-      actionCell.appendChild(removeBtn);
-      return row;
-    }
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const type = document.getElementById('type').value;
-      const status = document.getElementById('status').value;
-
-      const newRow = createRow(name, email, type, status);
-      table.appendChild(newRow);
-      form.reset();
-      updateSummary();
-    });
-
-    [...table.querySelectorAll('tr')].forEach(row => {
-      const name = row.children[0].textContent;
-      const email = row.children[1].textContent;
-      const type = row.children[2].textContent;
-      const status = row.querySelector('.tag').textContent;
-      const actions = createRow(name, email, type, status).querySelector('td:last-child').innerHTML;
-      row.insertCell(4).innerHTML = actions;
-    });
-
-    updateSummary();
+    renderAttendees();
   </script>
 </body>
 </html>
