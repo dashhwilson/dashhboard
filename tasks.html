@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tasks | Digital Dashh</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Dashh | Tasks</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -16,34 +16,18 @@
     .header {
       background-color: #1c1c3a;
       color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+      padding: 30px;
+      text-align: center;
     }
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    .header a {
+    .menu-bar {
       background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .menu {
-      background-color: #f8e88b;
-      padding: 12px 30px;
+      padding: 10px 20px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
-      border-bottom: 2px solid #ddd;
+      gap: 10px;
     }
-    .menu a {
+    .menu-bar a {
       background-color: #6c79db;
       color: white;
       text-decoration: none;
@@ -51,9 +35,27 @@
       border-radius: 6px;
       font-weight: bold;
     }
-    .container {
-      max-width: 1200px;
-      margin: auto;
+    .sidebar {
+      width: 200px;
+      padding: 20px;
+      background-color: #d6dcf5;
+      position: fixed;
+      height: 100%;
+    }
+    .sidebar button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .main-content {
+      margin-left: 220px;
       padding: 30px;
     }
     .card {
@@ -63,33 +65,27 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       margin-bottom: 20px;
     }
-    .task {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .task:last-child {
-      border-bottom: none;
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
     }
-    .status {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: bold;
+    th {
+      background-color: #f4f4f4;
     }
-    .status.Complete { background-color: #38a169; color: #fff; }
-    .status.Upcoming { background-color: #4299e1; color: #fff; }
-    .status.InProgress { background-color: #ed8936; color: #fff; }
-    .priority.High { color: #e53e3e; font-weight: bold; }
     input, select {
       padding: 8px;
-      margin: 8px 0;
       width: 100%;
-      border-radius: 5px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
     }
-    button {
+    button.add-task-btn {
       background-color: #6c79db;
       color: white;
       border: none;
@@ -102,10 +98,9 @@
 </head>
 <body>
   <div class="header">
-    <a href="index.html">🏠 Home</a>
-    <h1>Digital Dashh | Tasks</h1>
+    <h1>Digital Dashh | Task Manager</h1>
   </div>
-  <div class="menu">
+  <div class="menu-bar">
     <a href="overview.html">Overview</a>
     <a href="budget.html">Budget</a>
     <a href="venues.html">Venues</a>
@@ -113,59 +108,59 @@
     <a href="content.html">Creative Content</a>
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
-    <a href="timeline.html">Timeline</a>
   </div>
-
-  <div class="container">
+  <div class="sidebar">
+    <button onclick="filterTasks('all')">All</button>
+    <button onclick="filterTasks('high')">High Priority</button>
+    <button onclick="filterTasks('medium')">Medium Priority</button>
+    <button onclick="filterTasks('low')">Low Priority</button>
+  </div>
+  <div class="main-content">
     <div class="card">
-      <h3>Add New Task</h3>
+      <h2>Add New Task</h2>
       <input type="text" id="taskName" placeholder="Task name...">
-      <input type="text" id="assignee" placeholder="Assignee...">
-      <select id="priority">
-        <option value="High">High Priority</option>
-        <option value="Medium">Medium Priority</option>
-        <option value="Low">Low Priority</option>
+      <input type="text" id="taskAssignee" placeholder="Assignee...">
+      <select id="taskPriority">
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
       </select>
-      <select id="status">
-        <option value="Upcoming">Upcoming</option>
-        <option value="InProgress">In Progress</option>
-        <option value="Complete">Complete</option>
+      <select id="taskStatus">
+        <option value="todo">To Do</option>
+        <option value="inprogress">In Progress</option>
+        <option value="done">Done</option>
       </select>
-      <button onclick="addTask()">Add Task</button>
+      <button class="add-task-btn" onclick="addTask()">Add Task</button>
     </div>
-
-    <div class="card" id="taskList">
-      <h3>Task List</h3>
-      <div class="task">
-        <strong>Finalize keynote speaker</strong> <span class="status InProgress">In Progress</span> — <span class="priority High">High</span>, assigned to Alex
-      </div>
-      <div class="task">
-        <strong>Confirm panel layout</strong> <span class="status Upcoming">Upcoming</span> — <span class="priority Medium">Medium</span>, assigned to Sam
-      </div>
-      <div class="task">
-        <strong>Send final invites</strong> <span class="status Complete">Complete</span> — <span class="priority Low">Low</span>, assigned to Jenna
-      </div>
+    <div class="card">
+      <h2>Task List</h2>
+      <table id="taskTable">
+        <thead>
+          <tr><th>Task</th><th>Assignee</th><th>Priority</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 
   <script>
     function addTask() {
-      const name = document.getElementById('taskName').value;
-      const assignee = document.getElementById('assignee').value;
-      const priority = document.getElementById('priority').value;
-      const status = document.getElementById('status').value;
-      if (!name || !assignee) return;
-      
-      const taskList = document.getElementById('taskList');
-      const newTask = document.createElement('div');
-      newTask.className = 'task';
-      newTask.innerHTML = `<strong>${name}</strong> <span class="status ${status}">${status.replace(/([A-Z])/g, ' $1').trim()}</span> — <span class="priority ${priority}">${priority}</span>, assigned to ${assignee}`;
-      taskList.appendChild(newTask);
+      const table = document.getElementById("taskTable").querySelector("tbody");
+      const name = document.getElementById("taskName").value;
+      const assignee = document.getElementById("taskAssignee").value;
+      const priority = document.getElementById("taskPriority").value;
+      const status = document.getElementById("taskStatus").value;
+      const row = table.insertRow();
+      row.setAttribute("data-priority", priority);
+      row.innerHTML = `<td>${name}</td><td>${assignee}</td><td>${priority}</td><td>${status}</td>`;
+    }
 
-      document.getElementById('taskName').value = '';
-      document.getElementById('assignee').value = '';
-      document.getElementById('priority').value = 'High';
-      document.getElementById('status').value = 'Upcoming';
+    function filterTasks(priority) {
+      const rows = document.querySelectorAll("#taskTable tbody tr");
+      rows.forEach(row => {
+        const taskPriority = row.getAttribute("data-priority");
+        row.style.display = (priority === 'all' || taskPriority === priority) ? '' : 'none';
+      });
     }
   </script>
 </body>
