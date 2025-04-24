@@ -16,22 +16,34 @@
     .header {
       background-color: #1c1c3a;
       color: #fff;
-      padding: 20px;
-      text-align: center;
+      padding: 20px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    .home-button {
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+    .header .home-link {
+      margin-top: 10px;
+    }
+    .header .home-link a {
       background-color: #ffe066;
       color: #1c1c3a;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: bold;
       text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
+      padding: 6px 14px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    #current-date {
+      margin-top: 6px;
+      font-size: 14px;
     }
     .menu {
       background-color: #ffffff;
-      padding: 10px;
+      padding: 10px 30px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -48,7 +60,7 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 20px;
       padding: 30px;
       max-width: 1200px;
@@ -59,6 +71,9 @@
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .card h3 {
+      margin-top: 0;
     }
     table {
       width: 100%;
@@ -80,39 +95,15 @@
       border-radius: 8px;
       font-size: 12px;
     }
-    .top-section {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .top-section .card {
-      flex: 1;
-      min-width: 300px;
-    }
-    button {
-      background-color: #6c79db;
-      color: white;
-      padding: 6px 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-left: 5px;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Digital Dashh | Registration</h1>
-    <a href="index.html" class="home-button">🏠 Home</a>
-    <div id="current-date"></div>
+    <div class="home-link">
+      <a href="index.html">🏠 Home</a>
+      <div id="current-date"></div>
+    </div>
   </div>
 
   <div class="menu">
@@ -126,52 +117,33 @@
   </div>
 
   <div class="grid">
-    <div class="top-section">
-      <div class="card">
-        <h3>📍 Event Info</h3>
-        <p><strong>Name:</strong> Future Forward Summit</p>
-        <p><strong>Location:</strong> The Anthem, DC</p>
-        <p><strong>Dates:</strong> May 10–12, 2025</p>
-      </div>
-      <div class="card" id="summaryCard">
-        <h3>📈 Registration Summary</h3>
-        <p><strong>Total Registered:</strong> <span id="totalRegistered">2</span></p>
-        <p><strong>Capacity:</strong> 1000</p>
-        <p><strong>Checked In:</strong> <span id="checkedIn">1</span></p>
-        <p><strong>Remaining:</strong> <span id="remaining">998</span></p>
-        <button onclick="exportCSV()">⬇️ Download CSV</button>
-      </div>
+    <div class="card">
+      <h3>📍 Event Info</h3>
+      <p><strong>Name:</strong> Future Forward Summit</p>
+      <p><strong>Location:</strong> The Anthem, DC</p>
+      <p><strong>Dates:</strong> May 10–12, 2025</p>
     </div>
 
     <div class="card">
-      <h3>➕ Add Attendee</h3>
-      <input type="text" id="attendeeName" placeholder="Full Name">
-      <input type="email" id="attendeeEmail" placeholder="Email">
-      <select id="attendeeType">
-        <option value="VIP">VIP</option>
-        <option value="Panelist">Panelist</option>
-        <option value="General">General</option>
-      </select>
-      <select id="attendeeStatus">
-        <option value="Confirmed">Confirmed</option>
-        <option value="Pending">Pending</option>
-      </select>
-      <input type="text" id="milkPref" placeholder="Milk Preference (e.g. Oat, Almond)">
-      <input type="text" id="allergies" placeholder="Allergies (if any)">
-      <input type="checkbox" id="hotelNeeded"> <label for="hotelNeeded">Needs Hotel Accommodation</label>
-      <br><br>
-      <button onclick="addAttendee()">Add Attendee</button>
+      <h3>📈 Registration Summary</h3>
+      <p><strong>Total Registered:</strong> 2</p>
+      <p><strong>Capacity:</strong> 1000</p>
+      <p><strong>Checked In:</strong> 1</p>
+      <p><strong>Remaining:</strong> 998</p>
+      <button style="background-color: #6c79db; color: white; font-weight: bold; padding: 6px 12px; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer;">⬇️ Download CSV</button>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>🧾 Attendee List</h3>
-      <table id="attendeeTable">
+  <div class="grid">
+    <div class="card" style="grid-column: 1 / -1">
+      <h3>📋 Attendee List</h3>
+      <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th><th>Milk</th><th>Allergies</th><th>Hotel</th><th>Actions</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th><th>Milk</th><th>Allergies</th><th>Hotel</th></tr>
         </thead>
         <tbody>
-          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td><td>Oat</td><td>None</td><td>Yes</td><td><button onclick="removeRow(this)">❌</button></td></tr>
-          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td><td>Almond</td><td>Peanuts</td><td>No</td><td><button onclick="removeRow(this)">❌</button></td></tr>
+          <tr><td>Jordan Smith</td><td>jordan@example.com</td><td>VIP</td><td><span class="tag">Confirmed</span></td><td>Oat</td><td>None</td><td>Yes</td></tr>
+          <tr><td>Taylor Gray</td><td>taylor@example.com</td><td>Panelist</td><td><span class="tag">Pending</span></td><td>Almond</td><td>Peanuts</td><td>No</td></tr>
         </tbody>
       </table>
     </div>
@@ -183,58 +155,6 @@
       weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
     });
     document.getElementById('current-date').textContent = dateString;
-
-    function addAttendee() {
-      const name = document.getElementById('attendeeName').value;
-      const email = document.getElementById('attendeeEmail').value;
-      const type = document.getElementById('attendeeType').value;
-      const status = document.getElementById('attendeeStatus').value;
-      const milk = document.getElementById('milkPref').value || 'None';
-      const allergies = document.getElementById('allergies').value || 'None';
-      const hotel = document.getElementById('hotelNeeded').checked ? 'Yes' : 'No';
-
-      const table = document.getElementById('attendeeTable').getElementsByTagName('tbody')[0];
-      const row = table.insertRow();
-      row.innerHTML = `<td>${name}</td><td>${email}</td><td>${type}</td><td><span class="tag">${status}</span></td><td>${milk}</td><td>${allergies}</td><td>${hotel}</td><td><button onclick="removeRow(this)">❌</button></td>`;
-
-      updateSummary();
-      document.getElementById('uploadForm')?.reset();
-    }
-
-    function removeRow(btn) {
-      const row = btn.parentNode.parentNode;
-      row.parentNode.removeChild(row);
-      updateSummary();
-    }
-
-    function updateSummary() {
-      const rows = document.getElementById('attendeeTable').getElementsByTagName('tbody')[0].rows;
-      document.getElementById('totalRegistered').textContent = rows.length;
-      let checkedIn = 0;
-      for (let i = 0; i < rows.length; i++) {
-        if (rows[i].cells[3].innerText.trim() === 'Confirmed') checkedIn++;
-      }
-      document.getElementById('checkedIn').textContent = checkedIn;
-      document.getElementById('remaining').textContent = 1000 - rows.length;
-    }
-
-    function exportCSV() {
-      let csv = "Name,Email,Type,Status,Milk,Allergies,Hotel\n";
-      const rows = document.getElementById('attendeeTable').getElementsByTagName('tbody')[0].rows;
-      for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName("td");
-        csv += `${cells[0].innerText},${cells[1].innerText},${cells[2].innerText},${cells[3].innerText},${cells[4].innerText},${cells[5].innerText},${cells[6].innerText}\n`;
-      }
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.setAttribute('hidden', '');
-      a.setAttribute('href', url);
-      a.setAttribute('download', 'attendees.csv');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
   </script>
 </body>
 </html>
