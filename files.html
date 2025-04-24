@@ -158,86 +158,83 @@
   </div>
 
   <script>
-    const fileList = document.getElementById("fileList");
-    let files = [
-      { name: "100_0192.JPG", category: "budget" },
-      { name: "VenueMap.pdf", category: "venues" },
-      { name: "SponsorDeck.pptx", category: "sponsor" }
-    ];
+  const fileList = document.getElementById("fileList");
+  let files = [
+    { name: "100_0192.JPG", category: "budget" },
+    { name: "VenueMap.pdf", category: "venues" },
+    { name: "SponsorDeck.pptx", category: "sponsor" }
+  ];
 
-    function renderFiles(category = 'all') {
-      fileList.innerHTML = '';
-      const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
-      visibleFiles.forEach((file, index) => {
-        const div = document.createElement('div');
-        div.className = 'file-entry';
+  function renderFiles(category = 'all') {
+    fileList.innerHTML = '';
+    const visibleFiles = category === 'all' ? files : files.filter(f => f.category === category);
+    visibleFiles.forEach((file, index) => {
+      const div = document.createElement('div');
+      div.className = 'file-entry';
 
-        const input = document.createElement('input');
-        input.value = file.name;
+      const input = document.createElement('input');
+      input.value = file.name;
+      input.disabled = true;
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => {
+        input.disabled = false;
+        input.focus();
+      };
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.onclick = () => {
+        files[index].name = input.value;
         input.disabled = true;
+      };
 
-        const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
-        editBtn.onclick = () => {
-          input.disabled = false;
-          input.focus();
-        };
+      div.appendChild(input);
+      div.appendChild(editBtn);
+      div.appendChild(saveBtn);
+      fileList.appendChild(div);
+    });
+  }
 
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = 'Save';
-        saveBtn.onclick = () => {
-          files[index].name = input.value;
-          input.disabled = true;
-        };
+  function filterFiles(category) {
+    renderFiles(category);
+  }
 
-        div.appendChild(input);
-        div.appendChild(editBtn);
-        div.appendChild(saveBtn);
-        fileList.appendChild(div);
-      });
-    }
-
-    function uploadFile() {
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
-      if (file) {
-        files.push({ name: file.name, category: 'uncategorized' });
-        renderFiles();
-      }
-    }
-
-    function filterFiles(category) {
-      renderFiles(category);
-    }
-
-    renderFiles();
-
-    const uploadForm = document.getElementById('uploadForm');
-const fileCategory = document.getElementById('fileCategory');
-
-uploadForm.addEventListener('submit', function(event) {
-  event.preventDefault();
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  const fileName = file.name;
-  const category = fileCategory.value;
-
-  files.push({ name: fileName, category });
   renderFiles();
 
-fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
-  method: "POST",
-  body: new URLSearchParams({
-    fileName: file.name,
-    category: selectedCategory
-  })
-})
-.then(response => response.text())
-.then(result => console.log("Success:", result))
-.catch(error => console.error("Error:", error));
+  // Upload handler
+  const uploadForm = document.getElementById('uploadForm');
+  const fileInput = document.getElementById('fileInput');
+  const fileCategory = document.getElementById('fileCategory');
+
+  uploadForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const fileName = file.name;
+    const category = fileCategory.value;
+    const uploadDate = new Date().toLocaleDateString();
+
+    // Add to visible list
+    files.push({ name: fileName, category });
+    renderFiles();
+
+    // Send to Google Sheets
+    fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        name: fileName,
+        category: category,
+        date: uploadDate
+      })
+    })
+    .then(response => response.text())
+    .then(result => console.log("Success:", result))
+    .catch(error => console.error("Error:", error));
   });
-});
-  </script>
+</script>
 </body>
 </html>
