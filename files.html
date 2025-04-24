@@ -211,6 +211,36 @@
     }
 
     renderFiles();
+
+    const uploadForm = document.getElementById('uploadForm');
+const fileCategory = document.getElementById('fileCategory');
+
+uploadForm.addEventListener('submit', function(event) {
+  event.preventDefault();
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const fileName = file.name;
+  const category = fileCategory.value;
+
+  files.push({ name: fileName, category });
+  renderFiles();
+
+  fetch("https://script.google.com/macros/s/AKfycbxyof-vRDXQeSfMfOcj_oIhrdO_4pm5q0LLb_q0ADGl/dev", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      filename: fileName,
+      category: category,
+      timestamp: new Date().toISOString()
+    })
+  }).then(() => {
+    fileInput.value = '';
+  }).catch(error => {
+    console.error("Upload to Google Sheets failed:", error);
+  });
+});
   </script>
 </body>
 </html>
