@@ -15,98 +15,95 @@
     }
     .header {
       background-color: #1c1c3a;
-      color: white;
-      padding: 25px;
-      text-align: center;
-    }
-    .menu {
-      background-color: #ffe066;
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .menu a {
-      background-color: #6c79db;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 3fr;
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .sidebar button {
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .main {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .task-card {
-      background-color: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      color: #fff;
+      padding: 20px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
     }
-    .task-info {
-      max-width: 70%;
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
     }
-    .task-info h3 {
-      margin: 0 0 5px 0;
+    .header a {
+      background-color: #ffe066;
+      color: #1c1c3a;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 5px;
+      font-weight: bold;
     }
-    .tag {
-      padding: 4px 8px;
+    .menu {
+      background-color: #f8e88b;
+      padding: 12px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .menu a {
+      background-color: #6c79db;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .task {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    .task:last-child {
+      border-bottom: none;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
       border-radius: 5px;
       font-size: 12px;
       font-weight: bold;
-      margin-left: 8px;
     }
-    .priority-high { background-color: #f44336; color: white; }
-    .priority-medium { background-color: #ff9800; color: white; }
-    .priority-low { background-color: #4caf50; color: white; }
-    .assigned {
-      font-size: 13px;
-      color: #444;
-      margin-top: 4px;
+    .status.Complete { background-color: #38a169; color: #fff; }
+    .status.Upcoming { background-color: #4299e1; color: #fff; }
+    .status.InProgress { background-color: #ed8936; color: #fff; }
+    .priority.High { color: #e53e3e; font-weight: bold; }
+    input, select {
+      padding: 8px;
+      margin: 8px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-family: 'Barlow', sans-serif;
     }
-    .status-toggle button {
-      margin-left: 8px;
+    button {
       background-color: #6c79db;
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 5px;
+      padding: 10px 16px;
+      border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>Digital Dashh | Tasks</h1>
+    <a href="index.html">🏠 Home</a>
   </div>
   <div class="menu">
     <a href="overview.html">Overview</a>
@@ -116,55 +113,59 @@
     <a href="content.html">Creative Content</a>
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
+    <a href="timeline.html">Timeline</a>
   </div>
-  <div class="grid">
-    <div class="sidebar">
-      <button onclick="filterTasks('all')">Show All</button>
-      <button onclick="filterTasks('complete')">Complete</button>
-      <button onclick="filterTasks('in-progress')">In Progress</button>
-      <button onclick="filterTasks('not-started')">Not Started</button>
+
+  <div class="container">
+    <div class="card">
+      <h3>Add New Task</h3>
+      <input type="text" id="taskName" placeholder="Task name...">
+      <input type="text" id="assignee" placeholder="Assignee...">
+      <select id="priority">
+        <option value="High">High Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="Low">Low Priority</option>
+      </select>
+      <select id="status">
+        <option value="Upcoming">Upcoming</option>
+        <option value="InProgress">In Progress</option>
+        <option value="Complete">Complete</option>
+      </select>
+      <button onclick="addTask()">Add Task</button>
     </div>
-    <div class="main" id="taskContainer">
-      <div class="task-card" data-status="in-progress">
-        <div class="task-info">
-          <h3>Confirm AV requirements <span class="tag priority-high">High</span></h3>
-          <div class="assigned">Assigned to: Alex</div>
-        </div>
-        <div class="status-toggle">
-          <button>Mark Complete</button>
-        </div>
+
+    <div class="card" id="taskList">
+      <h3>Task List</h3>
+      <div class="task">
+        <strong>Finalize keynote speaker</strong> <span class="status InProgress">In Progress</span> — <span class="priority High">High</span>, assigned to Alex
       </div>
-      <div class="task-card" data-status="not-started">
-        <div class="task-info">
-          <h3>Finalize catering order <span class="tag priority-medium">Medium</span></h3>
-          <div class="assigned">Assigned to: Maya</div>
-        </div>
-        <div class="status-toggle">
-          <button>Mark In Progress</button>
-        </div>
+      <div class="task">
+        <strong>Confirm panel layout</strong> <span class="status Upcoming">Upcoming</span> — <span class="priority Medium">Medium</span>, assigned to Sam
       </div>
-      <div class="task-card" data-status="complete">
-        <div class="task-info">
-          <h3>Book keynote speaker <span class="tag priority-low">Low</span></h3>
-          <div class="assigned">Assigned to: Jordan</div>
-        </div>
-        <div class="status-toggle">
-          <button>Undo</button>
-        </div>
+      <div class="task">
+        <strong>Send final invites</strong> <span class="status Complete">Complete</span> — <span class="priority Low">Low</span>, assigned to Jenna
       </div>
     </div>
   </div>
 
   <script>
-    function filterTasks(status) {
-      const cards = document.querySelectorAll('.task-card');
-      cards.forEach(card => {
-        if (status === 'all' || card.dataset.status === status) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+    function addTask() {
+      const name = document.getElementById('taskName').value;
+      const assignee = document.getElementById('assignee').value;
+      const priority = document.getElementById('priority').value;
+      const status = document.getElementById('status').value;
+      if (!name || !assignee) return;
+      
+      const taskList = document.getElementById('taskList');
+      const newTask = document.createElement('div');
+      newTask.className = 'task';
+      newTask.innerHTML = `<strong>${name}</strong> <span class="status ${status}">${status.replace(/([A-Z])/g, ' $1').trim()}</span> — <span class="priority ${priority}">${priority}</span>, assigned to ${assignee}`;
+      taskList.appendChild(newTask);
+
+      document.getElementById('taskName').value = '';
+      document.getElementById('assignee').value = '';
+      document.getElementById('priority').value = 'High';
+      document.getElementById('status').value = 'Upcoming';
     }
   </script>
 </body>
