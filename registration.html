@@ -20,9 +20,11 @@
     th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; text-align: left; }
     th { background-color: #f4f4f4; }
     .tag { background-color: #e0ecf8; padding: 2px 8px; border-radius: 8px; font-size: 12px; }
-    .filter-controls { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .filter-controls { display: flex; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
     .filter-controls select { padding: 6px; font-family: 'Barlow', sans-serif; }
-    .add-attendee { margin-top: 10px; }
+    .add-attendee { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .add-attendee input { padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
+    .add-attendee button { padding: 8px 16px; background-color: #6c79db; color: white; border: none; border-radius: 6px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -45,9 +47,9 @@
   <div class="grid">
     <div class="card">
       <h3>📍 Event Info</h3>
-      <p><strong>Name:</strong> Future Forward Summit</p>
-      <p><strong>Location:</strong> The Anthem, DC</p>
-      <p><strong>Dates:</strong> May 10–12, 2025</p>
+      <p><strong>Name:</strong> <span contenteditable="true" id="eventName">Future Forward Summit</span></p>
+      <p><strong>Location:</strong> <span contenteditable="true" id="eventLocation">The Anthem, DC</span></p>
+      <p><strong>Dates:</strong> <span contenteditable="true" id="eventDates">May 10–12, 2025</span></p>
     </div>
 
     <div class="card">
@@ -56,20 +58,19 @@
       <p><strong>Capacity:</strong> 1000</p>
       <p id="checked-in"><strong>Checked In:</strong> 1</p>
       <p id="remaining"><strong>Remaining:</strong> 998</p>
-      <button style="margin-top: 10px; padding: 6px 10px; background-color: #6c79db; color: white; border: none; border-radius: 6px; font-weight: bold;">⬇️ Download CSV</button>
     </div>
 
     <div class="card" style="grid-column: span 2;">
       <h3>🧾 Attendee List</h3>
       <div class="filter-controls">
-        <label>Filter by Type:
+        <label>Type:
           <select id="typeFilter" onchange="filterAttendees()">
             <option value="all">All</option>
             <option value="VIP">VIP</option>
             <option value="Panelist">Panelist</option>
           </select>
         </label>
-        <label>Filter by Status:
+        <label>Status:
           <select id="statusFilter" onchange="filterAttendees()">
             <option value="all">All</option>
             <option value="Confirmed">Confirmed</option>
@@ -88,7 +89,7 @@
         <input type="email" id="newEmail" placeholder="Email" />
         <input type="text" id="newType" placeholder="Type (VIP, Panelist)" />
         <input type="text" id="newStatus" placeholder="Status (Confirmed, Pending)" />
-        <button onclick="addAttendee()">Add Attendee</button>
+        <button onclick="addAttendee()">Add</button>
       </div>
     </div>
 
@@ -103,96 +104,101 @@
     </div>
   </div>
 
-  <script>
-    const today = new Date();
-    const dateDisplay = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
-    document.getElementById('current-date').textContent = dateDisplay;
+<script>
+  const today = new Date();
+  const dateStr = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+  document.getElementById('current-date').textContent = dateStr;
 
-    let attendees = [
-      {name: 'Jordan Smith', email: 'jordan@example.com', type: 'VIP', status: 'Confirmed'},
-      {name: 'Taylor Gray', email: 'taylor@example.com', type: 'Panelist', status: 'Pending'}
-    ];
+  let attendees = [
+    {name: 'Jordan Smith', email: 'jordan@example.com', type: 'VIP', status: 'Confirmed'},
+    {name: 'Taylor Gray', email: 'taylor@example.com', type: 'Panelist', status: 'Pending'}
+  ];
 
-    let fnbPrefsData = [
-      {name: 'Jordan Smith', milk: 'Oat', allergies: 'None', hotel: 'Yes'},
-      {name: 'Taylor Gray', milk: 'Almond', allergies: 'Peanut', hotel: 'No'}
-    ];
+  let fnbPrefs = [
+    {name: 'Jordan Smith', milk: 'Oat', allergies: 'None', hotel: 'Yes'},
+    {name: 'Taylor Gray', milk: 'Almond', allergies: 'Peanut', hotel: 'No'}
+  ];
 
-    function renderTables() {
-      const tbody = document.querySelector('#attendeeTable tbody');
-      const fnbTbody = document.querySelector('#fnbTable tbody');
-      tbody.innerHTML = '';
-      fnbTbody.innerHTML = '';
-      attendees.forEach((att, i) => {
-        const row = `<tr>
-          <td contenteditable="true">${att.name}</td>
-          <td contenteditable="true">${att.email}</td>
-          <td contenteditable="true">${att.type}</td>
-          <td contenteditable="true">${att.status}</td>
-          <td><button onclick="removeAttendee(${i})">Remove</button></td>
+  function renderTables() {
+    const attendeeBody = document.querySelector('#attendeeTable tbody');
+    const fnbBody = document.querySelector('#fnbTable tbody');
+    attendeeBody.innerHTML = '';
+    fnbBody.innerHTML = '';
+
+    attendees.forEach((attendee, index) => {
+      attendeeBody.innerHTML += `
+        <tr>
+          <td contenteditable="true">${attendee.name}</td>
+          <td contenteditable="true">${attendee.email}</td>
+          <td contenteditable="true">${attendee.type}</td>
+          <td contenteditable="true">${attendee.status}</td>
+          <td><button onclick="removeAttendee(${index})">Remove</button></td>
         </tr>`;
-        tbody.innerHTML += row;
-      });
-      fnbPrefsData.forEach(p => {
-        const fnbRow = `<tr>
-          <td contenteditable="true">${p.name}</td>
-          <td contenteditable="true">${p.milk}</td>
-          <td contenteditable="true">${p.allergies}</td>
-          <td contenteditable="true">${p.hotel}</td>
+    });
+
+    fnbPrefs.forEach(pref => {
+      fnbBody.innerHTML += `
+        <tr>
+          <td contenteditable="true">${pref.name}</td>
+          <td contenteditable="true">${pref.milk}</td>
+          <td contenteditable="true">${pref.allergies}</td>
+          <td contenteditable="true">${pref.hotel}</td>
         </tr>`;
-        fnbTbody.innerHTML += fnbRow;
-      });
-      updateSummary();
-    }
+    });
 
-    function addAttendee() {
-      const newName = document.getElementById('newName').value;
-      const newEmail = document.getElementById('newEmail').value;
-      const newType = document.getElementById('newType').value;
-      const newStatus = document.getElementById('newStatus').value;
-      if (newName && newEmail && newType && newStatus) {
-        attendees.push({name: newName, email: newEmail, type: newType, status: newStatus});
-        fnbPrefsData.push({name: newName, milk: 'None', allergies: 'None', hotel: 'No'});
-        document.getElementById('newName').value = '';
-        document.getElementById('newEmail').value = '';
-        document.getElementById('newType').value = '';
-        document.getElementById('newStatus').value = '';
-        renderTables();
-      }
-    }
+    updateSummary();
+  }
 
-    function removeAttendee(index) {
-      attendees.splice(index, 1);
-      fnbPrefsData.splice(index, 1);
+  function addAttendee() {
+    const name = document.getElementById('newName').value;
+    const email = document.getElementById('newEmail').value;
+    const type = document.getElementById('newType').value;
+    const status = document.getElementById('newStatus').value;
+
+    if (name && email && type && status) {
+      attendees.push({name, email, type, status});
+      fnbPrefs.push({name, milk: 'None', allergies: 'None', hotel: 'No'});
       renderTables();
+      document.getElementById('newName').value = '';
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newType').value = '';
+      document.getElementById('newStatus').value = '';
     }
+  }
 
-    function updateSummary() {
-      document.getElementById('total-registered').innerHTML = `<strong>Total Registered:</strong> ${attendees.length}`;
-      document.getElementById('checked-in').innerHTML = `<strong>Checked In:</strong> 1`;
-      document.getElementById('remaining').innerHTML = `<strong>Remaining:</strong> ${1000 - attendees.length}`;
-    }
-
-    function filterAttendees() {
-      const type = document.getElementById('typeFilter').value;
-      const status = document.getElementById('statusFilter').value;
-      const tbody = document.querySelector('#attendeeTable tbody');
-      tbody.innerHTML = '';
-      attendees.forEach((att, i) => {
-        if ((type === 'all' || att.type === type) && (status === 'all' || att.status === status)) {
-          const row = `<tr>
-            <td contenteditable="true">${att.name}</td>
-            <td contenteditable="true">${att.email}</td>
-            <td contenteditable="true">${att.type}</td>
-            <td contenteditable="true">${att.status}</td>
-            <td><button onclick="removeAttendee(${i})">Remove</button></td>
-          </tr>`;
-          tbody.innerHTML += row;
-        }
-      });
-    }
-
+  function removeAttendee(index) {
+    attendees.splice(index, 1);
+    fnbPrefs.splice(index, 1);
     renderTables();
-  </script>
+  }
+
+  function updateSummary() {
+    document.getElementById('total-registered').innerHTML = `<strong>Total Registered:</strong> ${attendees.length}`;
+    document.getElementById('checked-in').innerHTML = `<strong>Checked In:</strong> 1`;
+    document.getElementById('remaining').innerHTML = `<strong>Remaining:</strong> ${1000 - attendees.length}`;
+  }
+
+  function filterAttendees() {
+    const type = document.getElementById('typeFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    const tbody = document.querySelector('#attendeeTable tbody');
+    tbody.innerHTML = '';
+
+    attendees.forEach((attendee, index) => {
+      if ((type === 'all' || attendee.type === type) && (status === 'all' || attendee.status === status)) {
+        tbody.innerHTML += `
+          <tr>
+            <td contenteditable="true">${attendee.name}</td>
+            <td contenteditable="true">${attendee.email}</td>
+            <td contenteditable="true">${attendee.type}</td>
+            <td contenteditable="true">${attendee.status}</td>
+            <td><button onclick="removeAttendee(${index})">Remove</button></td>
+          </tr>`;
+      }
+    });
+  }
+
+  renderTables();
+</script>
 </body>
 </html>
