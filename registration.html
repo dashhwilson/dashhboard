@@ -95,10 +95,6 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
-    button:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
     input, select {
       margin-top: 6px;
       margin-bottom: 10px;
@@ -133,8 +129,33 @@
     .save-message.show {
       opacity: 1;
     }
+    /* Table input field adjustments */
+    table input, table select {
+      padding: 4px 6px;
+      font-size: 13px;
+      height: 30px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background-color: #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #6c79db;
+      width: 0%;
+      border-radius: 8px;
+      transition: width 0.4s ease;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="header">Digital Dashh | Registration</div>
@@ -167,11 +188,18 @@
 
     <div class="card">
       <h3>📈 Registration Summary</h3>
-      <p id="totalReg">Total Registered: 2</p>
-      <p id="capacity">Capacity: 500</p>
-      <p id="checkedIn">Checked In: 1</p>
-      <p id="remaining">Remaining: 498</p>
-      <button onclick="downloadCSV()">📄 Download CSV</button>
+      <p id="totalReg">Total Registered: 0</p>
+      <p id="capacity">Capacity: 0</p>
+      <p id="checkedIn">Checked In: 0</p>
+      <p id="remaining">Remaining: 0</p>
+      <hr class="divider">
+      <p id="percentFilled">Capacity Filled: 0%</p>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <p id="vipGeneralBreakdown">VIPs: 0 | General: 0</p>
+      <p id="statusBreakdown">Confirmed: 0 | Pending: 0</p>
+      <button onclick="downloadCSV()">📥 Download CSV</button>
     </div>
 
     <div class="card" style="grid-column: span 2;">
@@ -213,6 +241,11 @@
       attendeeTable.innerHTML = '';
       fnbTable.innerHTML = '';
 
+      let vipCount = 0;
+      let generalCount = 0;
+      let confirmedCount = 0;
+      let pendingCount = 0;
+
       attendees.forEach((attendee, index) => {
         attendeeTable.innerHTML += `
           <tr>
@@ -223,6 +256,12 @@
             <td><button onclick="removeAttendee(${index})">Remove</button></td>
           </tr>
         `;
+
+        // Track counts
+        if (attendee.type.toLowerCase() === "vip") vipCount++;
+        else generalCount++;
+        if (attendee.status.toLowerCase() === "confirmed") confirmedCount++;
+        else pendingCount++;
       });
 
       fnbPrefs.forEach((pref, idx) => {
@@ -241,8 +280,17 @@
         `;
       });
 
-      document.getElementById('totalReg').textContent = `Total Registered: ${attendees.length}`;
-      document.getElementById('remaining').textContent = `Remaining: ${parseInt(document.getElementById('eventCapacity').value) - attendees.length}`;
+      const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
+      const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
+      document.getElementById('progressFill').style.width = `${percentFilled}%`;
+
+      document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
+      document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
+      document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
+      document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+      document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+      document.getElementById('vipGeneralBreakdown').innerText = `VIPs: ${vipCount} | General: ${generalCount}`;
+      document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
     }
 
     function addAttendee() {
@@ -267,6 +315,13 @@
       fnbPrefs[index][field] = value;
     }
 
+    function saveEventInfo() {
+      renderTables();
+      const saveConfirmation = document.getElementById('saveConfirmation');
+      saveConfirmation.classList.add('show');
+      setTimeout(() => saveConfirmation.classList.remove('show'), 2500);
+    }
+
     function downloadCSV() {
       let csv = "Name,Email,Type,Status\n";
       attendees.forEach(a => {
@@ -280,22 +335,6 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    }
-
-    function saveEventInfo() {
-      const eventName = document.getElementById('eventName').value;
-      const eventLocation = document.getElementById('eventLocation').value;
-      const eventDate = document.getElementById('eventDate').value;
-      const eventCapacity = document.getElementById('eventCapacity').value;
-
-      document.getElementById('capacity').textContent = `Capacity: ${eventCapacity}`;
-      renderTables();
-
-      const saveConfirmation = document.getElementById('saveConfirmation');
-      saveConfirmation.classList.add('show');
-      setTimeout(() => {
-        saveConfirmation.classList.remove('show');
-      }, 2500);
     }
 
     renderTables();
