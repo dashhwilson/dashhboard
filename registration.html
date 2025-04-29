@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +80,6 @@
       cursor: pointer;
       margin-top: 10px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -147,17 +147,16 @@
   </style>
 </head>
 <body>
-
   <div class="header">Digital Dashh | Registration</div>
 
   <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
+    <a href="#">Overview</a>
+    <a href="#">Budget</a>
+    <a href="#">Venues</a>
+    <a href="#">AV Production</a>
+    <a href="#">Creative Content</a>
+    <a href="#">Sponsor Tracker</a>
+    <a href="#">Merch Inventory</a>
   </div>
 
   <div class="grid">
@@ -184,12 +183,33 @@
       <p id="remaining">Remaining: 0</p>
       <hr class="divider">
       <p id="percentFilled">Capacity Filled: 0%</p>
-      <div class="progress-bar">
-        <div class="progress-bar-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
       <p id="vipGeneralBreakdown">VIPs: 0 | General: 0</p>
       <p id="statusBreakdown">Confirmed: 0 | Pending: 0</p>
       <button onclick="downloadCSV()">📥 Download CSV</button>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+      <h3>🔎 Filter Attendees</h3>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 1;">
+          <label for="filterType">Type</label>
+          <select id="filterType" onchange="renderTables()" style="width: 100%;">
+            <option value="">All</option>
+            <option value="VIP">VIP</option>
+            <option value="General">General</option>
+            <option value="Panelist">Panelist</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label for="filterStatus">Status</label>
+          <select id="filterStatus" onchange="renderTables()" style="width: 100%;">
+            <option value="">All</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="card" style="grid-column: span 2;">
@@ -214,142 +234,132 @@
     </div>
   </div>
 
- <script>
-  let attendees = [
-    { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
-    { name: "Taylor Gray", email: "taylor@example.com", type: "VIP", status: "Confirmed" },
-    { name: "Quincy Wilson", email: "", type: "Panelist", status: "Pending" }
-  ];
+  <script>
+    let attendees = [
+      { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
+      { name: "Taylor Gray", email: "taylor@example.com", type: "Panelist", status: "Pending" }
+    ];
+    let fnbPrefs = [
+      { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
+      { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" }
+    ];
 
-  let fnbPrefs = [
-    { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
-    { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" },
-    { name: "Quincy Wilson", allergies: "", milk: "", hotel: "No" }
-  ];
+    function renderTables() {
+      const attendeeTable = document.getElementById('attendeeTable');
+      const fnbTable = document.getElementById('fnbTable');
+      attendeeTable.innerHTML = '';
+      fnbTable.innerHTML = '';
 
-  function renderTables() {
-    const attendeeTable = document.getElementById('attendeeTable');
-    const fnbTable = document.getElementById('fnbTable');
-    attendeeTable.innerHTML = '';
-    fnbTable.innerHTML = '';
+      const filterType = document.getElementById('filterType')?.value || '';
+      const filterStatus = document.getElementById('filterStatus')?.value || '';
 
-    // Count types and statuses
-    const typeCounts = {};
-    let confirmedCount = 0;
-    let pendingCount = 0;
+      const typeCounts = {};
+      let confirmedCount = 0, pendingCount = 0;
 
-    attendees.forEach((attendee, index) => {
-      // Count types
-      const type = attendee.type || "Unknown";
-      if (!typeCounts[type]) typeCounts[type] = 0;
-      typeCounts[type]++;
+      attendees.forEach((attendee, index) => {
+        if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
 
-      // Count status
-      if (attendee.status === "Confirmed") confirmedCount++;
-      else pendingCount++;
+        const type = attendee.type || "Unknown";
+        if (!typeCounts[type]) typeCounts[type] = 0;
+        typeCounts[type]++;
 
-      attendeeTable.innerHTML += `
-        <tr>
-          <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
-          <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
-          <td>
-            <select onchange="updateAttendee(${index}, 'type', this.value)">
-              <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
-              <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
-              <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
-            </select>
-          </td>
-          <td>
-            <select onchange="updateAttendee(${index}, 'status', this.value)">
-              <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
-              <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
-            </select>
-          </td>
-          <td><button onclick="removeAttendee(${index})">Remove</button></td>
-        </tr>
-      `;
-    });
+        if (attendee.status === "Confirmed") confirmedCount++;
+        else pendingCount++;
 
-    fnbPrefs.forEach((pref, idx) => {
-      fnbTable.innerHTML += `
-        <tr>
-          <td>${pref.name}</td>
-          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-          <td>
-            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-            </select>
-          </td>
-        </tr>
-      `;
-    });
+        attendeeTable.innerHTML += `
+          <tr>
+            <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
+            <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
+            <td>
+              <select onchange="updateAttendee(${index}, 'type', this.value)">
+                <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
+                <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
+                <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
+              </select>
+            </td>
+            <td>
+              <select onchange="updateAttendee(${index}, 'status', this.value)">
+                <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
+                <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
+              </select>
+            </td>
+            <td><button onclick="removeAttendee(${index})">Remove</button></td>
+          </tr>`;
+      });
 
-    
-    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
-    const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
+      fnbPrefs.forEach((pref, idx) => {
+        fnbTable.innerHTML += `
+          <tr>
+            <td>${pref.name}</td>
+            <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
+            <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
+            <td>
+              <select onchange="updateFnb(${idx}, 'hotel', this.value)">
+                <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
+                <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
+              </select>
+            </td>
+          </tr>`;
+      });
 
-    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
-    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
-    document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
-    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
-    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
-    document.getElementById('progressFill').style.width = percentFilled + '%';
+      const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
+      const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
+      document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
+      document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
+      document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
+      document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+      document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+      document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
+      document.getElementById('progressFill').style.width = percentFilled + '%';
 
-    const breakdown = Object.entries(typeCounts)
-      .map(([type, count]) => `${type}s: ${count}`)
-      .join(' | ');
-    document.getElementById('vipGeneralBreakdown').innerText = breakdown;
-  }
-
-  function updateAttendee(index, field, value) {
-    attendees[index][field] = value;
-    if (field === 'name') {
-      fnbPrefs[index].name = value; 
+      const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
+      document.getElementById('vipGeneralBreakdown').innerText = breakdown;
     }
+
+    function updateAttendee(index, field, value) {
+      attendees[index][field] = value;
+      if (field === 'name') fnbPrefs[index].name = value;
+      renderTables();
+    }
+
+    function updateFnb(index, field, value) {
+      fnbPrefs[index][field] = value;
+      renderTables();
+    }
+
+    function addAttendee() {
+      attendees.push({ name: '', email: '', type: 'General', status: 'Pending' });
+      fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
+      renderTables();
+    }
+
+    function removeAttendee(index) {
+      attendees.splice(index, 1);
+      fnbPrefs.splice(index, 1);
+      renderTables();
+    }
+
+    function saveEventInfo() {
+      renderTables();
+      const msg = document.getElementById('saveConfirmation');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 2500);
+    }
+
+    function downloadCSV() {
+      let csv = "Name,Email,Type,Status\n";
+      attendees.forEach(a => {
+        csv += `${a.name},${a.email},${a.type},${a.status}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "attendees.csv";
+      a.click();
+    }
+
     renderTables();
-  }
-
-  function updateFnb(index, field, value) {
-    fnbPrefs[index][field] = value;
-    renderTables();
-  }
-
-  function addAttendee() {
-    attendees.push({ name: '', email: '', type: 'General', status: 'Pending' });
-    fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
-    renderTables();
-  }
-
-  function removeAttendee(index) {
-    attendees.splice(index, 1);
-    fnbPrefs.splice(index, 1);
-    renderTables();
-  }
-
-  function saveEventInfo() {
-    renderTables();
-    const msg = document.getElementById('saveConfirmation');
-    msg.classList.add('show');
-    setTimeout(() => msg.classList.remove('show'), 2500);
-  }
-
-  function downloadCSV() {
-    let csv = "Name,Email,Type,Status\n";
-    attendees.forEach(a => {
-      csv += `${a.name},${a.email},${a.type},${a.status}\n`;
-    });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "attendees.csv";
-    a.click();
-  }
-
-  renderTables();
-</script>
+  </script>
 </body>
 </html>
