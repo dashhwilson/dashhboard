@@ -214,15 +214,17 @@
     </div>
   </div>
 
-  <script>
+ <script>
   let attendees = [
     { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
-    { name: "Taylor Gray", email: "taylor@example.com", type: "Panelist", status: "Pending" }
+    { name: "Taylor Gray", email: "taylor@example.com", type: "VIP", status: "Confirmed" },
+    { name: "Quincy Wilson", email: "", type: "Panelist", status: "Pending" }
   ];
 
   let fnbPrefs = [
     { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
-    { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" }
+    { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" },
+    { name: "Quincy Wilson", allergies: "", milk: "", hotel: "No" }
   ];
 
   function renderTables() {
@@ -231,12 +233,21 @@
     attendeeTable.innerHTML = '';
     fnbTable.innerHTML = '';
 
-    let vipCount = 0;
-    let generalCount = 0;
+    // Count types and statuses
+    const typeCounts = {};
     let confirmedCount = 0;
     let pendingCount = 0;
 
     attendees.forEach((attendee, index) => {
+      // Count types
+      const type = attendee.type || "Unknown";
+      if (!typeCounts[type]) typeCounts[type] = 0;
+      typeCounts[type]++;
+
+      // Count status
+      if (attendee.status === "Confirmed") confirmedCount++;
+      else pendingCount++;
+
       attendeeTable.innerHTML += `
         <tr>
           <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
@@ -257,13 +268,6 @@
           <td><button onclick="removeAttendee(${index})">Remove</button></td>
         </tr>
       `;
-
-      // update counters
-      if (attendee.type === "VIP") vipCount++;
-      else generalCount++;
-
-      if (attendee.status === "Confirmed") confirmedCount++;
-      else pendingCount++;
     });
 
     fnbPrefs.forEach((pref, idx) => {
@@ -291,14 +295,20 @@
     document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
     document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
     document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-    document.getElementById('vipGeneralBreakdown').innerText = `VIPs: ${vipCount} | General: ${generalCount}`;
     document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
-
     document.getElementById('progressFill').style.width = percentFilled + '%';
+
+    const breakdown = Object.entries(typeCounts)
+      .map(([type, count]) => `${type}s: ${count}`)
+      .join(' | ');
+    document.getElementById('vipGeneralBreakdown').innerText = breakdown;
   }
 
   function updateAttendee(index, field, value) {
     attendees[index][field] = value;
+    if (field === 'name') {
+      fnbPrefs[index].name = value; 
+    }
     renderTables();
   }
 
