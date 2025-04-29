@@ -215,103 +215,131 @@
   </div>
 
   <script>
-    let attendees = [
-      { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
-      { name: "Taylor Gray", email: "taylor@example.com", type: "Panelist", status: "Pending" }
-    ];
+  let attendees = [
+    { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
+    { name: "Taylor Gray", email: "taylor@example.com", type: "Panelist", status: "Pending" }
+  ];
 
-    let fnbPrefs = [
-      { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
-      { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" }
-    ];
+  let fnbPrefs = [
+    { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
+    { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" }
+  ];
 
-    function renderTables() {
-      const attendeeTable = document.getElementById('attendeeTable');
-      const fnbTable = document.getElementById('fnbTable');
-      attendeeTable.innerHTML = '';
-      fnbTable.innerHTML = '';
+  function renderTables() {
+    const attendeeTable = document.getElementById('attendeeTable');
+    const fnbTable = document.getElementById('fnbTable');
+    attendeeTable.innerHTML = '';
+    fnbTable.innerHTML = '';
 
-      attendees.forEach((attendee, index) => {
-        attendeeTable.innerHTML += `
-          <tr>
-            <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
-            <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
-            <td>
-              <select onchange="updateAttendee(${index}, 'type', this.value)">
-                <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
-                <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
-                <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
-              </select>
-            </td>
-            <td>
-              <select onchange="updateAttendee(${index}, 'status', this.value)">
-                <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
-                <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
-              </select>
-            </td>
-            <td><button onclick="removeAttendee(${index})">Remove</button></td>
-          </tr>
-        `;
-      });
+    let vipCount = 0;
+    let generalCount = 0;
+    let confirmedCount = 0;
+    let pendingCount = 0;
 
-      fnbPrefs.forEach((pref, idx) => {
-        fnbTable.innerHTML += `
-          <tr>
-            <td>${pref.name}</td>
-            <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-            <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-            <td>
-              <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-                <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-                <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-              </select>
-            </td>
-          </tr>
-        `;
-      });
-    }
+    attendees.forEach((attendee, index) => {
+      attendeeTable.innerHTML += `
+        <tr>
+          <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
+          <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
+          <td>
+            <select onchange="updateAttendee(${index}, 'type', this.value)">
+              <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
+              <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
+              <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
+            </select>
+          </td>
+          <td>
+            <select onchange="updateAttendee(${index}, 'status', this.value)">
+              <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
+              <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
+            </select>
+          </td>
+          <td><button onclick="removeAttendee(${index})">Remove</button></td>
+        </tr>
+      `;
 
-    function updateAttendee(index, field, value) {
-      attendees[index][field] = value;
-    }
+      // update counters
+      if (attendee.type === "VIP") vipCount++;
+      else generalCount++;
 
-    function updateFnb(index, field, value) {
-      fnbPrefs[index][field] = value;
-    }
+      if (attendee.status === "Confirmed") confirmedCount++;
+      else pendingCount++;
+    });
 
-    function addAttendee() {
-      attendees.push({ name: '', email: '', type: 'General', status: 'Pending' });
-      fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
-      renderTables();
-    }
+    fnbPrefs.forEach((pref, idx) => {
+      fnbTable.innerHTML += `
+        <tr>
+          <td>${pref.name}</td>
+          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
+          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
+          <td>
+            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
+              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
+              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
+            </select>
+          </td>
+        </tr>
+      `;
+    });
 
-    function removeAttendee(index) {
-      attendees.splice(index, 1);
-      fnbPrefs.splice(index, 1);
-      renderTables();
-    }
+    
+    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
+    const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
 
-    function saveEventInfo() {
-      renderTables();
-      const msg = document.getElementById('saveConfirmation');
-      msg.classList.add('show');
-      setTimeout(() => msg.classList.remove('show'), 2500);
-    }
+    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
+    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
+    document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
+    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+    document.getElementById('vipGeneralBreakdown').innerText = `VIPs: ${vipCount} | General: ${generalCount}`;
+    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
 
-    function downloadCSV() {
-      let csv = "Name,Email,Type,Status\n";
-      attendees.forEach(a => {
-        csv += `${a.name},${a.email},${a.type},${a.status}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "attendees.csv";
-      a.click();
-    }
+    document.getElementById('progressFill').style.width = percentFilled + '%';
+  }
 
+  function updateAttendee(index, field, value) {
+    attendees[index][field] = value;
     renderTables();
-  </script>
+  }
+
+  function updateFnb(index, field, value) {
+    fnbPrefs[index][field] = value;
+    renderTables();
+  }
+
+  function addAttendee() {
+    attendees.push({ name: '', email: '', type: 'General', status: 'Pending' });
+    fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
+    renderTables();
+  }
+
+  function removeAttendee(index) {
+    attendees.splice(index, 1);
+    fnbPrefs.splice(index, 1);
+    renderTables();
+  }
+
+  function saveEventInfo() {
+    renderTables();
+    const msg = document.getElementById('saveConfirmation');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  }
+
+  function downloadCSV() {
+    let csv = "Name,Email,Type,Status\n";
+    attendees.forEach(a => {
+      csv += `${a.name},${a.email},${a.type},${a.status}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "attendees.csv";
+    a.click();
+  }
+
+  renderTables();
+</script>
 </body>
 </html>
