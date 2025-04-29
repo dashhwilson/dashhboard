@@ -251,7 +251,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     function filterView(view) {
       const cards = document.querySelectorAll('.card');
       const buttons = document.querySelectorAll('.menu-buttons button');
@@ -265,6 +265,26 @@
         card.style.display = (view === 'all' || cardView === view) ? 'block' : 'none';
       });
     }
+  </script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
+      authDomain: "digital-dashh.firebaseapp.com",
+      projectId: "digital-dashh",
+      storageBucket: "digital-dashh.appspot.com",
+      messagingSenderId: "535613848097",
+      appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
   </script>
 </body>
 </html>
