@@ -572,6 +572,15 @@ body.partner-theme [data-view="partner"] {
     const auth = firebase.auth();
     const db = firebase.firestore();
   </script>
+
+  <script>
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      // User not logged in, redirect to login page
+      window.location.href = "login.html";
+    }
+  });
+</script>
   
 </body>
 </html>
