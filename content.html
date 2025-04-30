@@ -163,6 +163,22 @@
     body.partner-theme [data-view="partner"] {
       display: block;
     }
+ .header .right button {
+  background-color: #6c79db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.header .right button:hover {
+  background-color: #5a67d8;
+}
+    
   </style>
 </head>
 <body>
@@ -173,6 +189,7 @@
       <a href="index.html">🏠 Home</a>
       <span id="current-date"></span> |
       <span id="countdown"></span>
+      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -308,6 +325,16 @@
       window.location.href = "login.html";
     }
   });
+</script>
+
+   <script>
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch((error) => {
+      alert("Error logging out: " + error.message);
+    });
+  }
 </script>
   
 </body>
