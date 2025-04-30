@@ -29,7 +29,9 @@
       font-size: 22px;
     }
     .header .right {
-      text-align: right;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .header a {
       background-color: #ffe066;
@@ -37,8 +39,20 @@
       text-decoration: none;
       padding: 6px 14px;
       border-radius: 5px;
-      margin-right: 10px;
       font-weight: bold;
+    }
+    .header button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .header button:hover {
+      background-color: #5a67d8;
     }
     .menu {
       background-color: #ffffff;
@@ -250,6 +264,7 @@ body.partner-theme [data-view="partner"] {
       <a href="index.html">🏠 Home</a>
       <span id="current-date"></span> |
       <span id="countdown"></span>
+      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -263,11 +278,11 @@ body.partner-theme [data-view="partner"] {
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
 
-<div class="view-toggle-bar">
-  <button onclick="setView('production')" id="btn-production">Production View</button>
-  <button onclick="setView('client')" id="btn-client">Client View</button>
-  <button onclick="setView('partner')" class="partner-only" id="btn-partner">Partner View</button>
-</div>
+  <div class="view-toggle-bar">
+    <button onclick="setView('production')" id="btn-production">Production View</button>
+    <button onclick="setView('client')" id="btn-client">Client View</button>
+    <button onclick="setView('partner')" class="partner-only" id="btn-partner">Partner View</button>
+  </div>
   
   <div class="summary-upload-row">
     <div class="card">
