@@ -12,6 +12,7 @@
       padding: 0;
       color: #1c1c3a;
     }
+    body.all-theme { background-color: #98c1ff; --accent-color: #ddd6cf; }
     body.production-theme { background-color: #eef1fb; --accent-color: #8da5e2; }
     body.client-theme { background-color: #e9edf3; --accent-color: #2c3e50; }
     body.partner-theme { background-color: #fdf1f5; --accent-color: #f8a9c4; }
@@ -130,7 +131,10 @@
       cursor: pointer;
       font-weight: bold;
     }
-    [data-view] { display: none; }
+    body.all-theme [data-view] {
+  display: block;
+}
+    [data-view] { display: none; }  
     body.production-theme [data-view="production"],
     body.client-theme [data-view="client"],
     body.partner-theme [data-view="partner"] {
@@ -180,18 +184,13 @@
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
   <div class="menu-bar">
-  <div class="menu-buttons">
-    <button onclick="filterView('all')" id="btn-all" class="active">All Views</button>
-    <button onclick="filterView('production')" id="btn-production">Production</button>
-    <button onclick="filterView('client')" id="btn-client">Client</button>
-    <button onclick="filterView('partner')" id="btn-partner">Partner</button>
-  </div>
   <div class="logout-button">
     <button onclick="logout()">Logout</button>
   </div>
 </div>
 
   <div class="view-toggle-bar">
+    <button onclick="setView('all')" id="btn-all">All</button>
     <button onclick="setView('production')" id="btn-production">Production View</button>
     <button onclick="setView('client')" id="btn-client">Client View</button>
     <button onclick="setView('partner')" id="btn-partner">Partner View</button>
@@ -257,7 +256,7 @@
 
     function setView(view) {
       const body = document.body;
-      const views = ['production', 'client', 'partner'];
+      const views = ['all', 'production', 'client', 'partner'];
       views.forEach(v => body.classList.remove(`${v}-theme`));
       body.classList.add(`${view}-theme`);
       localStorage.setItem('dashhboardView', view);
