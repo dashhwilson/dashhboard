@@ -98,25 +98,33 @@
     const auth = firebase.auth();
 
     function signup() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const errorDiv = document.getElementById("error");
-      const button = document.querySelector("button");
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const errorDiv = document.getElementById("error");
+  const button = document.querySelector("button");
 
-      errorDiv.textContent = "";
-      button.textContent = "Signing up...";
-      button.disabled = true;
+  errorDiv.textContent = "";
+  button.textContent = "Signing up...";
+  button.disabled = true;
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch(error => {
-          errorDiv.textContent = error.message;
-          button.textContent = "Sign Up";
-          button.disabled = false;
-        });
-    }
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      return user.sendEmailVerification();
+    })
+    .then(() => {
+      alert("Verification email sent! Please check your inbox before logging in.");
+      return auth.signOut(); // Sign out after sending email
+    })
+    .catch(error => {
+      errorDiv.textContent = error.message;
+    })
+    .finally(() => {
+      button.textContent = "Sign Up";
+      button.disabled = false;
+    });
+}
+    
   </script>
 </body>
 </html>
