@@ -38,6 +38,24 @@
       text-decoration: none;
       margin-top: 8px;
     }
+    
+     .header .right button {
+  background-color: #6c79db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.header .right button:hover {
+  background-color: #5a67d8;
+}
+
+    
     .menu {
       background-color: #ffe066;
       display: flex;
@@ -54,6 +72,7 @@
       font-weight: bold;
       text-decoration: none;
     }
+    
     .content-wrapper {
       display: flex;
       padding: 30px;
@@ -160,6 +179,12 @@
   <div class="header">
     <div>📁 All Uploaded Files</div>
     <a href="index.html" class="home-button">🏠 Home</a>
+   <div class="right">
+      <span id="current-date"></span> |
+      <span id="countdown"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
+    
   </div>
   <div class="menu">
     <a href="overview.html">Overview</a>
@@ -363,6 +388,16 @@ function downloadCSV() {
       window.location.href = "login.html";
     }
   });
+</script>
+
+   <script>
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch((error) => {
+      alert("Error logging out: " + error.message);
+    });
+  }
 </script>
   
 </body>
