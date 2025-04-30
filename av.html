@@ -42,26 +42,6 @@
       margin-right: 20px;
       font-weight: bold;
     } 
-      .logout-button {
-  display: flex;
-  align-items: center;
-}
-
-.logout-button button {
-  background-color: #6c79db;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.logout-button button:hover {
-  background-color: #5a67d8;
-}
 
     .menu {
       background-color: #ffffff;
@@ -161,6 +141,22 @@
       display: block;
     }
 
+    .header .right button {
+  background-color: #6c79db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.header .right button:hover {
+  background-color: #5a67d8;
+}
+
   </style>
 </head>
 <body>
@@ -171,6 +167,7 @@
       <a href="index.html" class="home-button">🏠 Home</a>
       <span id="current-date"></span> |
       <span id="countdown"></span>
+      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -183,11 +180,6 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
-  <div class="menu-bar">
-  <div class="logout-button">
-    <button onclick="logout()">Logout</button>
-  </div>
-</div>
 
   <div class="view-toggle-bar">
     <button onclick="setView('all')" id="btn-all">All</button>
