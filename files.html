@@ -39,7 +39,7 @@
       margin-top: 8px;
     }
     
-     .header .right button {
+     .header .center button {
   background-color: #6c79db;
   color: white;
   border: none;
@@ -51,8 +51,40 @@
   margin-left: 10px;
 }
 
-.header .right button:hover {
+.header .center button:hover {
   background-color: #5a67d8;
+}
+
+    .header {
+  background-color: #1c1c3a;
+  color: white;
+  padding: 20px 30px;
+  display: grid;
+  grid-template-areas: 
+    "title right"
+    "center right";
+  grid-template-columns: 1fr auto;
+  row-gap: 12px;
+  align-items: center;
+}
+
+.title {
+  grid-area: title;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.center {
+  grid-area: center;
+  display: flex;
+  justify-content: center;
+}
+
+.right {
+  grid-area: right;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
     
@@ -172,18 +204,24 @@
 .download-button:hover {
   background-color: #ffd633;
 }
+
+
+
     
   </style>
 </head>
 <body>
-  <div class="header">
-    <div>📁 All Uploaded Files</div>
+<div class="header">
+  <div class="title">📁 All Uploaded Files</div>
+  <div class="center">
     <a href="index.html" class="home-button">🏠 Home</a>
-   <div class="right">
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
-      <button onclick="logout()">Logout</button>
-    </div>
+  </div>
+  <div class="right">
+    <span id="current-date"></span> |
+    <span id="countdown"></span>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
     
   </div>
   <div class="menu">
