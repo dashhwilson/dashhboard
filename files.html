@@ -437,6 +437,19 @@ function downloadCSV() {
     });
   }
 </script>
+
+<script>
+  const today = new Date();
+  const dateString = today.toLocaleDateString(undefined, {
+    weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+  });
+  document.getElementById('current-date').textContent = dateString;
+
+  const eventDate = new Date('2025-05-10T00:00:00');
+  const diff = eventDate - today;
+  const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+</script>
   
 </body>
 </html>
