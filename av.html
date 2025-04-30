@@ -136,6 +136,27 @@
     body.partner-theme [data-view="partner"] {
       display: block;
     }
+
+    .logout-button {
+  display: flex;
+  align-items: center;
+}
+
+.logout-button button {
+  background-color: #6c79db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.logout-button button:hover {
+  background-color: #5a67d8;
+}
   </style>
 </head>
 <body>
@@ -158,6 +179,17 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
+  <div class="menu-bar">
+  <div class="menu-buttons">
+    <button onclick="filterView('all')" id="btn-all" class="active">All Views</button>
+    <button onclick="filterView('production')" id="btn-production">Production</button>
+    <button onclick="filterView('client')" id="btn-client">Client</button>
+    <button onclick="filterView('partner')" id="btn-partner">Partner</button>
+  </div>
+  <div class="logout-button">
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
 
   <div class="view-toggle-bar">
     <button onclick="setView('production')" id="btn-production">Production View</button>
@@ -270,6 +302,14 @@
     }
   });
 </script>
-  
+  <script>
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch((error) => {
+      alert("Error logging out: " + error.message);
+    });
+  }
+</script>
 </body>
 </html>
