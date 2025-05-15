@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Barlow', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f6fa;
+      color: #222;
+    }
+    nav {
+      background-color: #ffffff;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #4b4bff;
+      text-decoration: none;
+    }
+    nav .nav-links a {
+      margin-left: 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    header {
+      background-color: #4b4bff;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    p.subtitle {
+      margin-top: 0.5rem;
+      font-weight: 300;
+      font-size: 1.25rem;
+    }
+    .content {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .section h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    a.cta {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #ffcf33;
+      color: #000;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav .nav-links {
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="/">Digital Dashh</a>
+    <div class="nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/budget.html">Budget</a>
+      <a href="/venues.html">Venues</a>
+      <a href="/tasks.html">Tasks</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/demo.html">Demo</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>See Digital Dashh in Action</h1>
+    <p class="subtitle">Take a peek inside the planning tool built for event producers</p>
+  </header>
+
+  <div class="content">
+    <div class="section">
+      <h2>What You’ll See</h2>
+      <div class="feature-card">
+        <p>💻 A guided walkthrough of Digital Dashh’s event dashboard — including toggle views, budget tracking, and asset uploads.</p>
+      </div>
+      <div class="feature-card">
+        <p>📊 A look at real-time dashboards with dynamic charts, custom filters, and stakeholder-specific views.</p>
+      </div>
+      <div class="feature-card">
+        <p>🧩 A behind-the-scenes peek at how the tool was built with flexibility in mind — for both agencies and internal teams.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Want Full Access?</h2>
+      <p>To explore a full working version or request a private demo session, get in touch below.</p>
+      <a class="cta" href="mailto:dashh@digitaldashh.com">Request a Live Demo</a>
+    </div>
+  </div>
+
+</body>
+</html>
