@@ -445,7 +445,7 @@ function downloadCSV() {
   });
   document.getElementById('current-date').textContent = dateString;
 
-  const eventDate = new Date('2025-05-10T00:00:00');
+  const eventDate = new Date('2025-06-30T00:00:00');
   const diff = eventDate - today;
   const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
   document.getElementById('countdown').textContent = `${daysLeft} days until event`;
