@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Barlow', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f6fa;
+      color: #222;
+    }
+    nav {
+      background-color: #ffffff;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #4b4bff;
+      text-decoration: none;
+    }
+    nav .nav-links a {
+      margin-left: 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    header {
+      background-color: #4b4bff;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    p.subtitle {
+      margin-top: 0.5rem;
+      font-weight: 300;
+      font-size: 1.25rem;
+    }
+    .content {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .section h2 {
+      color: #333;
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .feature-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 1rem 1.25rem;
+    }
+    a.cta {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #ffcf33;
+      color: #000;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      .features {
+        grid-template-columns: 1fr;
+      }
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav .nav-links {
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="/">Digital Dashh</a>
+    <div class="nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/budget.html">Budget</a>
+      <a href="/venues.html">Venues</a>
+      <a href="/tasks.html">Tasks</a>
+      <a href="/projects.html">Projects</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>Digital Dashh</h1>
+    <p class="subtitle">A branded command center for event producers</p>
+  </header>
+
+  <div class="content">
+    <div class="section">
+      <h2>About</h2>
+      <p>Digital Dashh is a custom-built event management tool designed for producers and project managers to collaborate across venue, AV, content, and sponsorship workstreams. Built by D’Ashley Wilson, it’s been tailored to streamline event production, stakeholder alignment, and budget visibility in real time.</p>
+    </div>
+
+    <div class="section">
+      <h2>What It Includes</h2>
+      <div class="features">
+        <div class="feature-card">Toggle views for Clients, Production, and Partners</div>
+        <div class="feature-card">Dynamic budget tracker with visual charts</div>
+        <div class="feature-card">File upload + sync integration (Google Sheets)</div>
+        <div class="feature-card">Responsive card-based UI for each workstream</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Why It Was Built</h2>
+      <p>Born from years of agency-side event production experience, Digital Dashh was designed to solve real workflow pain points. Instead of juggling spreadsheets and scattered documents, this tool centralizes everything — from the BEO to swag inventory.</p>
+    </div>
+
+    <div class="section">
+      <h2>Get In Touch</h2>
+      <p>Want to collaborate, license, or customize Digtial Dashh for your team?</p>
+      <a class="cta" href="mailto:dashh@digitaldashh.com">Email Us</a>
+      <a class="cta" style="margin-left: 1rem;" href="https://dashhwilson.github.io/dashhboard/" target="_blank">View on GitHub</a>
+    </div>
+  </div>
+</body>
+</html>
