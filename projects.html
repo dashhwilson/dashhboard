@@ -141,5 +141,16 @@
       <a class="cta" style="margin-left: 1rem;" href="https://dashhwilson.github.io/dashhboard/" target="_blank">View on GitHub</a>
     </div>
   </div>
+<script>
+  // Prevent Firebase auth redirect on this public page
+  if (window.location.pathname !== '/projects.html' && window.firebase) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = '/login.html';
+      }
+    });
+  }
+</script>
+  
 </body>
 </html>
