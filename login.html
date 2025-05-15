@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: 'Barlow', sans-serif;
-      background-color: #f0f4f8;
+      background-color: #dcdcff; /* soft periwinkle */
       margin: 0;
       display: flex;
       justify-content: center;
@@ -19,42 +19,51 @@
     .login-container {
       background-color: #fff;
       padding: 40px;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       text-align: center;
     }
 
-    h2 {
+    h1 {
+      font-size: 1.75rem;
       color: #1c1c3a;
-      margin-bottom: 24px;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      font-weight: 300;
+      color: #555;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
     }
 
     input {
       width: 100%;
-      padding: 10px 14px;
+      padding: 12px;
       margin: 10px 0;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       font-family: 'Barlow', sans-serif;
       font-size: 16px;
     }
 
     button {
-      background-color: #6c79db;
+      background-color: #4b4bff;
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 12px;
       border-radius: 8px;
       font-weight: bold;
       font-size: 16px;
       cursor: pointer;
       margin-top: 12px;
+      width: 100%;
     }
 
     button:hover {
-      background-color: #5a67d8;
+      background-color: #3a3ad8;
     }
 
     .error {
@@ -63,22 +72,38 @@
       margin-top: 10px;
     }
 
-    .small-link {
+    .small-link, .public-link {
       margin-top: 20px;
       font-size: 14px;
       display: block;
-      color: #333;
+      color: #4b4bff;
+      text-decoration: none;
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #444;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <h2>Login to Digital Dashh</h2>
+    <h1>Welcome to Digital Dashh’s EventBoard</h1>
+    <p class="subtitle">Your personalized command center for smarter event planning.</p>
+
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
+    <button onclick="login()">Log In</button>
     <div class="error" id="error"></div>
+
     <a class="small-link" href="signup.html">Don't have an account? Sign up</a>
+    <a class="public-link" href="/projects.html">Not a member? Explore the project →</a>
+
+    <p class="footer-note">
+      Need help accessing your workspace? <br>
+      Contact us at <a href="mailto:dashh@digitaldashh.com">dashh@digitaldashh.com</a>
+    </p>
   </div>
 
   <!-- Firebase SDKs -->
@@ -113,10 +138,10 @@
     }
 
     auth.onAuthStateChanged(user => {
-  if (user) {
-    window.location.href = "index.html";
-  }
-});
+      if (user) {
+        window.location.href = "index.html";
+      }
+    });
   </script>
 </body>
 </html>
