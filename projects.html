@@ -82,6 +82,15 @@
       text-decoration: none;
       font-weight: bold;
     }
+    .feature-card.wheelhouse {
+  background-color: #fceff7; /* soft pink highlight */
+  border-left: 6px solid #ff85c1; /* deeper pink accent */
+}
+
+.feature-card.connection {
+  background-color: #eef2ff; /* soft periwinkle highlight */
+  border-left: 6px solid #7c9bff; /* periwinkle accent */
+}
     @media (max-width: 600px) {
       .features {
         grid-template-columns: 1fr;
@@ -138,8 +147,25 @@
       <h2>Get In Touch</h2>
       <p>Want to collaborate, license, or customize Digtial Dashh for your team?</p>
       <a class="cta" href="mailto:dashh@digitaldashh.com">Email Us</a>
-      <a class="cta" style="margin-left: 1rem;" href="https://dashhwilson.github.io/dashhboard/" target="_blank">View on GitHub</a>
+      <a class="cta" style="margin-left: 1rem;" href="http://www.digitaldashh.com/signup" target="_blank">Sign Up</a>
     </div>
+    
+<div class="section">
+  <h2>Explore My Work</h2>
+  <div class="features">
+    <div class="feature-card wheelhouse">
+      <h3>⚙️ Wilson Wheelhouse</h3>
+      <p>A curated collection of standout projects, creative campaigns, and signature events. Wilson Wheelhouse is where my portfolio lives — a look behind the curtain of how I think, build, and deliver.</p>
+      <a class="cta" href="https://www.wilsonwheelhouse.com" target="_blank">Visit Portfolio</a>
+    </div>
+    <div class="feature-card connection">
+      <h3>🌟 Where Dashh Meets Wheelhouse</h3>
+      <p>Digital Dashh is the systems brainchild of the creative work showcased in Wilson Wheelhouse. What started as project strategy became a platform — built to streamline the same workflows and stakeholder touchpoints that make my client work stand out.</p>
+      <a class="cta" href="https://www.digitaldashh.com" target="_blank">Learn More</a>
+    </div>
+  </div>
+</div>
+    
   </div>
 <script>
   // Prevent Firebase auth redirect on this public page
