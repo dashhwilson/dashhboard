@@ -579,9 +579,9 @@ body.partner-theme [data-view="partner"] {
   });
 </script>
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -607,31 +607,35 @@ const db = firebase.database();
   });
 </script>
 <script>
-  const totalBudgetInput = document.getElementById('totalBudget');
-  const budgetForm = document.getElementById('budgetForm');
-  const displayTotal = document.getElementById('displayTotal');
-  const budgetPath = 'projects/digital-dashh/budget';
+  document.addEventListener("DOMContentLoaded", function () {
+    const totalBudgetInput = document.getElementById('totalBudget');
+    const budgetForm = document.getElementById('budgetForm');
+    const displayTotal = document.getElementById('displayTotal');
+    const budgetPath = 'projects/digital-dashh/budget';
+    const budgetRef = db.ref(`${budgetPath}/total`);
 
-  const budgetRef = db.ref(`${budgetPath}/total`);
+    budgetRef.on('value', (snapshot) => {
+      const total = snapshot.val();
+      if (total !== null) {
+        displayTotal.textContent = `$${parseFloat(total).toLocaleString()}`;
+        totalBudgetInput.value = total;
+      } else {
+        displayTotal.textContent = 'Not set';
+      }
+    });
 
-  budgetRef.on('value', (snapshot) => {
-    const total = snapshot.val();
-    if (total !== null) {
-      displayTotal.textContent = `$${parseFloat(total).toLocaleString()}`;
-      totalBudgetInput.value = total;
-    } else {
-      displayTotal.textContent = 'Not set';
-    }
-  });
-
-  budgetForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const newTotal = parseFloat(totalBudgetInput.value);
-    if (!isNaN(newTotal)) {
-      db.ref(`${budgetPath}/total`).set(newTotal)
-        .then(() => alert("✅ Total budget saved!"))
-        .catch(err => console.error("Save error:", err));
-    }
+    budgetForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const newTotal = parseFloat(totalBudgetInput.value);
+      if (!isNaN(newTotal)) {
+        db.ref(`${budgetPath}/total`).set(newTotal)
+          .then(() => {
+            alert("✅ Total budget saved!");
+            displayTotal.textContent = `$${newTotal.toLocaleString()}`;
+          })
+          .catch(err => console.error("Save error:", err));
+      }
+    });
   });
 </script>
   
