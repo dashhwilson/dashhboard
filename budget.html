@@ -80,7 +80,7 @@
     }
     .summary-upload-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 3fr 1fr;
       gap: 20px;
       max-width: 1200px;
       margin: 30px auto;
@@ -359,6 +359,20 @@ body.partner-theme [data-view="partner"] {
         });
       </script>
     </div>
+    <div class="card" data-view="production">
+  <h3>Internal Notes for Production Team</h3>
+  <p>These are only visible in Production view.</p>
+</div>
+
+<div class="card" data-view="client">
+  <h3>Client-Only Overview</h3>
+  <p>This card is visible only in Client view.</p>
+</div>
+
+<div class="card" data-view="partner">
+  <h3>Partner-Specific Details</h3>
+  <p>This content shows only in Partner view.</p>
+</div>
   </div>
 
   <div class="card">
@@ -403,20 +417,7 @@ body.partner-theme [data-view="partner"] {
     </table>
     <canvas id="budgetChart" height="150" style="margin-top: 30px;"></canvas>
   </div>
-<div class="card" data-view="production">
-  <h3>Internal Notes for Production Team</h3>
-  <p>These are only visible in Production view.</p>
-</div>
 
-<div class="card" data-view="client">
-  <h3>Client-Only Overview</h3>
-  <p>This card is visible only in Client view.</p>
-</div>
-
-<div class="card" data-view="partner">
-  <h3>Partner-Specific Details</h3>
-  <p>This content shows only in Partner view.</p>
-</div>
   <div class="grid">
     <div class="card">
       <h3>📈 Expense Breakdown</h3>
