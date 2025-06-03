@@ -640,55 +640,74 @@ const db = firebase.database();
   });
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const totalBudgetInput = document.getElementById('totalBudget');
-    const budgetForm = document.getElementById('budgetForm');
-    const displayTotal = document.getElementById('displayTotal');
-    const displaySpent = document.getElementById('spentToDate');
-    const budgetPath = 'projects/digital-dashh/budget';
-    const budgetRef = db.ref(`${budgetPath}/total`);
+    document.addEventListener("DOMContentLoaded", function () {
+      const totalBudgetInput = document.getElementById('totalBudget');
+      const budgetForm = document.getElementById('budgetForm');
+      const displayTotal = document.getElementById('displayTotal');
+      const displaySpent = document.getElementById('spentToDate');
+      const budgetPath = 'projects/digital-dashh/budget';
+      const budgetRef = db.ref(`${budgetPath}/total`);
 
-    // Load saved total budget from Firebase
-    budgetRef.on('value', (snapshot) => {
-      const total = snapshot.val();
-      if (total !== null) {
-        displayTotal.textContent = `$${parseFloat(total).toLocaleString()}`;
-        totalBudgetInput.value = total;
-      } else {
-        displayTotal.textContent = 'Not set';
-      }
-    });
-
-    // Save total budget to Firebase
-    budgetForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const newTotal = parseFloat(totalBudgetInput.value);
-      if (!isNaN(newTotal)) {
-        db.ref(`${budgetPath}/total`).set(newTotal)
-          .then(() => {
-            alert("✅ Total budget saved!");
-            displayTotal.textContent = `$${newTotal.toLocaleString()}`;
-          })
-          .catch(err => console.error("Save error:", err));
-      }
-    });
-
-    // Calculate and display Spent to Date
-    function updateSpentToDate() {
-      let sum = 0;
-      document.querySelectorAll(".actual").forEach(input => {
-        const value = parseFloat(input.value);
-        if (!isNaN(value)) sum += value;
+      // Load saved total budget from Firebase
+      budgetRef.on('value', (snapshot) => {
+        const total = snapshot.val();
+        if (total !== null) {
+          displayTotal.textContent = `$${parseFloat(total).toLocaleString()}`;
+          totalBudgetInput.value = total;
+        } else {
+          displayTotal.textContent = 'Not set';
+        }
       });
-      displaySpent.textContent = `$${sum.toLocaleString()}`;
-    }
 
-    updateSpentToDate();
-    document.querySelectorAll(".actual").forEach(input => {
-      input.addEventListener("input", updateSpentToDate);
+      // Save total budget to Firebase
+      budgetForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newTotal = parseFloat(totalBudgetInput.value);
+        if (!isNaN(newTotal)) {
+          db.ref(`${budgetPath}/total`).set(newTotal)
+            .then(() => {
+              alert("✅ Total budget saved!");
+              displayTotal.textContent = `$${newTotal.toLocaleString()}`;
+            })
+            .catch(err => console.error("Save error:", err));
+        }
+      });
+
+      // Calculate and display Spent to Date dynamically
+      function updateSpentToDate() {
+        let sum = 0;
+        document.querySelectorAll(".actual").forEach(input => {
+          const value = parseFloat(input.value);
+          if (!isNaN(value)) sum += value;
+        });
+        displaySpent.textContent = `$${sum.toLocaleString()}`;
+      }
+
+      // Ensure listeners stay active with added rows
+      function attachDynamicListeners() {
+        document.querySelectorAll(".actual").forEach(input => {
+          input.removeEventListener("input", updateSpentToDate); // Prevent duplicate listeners
+          input.addEventListener("input", updateSpentToDate);
+        });
+      }
+
+      // Call once to initialize
+      updateSpentToDate();
+      attachDynamicListeners();
+
+      // Modify existing updateChartAndTable to also update spent
+      const originalUpdateChartAndTable = updateChartAndTable;
+      updateChartAndTable = function () {
+        originalUpdateChartAndTable();
+        updateSpentToDate();
+        attachDynamicListeners(); // Re-bind on every chart/table update
+      };
+
+      // Attach on load
+      document.querySelectorAll("#budgetTable tbody tr").forEach(attachListeners);
+      updateChartAndTable();
     });
-  });
-</script>
+  </script>
 
   
 </body>
