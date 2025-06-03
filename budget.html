@@ -78,13 +78,14 @@
       border-radius: 6px;
       font-weight: bold;
     }
-    .summary-upload-row {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-      gap: 20px;
-      max-width: 1200px;
-      margin: 30px auto;
-    }
+ .summary-upload-row {
+  display: flex;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 30px auto;
+  align-items: stretch;
+}
+    
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -105,6 +106,13 @@
       margin-top: 0;
       margin-bottom: 12px;
     }
+    .summary-upload-row .card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+       min-height: 260px;
+}
     table {
       width: 100%;
       border-collapse: collapse;
