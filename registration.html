@@ -240,159 +240,190 @@
     </div>
   </div>
 
-  <script>
-    let attendees = [
-      { name: "Jordan Smith", email: "jordan@example.com", type: "VIP", status: "Confirmed" },
-      { name: "Taylor Gray", email: "taylor@example.com", type: "Panelist", status: "Pending" }
-    ];
-    let fnbPrefs = [
-      { name: "Jordan Smith", allergies: "None", milk: "Oat", hotel: "Yes" },
-      { name: "Taylor Gray", allergies: "Peanuts", milk: "Whole", hotel: "No" }
-    ];
-
-    function renderTables() {
-      const attendeeTable = document.getElementById('attendeeTable');
-      const fnbTable = document.getElementById('fnbTable');
-      attendeeTable.innerHTML = '';
-      fnbTable.innerHTML = '';
-
-      const filterType = document.getElementById('filterType')?.value || '';
-      const filterStatus = document.getElementById('filterStatus')?.value || '';
-
-      const typeCounts = {};
-      let confirmedCount = 0, pendingCount = 0;
-
-      attendees.forEach((attendee, index) => {
-        if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
-
-        const type = attendee.type || "Unknown";
-        if (!typeCounts[type]) typeCounts[type] = 0;
-        typeCounts[type]++;
-
-        if (attendee.status === "Confirmed") confirmedCount++;
-        else pendingCount++;
-
-        attendeeTable.innerHTML += `
-          <tr>
-            <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
-            <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
-            <td>
-              <select onchange="updateAttendee(${index}, 'type', this.value)">
-                <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
-                <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
-                <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
-              </select>
-            </td>
-            <td>
-              <select onchange="updateAttendee(${index}, 'status', this.value)">
-                <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
-                <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
-              </select>
-            </td>
-            <td><button onclick="removeAttendee(${index})">Remove</button></td>
-          </tr>`;
-      });
-
-      fnbPrefs.forEach((pref, idx) => {
-        fnbTable.innerHTML += `
-          <tr>
-            <td>${pref.name}</td>
-            <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-            <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-            <td>
-              <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-                <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-                <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-              </select>
-            </td>
-          </tr>`;
-      });
-
-      const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
-      const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
-      document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
-      document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
-      document.getElementById('checkedIn').innerText = `Checked In: ${confirmedCount}`;
-      document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
-      document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-      document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
-      document.getElementById('progressFill').style.width = percentFilled + '%';
-
-      const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
-      document.getElementById('vipGeneralBreakdown').innerText = breakdown;
-    }
-
-    function updateAttendee(index, field, value) {
-      attendees[index][field] = value;
-      if (field === 'name') fnbPrefs[index].name = value;
-      renderTables();
-    }
-
-    function updateFnb(index, field, value) {
-      fnbPrefs[index][field] = value;
-      renderTables();
-    }
-
-    function addAttendee() {
-      attendees.push({ name: '', email: '', type: 'General', status: 'Pending' });
-      fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
-      renderTables();
-    }
-
-    function removeAttendee(index) {
-      attendees.splice(index, 1);
-      fnbPrefs.splice(index, 1);
-      renderTables();
-    }
-
-    function saveEventInfo() {
-      renderTables();
-      const msg = document.getElementById('saveConfirmation');
-      msg.classList.add('show');
-      setTimeout(() => msg.classList.remove('show'), 2500);
-    }
-
-    function downloadCSV() {
-      let csv = "Name,Email,Type,Status\n";
-      attendees.forEach(a => {
-        csv += `${a.name},${a.email},${a.type},${a.status}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "attendees.csv";
-      a.click();
-    }
-
-    renderTables();
-  </script>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
-      authDomain: "digital-dashh.firebaseapp.com",
-      projectId: "digital-dashh",
-      storageBucket: "digital-dashh.appspot.com",
-      messagingSenderId: "535613848097",
-      appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
 <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
+    authDomain: "digital-dashh.firebaseapp.com",
+    projectId: "digital-dashh",
+    storageBucket: "digital-dashh.appspot.com",
+    messagingSenderId: "535613848097",
+    appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let attendees = [], fnbPrefs = [];
+  let userId = null, eventId = localStorage.getItem('activeEventId');
+
+  function renderTables() {
+    const attendeeTable = document.getElementById('attendeeTable');
+    const fnbTable = document.getElementById('fnbTable');
+    attendeeTable.innerHTML = '';
+    fnbTable.innerHTML = '';
+
+    const filterType = document.getElementById('filterType')?.value || '';
+    const filterStatus = document.getElementById('filterStatus')?.value || '';
+
+    const typeCounts = {};
+    let confirmedCount = 0, pendingCount = 0;
+
+    attendees.forEach((attendee, index) => {
+      if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
+
+      const type = attendee.type || "Unknown";
+      if (!typeCounts[type]) typeCounts[type] = 0;
+      typeCounts[type]++;
+
+      if (attendee.status === "Confirmed") confirmedCount++;
+      else pendingCount++;
+
+   attendeeTable.innerHTML += `
+  <tr>
+    <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
+    <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
+    <td>
+      <select onchange="updateAttendee(${index}, 'type', this.value)">
+        <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
+        <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
+        <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
+      </select>
+    </td>
+    <td>
+      <select onchange="updateAttendee(${index}, 'status', this.value)">
+        <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
+        <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
+      </select>
+    </td>
+    <td>
+      <label style="font-size: 13px;">
+        <input type="checkbox" ${attendee.checkedIn ? 'checked' : ''} onchange="updateAttendee(${index}, 'checkedIn', this.checked)">
+        Checked In
+      </label>
+      <br><button onclick="removeAttendee(${index})">Remove</button>
+    </td>
+  </tr>`;
+    });
+
+    fnbPrefs.forEach((pref, idx) => {
+      fnbTable.innerHTML += `
+        <tr>
+          <td>${pref.name}</td>
+          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
+          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
+          <td>
+            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
+              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
+              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
+            </select>
+          </td>
+        </tr>`;
+    });
+
+    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
+    const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
+    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
+    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
+   const checkedInCount = attendees.filter(a => a.checkedIn).length;
+document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`;
+    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
+    document.getElementById('progressFill').style.width = percentFilled + '%';
+
+    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
+    document.getElementById('vipGeneralBreakdown').innerText = breakdown;
+  }
+
+function updateAttendee(index, field, value) {
+  attendees[index][field] = value;
+  if (field === 'name') fnbPrefs[index].name = value;
+  saveToFirestore();
+  renderTables();
+}
+
+  function updateFnb(index, field, value) {
+    fnbPrefs[index][field] = value;
+    saveToFirestore();
+    renderTables();
+  }
+
+function addAttendee() {
+  attendees.push({ name: '', email: '', type: 'General', status: 'Pending', checkedIn: false });
+  fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
+  saveToFirestore();
+  renderTables();
+}
+
+  function removeAttendee(index) {
+    attendees.splice(index, 1);
+    fnbPrefs.splice(index, 1);
+    saveToFirestore();
+    renderTables();
+  }
+
+  function saveEventInfo() {
+    const name = document.getElementById('eventName').value;
+    const location = document.getElementById('eventLocation').value;
+    const date = document.getElementById('eventDate').value;
+    const capacity = parseInt(document.getElementById('eventCapacity').value);
+
+    if (userId && eventId) {
+      db.collection('users').doc(userId).collection('events').doc(eventId).set({
+        eventName: name,
+        eventLocation: location,
+        eventDate: date,
+        eventCapacity: capacity
+      }, { merge: true });
     }
-  });
+    saveToFirestore();
+
+    const msg = document.getElementById('saveConfirmation');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  }
+
+  function saveToFirestore() {
+    if (!userId || !eventId) return;
+    db.collection('users').doc(userId).collection('events').doc(eventId).set({
+      attendees,
+      fnbPrefs
+    }, { merge: true });
+  }
+
+  function loadData() {
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      userId = user.uid;
+      if (!eventId) return;
+
+      const docRef = db.collection('users').doc(userId).collection('events').doc(eventId);
+      docRef.get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          attendees = data.attendees || attendees;
+          fnbPrefs = data.fnbPrefs || fnbPrefs;
+
+          document.getElementById('eventName').value = data.eventName || '';
+          document.getElementById('eventLocation').value = data.eventLocation || '';
+          document.getElementById('eventDate').value = data.eventDate || '';
+          document.getElementById('eventCapacity').value = data.eventCapacity || '';
+        }
+        renderTables();
+      });
+    });
+  }
+
+  loadData();
 </script>
   
 </body>
