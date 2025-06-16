@@ -187,8 +187,9 @@
  <h3 style="margin-left: 20px;">📅 Event Info</h3>
 <div class="event-info-card">
   <label for="event-date">Event Date:</label>
-  <input type="date" id="event-date" value="2025-06-10" />
-  <p id="countdown">Days Remaining: <span id="days-remaining"></span></p>
+  <input type="date" id="event-date" value="2025-07-01" />
+<p id="countdown" style="font-style: italic; color: #1c1c3a; opacity: 0.75;">Event date not set yet.</p>
+  
 </div>
   <div class="container">
     <div class="sidebar">
@@ -388,36 +389,73 @@
 </script>
 
 <script>
-  function calculateDaysRemaining(dateString) {
-    const eventDate = new Date(dateString);
-    const today = new Date();
-    const timeDiff = eventDate - today;
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-  }
-
-  function updateCountdown() {
-    const dateInput = document.getElementById('event-date');
-    const countdownEl = document.getElementById('days-remaining');
-    const selectedDate = dateInput.value;
-
-    // Save to localStorage
-    localStorage.setItem('eventDate', selectedDate);
-
-    const days = calculateDaysRemaining(selectedDate);
-    countdownEl.textContent = days;
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedDate = localStorage.getItem('eventDate');
-    const dateInput = document.getElementById('event-date');
-    if (savedDate && dateInput) {
-      dateInput.value = savedDate;
+  document.addEventListener("DOMContentLoaded", () => {
+    function calculateDaysRemaining(dateString) {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const timeDiff = eventDate - today;
+      return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     }
-    updateCountdown();
-    document.getElementById('event-date').addEventListener('change', updateCountdown);
+
+    function updateCountdown() {
+      const eventDateInput = document.getElementById("event-date").value;
+      const countdownEl = document.getElementById("countdown");
+
+      if (!eventDateInput) {
+        countdownEl.textContent = "Event date not set yet.";
+        return;
+      }
+
+      const daysRemaining = calculateDaysRemaining(eventDateInput);
+      countdownEl.textContent = `Days Remaining: ${daysRemaining}`;
+      localStorage.setItem("eventDate", eventDateInput);
+
+      const user = firebase.auth().currentUser;
+      const eventId = localStorage.getItem("activeEventId");
+
+      if (user && eventId) {
+        db.collection("users").doc(user.uid)
+          .collection("events").doc(eventId)
+          .set({ eventDate: eventDateInput }, { merge: true })
+          .then(() => console.log("✅ Event date saved to Firestore"))
+          .catch(err => console.error("🔥 Error saving event date:", err));
+      }
+    }
+
+    const eventDateInputEl = document.getElementById("event-date");
+
+    // Load event date from Firebase (if available)
+    const user = firebase.auth().currentUser;
+    const eventId = localStorage.getItem("activeEventId");
+
+    if (user && eventId) {
+      db.collection("users").doc(user.uid)
+        .collection("events").doc(eventId)
+        .get()
+        .then(doc => {
+          if (doc.exists && doc.data().eventDate) {
+            eventDateInputEl.value = doc.data().eventDate;
+            updateCountdown();
+          } else {
+            document.getElementById("countdown").textContent = "Event date not set yet.";
+          }
+        })
+        .catch(err => console.error("🔥 Error loading event date:", err));
+    } else {
+      // fallback if user is not signed in yet or missing eventId
+      const storedDate = localStorage.getItem("eventDate");
+      if (storedDate) {
+        eventDateInputEl.value = storedDate;
+        updateCountdown();
+      } else {
+        document.getElementById("countdown").textContent = "Event date not set yet.";
+      }
+    }
+
+    // Update countdown on user change
+    eventDateInputEl.addEventListener('change', updateCountdown);
   });
 </script>
-
   
 </body>
 </html>
