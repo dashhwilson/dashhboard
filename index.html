@@ -160,6 +160,7 @@
 }
 
     
+    
   </style>
 </head>
 <body>
@@ -191,10 +192,10 @@
   </a>
 
   <a href="timeline.html" class="summary-link">
-  <div class="card">
-  <h3>📅 Event Date</h3>
-  <p><strong>Date:</strong> <span id="homepage-event-date">—</span></p>
-  <p><strong>Countdown:</strong> <span id="homepage-days-remaining">—</span> days</p>
+<div class="summary-card" id="event-summary-card">
+  <h3>📆 Event Countdown</h3>
+  <p><strong>Date:</strong> <span id="event-date-display">Loading...</span></p>
+  <p><strong>Days Remaining:</strong> <span id="event-days-remaining">—</span></p>
 </div>
   </a>
 
@@ -304,34 +305,55 @@
 </script>
 
 <script>
-  function calculateDaysRemaining(dateString) {
-    const eventDate = new Date(dateString);
-    const today = new Date();
-    const timeDiff = eventDate - today;
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-  }
+  document.addEventListener("DOMContentLoaded", () => {
+    const dateDisplay = document.getElementById("event-date-display");
+    const daysRemainingEl = document.getElementById("event-days-remaining");
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedDate = localStorage.getItem('eventDate');
-    const dateEl = document.getElementById('homepage-event-date');
-    const countdownEl = document.getElementById('homepage-days-remaining');
+    function calculateDaysRemaining(dateString) {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const timeDiff = eventDate - today;
+      return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    }
 
-    if (savedDate && !isNaN(new Date(savedDate))) {
-      const formatted = new Date(savedDate).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+    const user = firebase.auth().currentUser;
+    const eventId = localStorage.getItem("activeEventId");
+
+    function updateUI(date) {
+      if (!date) {
+        dateDisplay.textContent = "Event date not set yet.";
+        daysRemainingEl.textContent = "—";
+        return;
+      }
+
+      dateDisplay.textContent = new Date(date).toLocaleDateString("en-US", {
+        weekday: "short", year: "numeric", month: "short", day: "numeric"
       });
-      dateEl.textContent = formatted;
-      countdownEl.textContent = calculateDaysRemaining(savedDate);
+
+      const remaining = calculateDaysRemaining(date);
+      daysRemainingEl.textContent = remaining > 0 ? remaining : "Today!";
+    }
+
+    if (user && eventId) {
+      db.collection("users").doc(user.uid)
+        .collection("events").doc(eventId)
+        .get()
+        .then(doc => {
+          const eventDate = doc.exists ? doc.data().eventDate : null;
+          updateUI(eventDate);
+        })
+        .catch(err => {
+          console.error("🔥 Error loading event date on homepage:", err);
+          updateUI(null);
+        });
     } else {
-      dateEl.textContent = 'Not set';
-      countdownEl.textContent = '—';
+      const storedDate = localStorage.getItem("eventDate");
+      updateUI(storedDate);
     }
   });
 </script>
 
+  
   
   
 </body>
