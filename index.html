@@ -191,11 +191,11 @@
   </a>
 
   <a href="timeline.html" class="summary-link">
-    <div class="summary-card">
-      <h3>Event Timeline</h3>
-      <div class="highlight">22 days</div>
-      <p>Until Event: June 10, 2025</p>
-    </div>
+  <div class="card">
+  <h3>📅 Event Date</h3>
+  <p><strong>Date:</strong> <span id="homepage-event-date">—</span></p>
+  <p><strong>Countdown:</strong> <span id="homepage-days-remaining">—</span> days</p>
+</div>
   </a>
 
   <a href="registration.html" class="summary-link">
@@ -302,6 +302,37 @@
     }
   });
 </script>
+
+<script>
+  function calculateDaysRemaining(dateString) {
+    const eventDate = new Date(dateString);
+    const today = new Date();
+    const timeDiff = eventDate - today;
+    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedDate = localStorage.getItem('eventDate');
+    const dateEl = document.getElementById('homepage-event-date');
+    const countdownEl = document.getElementById('homepage-days-remaining');
+
+    if (savedDate && !isNaN(new Date(savedDate))) {
+      const formatted = new Date(savedDate).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      dateEl.textContent = formatted;
+      countdownEl.textContent = calculateDaysRemaining(savedDate);
+    } else {
+      dateEl.textContent = 'Not set';
+      countdownEl.textContent = '—';
+    }
+  });
+</script>
+
+  
   
 </body>
 </html>
