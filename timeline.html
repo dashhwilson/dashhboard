@@ -133,9 +133,43 @@
     .Complete { background-color: #77dd77; }
     .InProgress { background-color: #ffb347; }
     .Upcoming { background-color: #6ac5fe; }
+  
+  .event-info-card {
+  background-color: #fff7d6;
+  border: 1px solid #f2d98a;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  font-family: 'Barlow', sans-serif;
+  width: fit-content;
+}
+
+.event-info-card label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+#event-date {
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+    @media (max-width: 768px) {
+  .event-info-card {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
   </style>
 </head>
+
+
+  
 <body>
+  
   <div class="header">
     Digital Dashh | Event Timeline<br>
     <a href="index.html" class="home-button">🏠 Home</a>
@@ -149,6 +183,13 @@
     <a href="sponsor-tracker.html">Sponsor Tracker</a>
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
+
+ <h3 style="margin-left: 20px;">📅 Event Info</h3>
+<div class="event-info-card">
+  <label for="event-date">Event Date:</label>
+  <input type="date" id="event-date" value="2025-06-10" />
+  <p id="countdown">Days Remaining: <span id="days-remaining"></span></p>
+</div>
   <div class="container">
     <div class="sidebar">
       <button onclick="filterPhases('all')">Show All</button>
@@ -345,6 +386,38 @@
     }
   });
 </script>
+
+<script>
+  function calculateDaysRemaining(dateString) {
+    const eventDate = new Date(dateString);
+    const today = new Date();
+    const timeDiff = eventDate - today;
+    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  }
+
+  function updateCountdown() {
+    const dateInput = document.getElementById('event-date');
+    const countdownEl = document.getElementById('days-remaining');
+    const selectedDate = dateInput.value;
+
+    // Save to localStorage
+    localStorage.setItem('eventDate', selectedDate);
+
+    const days = calculateDaysRemaining(selectedDate);
+    countdownEl.textContent = days;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedDate = localStorage.getItem('eventDate');
+    const dateInput = document.getElementById('event-date');
+    if (savedDate && dateInput) {
+      dateInput.value = savedDate;
+    }
+    updateCountdown();
+    document.getElementById('event-date').addEventListener('change', updateCountdown);
+  });
+</script>
+
   
 </body>
 </html>
