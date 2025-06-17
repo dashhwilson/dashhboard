@@ -202,8 +202,8 @@
   <a href="registration.html" class="summary-link">
     <div class="summary-card">
       <h3>Registration</h3>
-      <div class="highlight">850 / 1000</div>
-      <p>85% complete</p>
+     <p id="regCount">-- / --</p>
+<p id="regPercent">--% complete</p>
     </div>
   </a>
 
@@ -296,61 +296,55 @@
   </script>
 
 <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
-  });
-</script>
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const dateDisplay = document.getElementById("event-date-display");
-    const daysRemainingEl = document.getElementById("event-days-remaining");
+  const userId = user.uid;
+  const eventId = localStorage.getItem('activeEventId');
 
-    function calculateDaysRemaining(dateString) {
-      const eventDate = new Date(dateString);
-      const today = new Date();
-      const timeDiff = eventDate - today;
-      return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    }
+  if (userId && eventId) {
+    db.collection('users').doc(userId).collection('events').doc(eventId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
 
-    const user = firebase.auth().currentUser;
-    const eventId = localStorage.getItem("activeEventId");
+          // ✅ Registration Summary
+          const registered = (data.attendees || []).length;
+          const capacity = parseInt(data.eventCapacity) || 0;
+          const percent = capacity > 0 ? Math.round((registered / capacity) * 100) : 0;
 
-    function updateUI(date) {
-      if (!date) {
-        dateDisplay.textContent = "Event date not set yet.";
-        daysRemainingEl.textContent = "—";
-        return;
-      }
+          document.getElementById('regCount').innerText = `${registered} / ${capacity}`;
+          document.getElementById('regPercent').innerText = `${percent}% complete`;
 
-      dateDisplay.textContent = new Date(date).toLocaleDateString("en-US", {
-        weekday: "short", year: "numeric", month: "short", day: "numeric"
+          // ✅ Event Countdown
+          const dateDisplay = document.getElementById("event-date-display");
+          const daysRemainingEl = document.getElementById("event-days-remaining");
+          const eventDate = data.eventDate;
+
+          if (!eventDate) {
+            dateDisplay.textContent = "Event date not set yet.";
+            daysRemainingEl.textContent = "—";
+            return;
+          }
+
+          dateDisplay.textContent = new Date(eventDate).toLocaleDateString("en-US", {
+            weekday: "short", year: "numeric", month: "short", day: "numeric"
+          });
+
+          const timeDiff = new Date(eventDate) - new Date();
+          const remaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          daysRemainingEl.textContent = remaining > 0 ? remaining : "Today!";
+        }
+      })
+      .catch(error => {
+        console.error("🔥 Error loading event data:", error);
       });
-
-      const remaining = calculateDaysRemaining(date);
-      daysRemainingEl.textContent = remaining > 0 ? remaining : "Today!";
-    }
-
-    if (user && eventId) {
-      db.collection("users").doc(user.uid)
-        .collection("events").doc(eventId)
-        .get()
-        .then(doc => {
-          const eventDate = doc.exists ? doc.data().eventDate : null;
-          updateUI(eventDate);
-        })
-        .catch(err => {
-          console.error("🔥 Error loading event date on homepage:", err);
-          updateUI(null);
-        });
-    } else {
-      const storedDate = localStorage.getItem("eventDate");
-      updateUI(storedDate);
-    }
-  });
+  }
+});
 </script>
 
   
