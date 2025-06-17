@@ -229,6 +229,43 @@
       <button onclick="addAttendee()">➕ Add Attendee</button>
     </div>
 
+<div class="card" style="grid-column: span 2;">
+  <h3>📤 Import Attendees via CSV</h3>
+  <p>You can upload a CSV file with the following format:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Type (VIP, General, Panelist)</th>
+        <th>Status (Confirmed, Pending)</th>
+        <th>Checked In (TRUE or FALSE)</th>
+        <th>Allergies</th>
+        <th>Milk Preference</th>
+        <th>Hotel Needed? (Yes or No)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Jane Doe</td>
+        <td>jane@example.com</td>
+        <td>VIP</td>
+        <td>Confirmed</td>
+        <td>TRUE</td>
+        <td>Peanuts</td>
+        <td>Oat</td>
+        <td>Yes</td>
+      </tr>
+    </tbody>
+  </table>
+  <input type="file" id="csvUpload" accept=".csv" onchange="handleCSVUpload(event)">
+  <p id="csvFeedback" style="margin-top: 8px; font-size: 14px; color: #cc3300;"></p>
+<a href="/assets/attendee_template.csv" download>
+  <button>📄 Download Template CSV</button>
+</a>
+  
+</div>
+    
     <div class="card" style="grid-column: span 2;">
       <h3>🍽️ Lodging, Food & Beverage Details</h3>
       <table>
@@ -336,7 +373,29 @@ document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`
     document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
     document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}`;
     document.getElementById('progressFill').style.width = percentFilled + '%';
+    document.getElementById('csvFeedback').innerText =
+  skipped > 0 ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` : '';
 
+const warningMessage = document.getElementById('overCapacityWarning');
+if (attendees.length > capacity) {
+  if (!warningMessage) {
+    const warning = document.createElement('p');
+    warning.id = 'overCapacityWarning';
+    warning.innerText = '⚠️ Over Capacity!';
+    warning.style.color = 'red';
+    warning.style.fontWeight = 'bold';
+    warning.style.marginTop = '8px';
+    document.querySelector('.card:nth-of-type(2)').appendChild(warning);
+  }
+
+  document.getElementById('capacity').style.color = 'red';
+  document.getElementById('remaining').style.color = 'red';
+} else {
+  if (warningMessage) warningMessage.remove();
+  document.getElementById('capacity').style.color = '';
+  document.getElementById('remaining').style.color = '';
+}
+    
     const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
     document.getElementById('vipGeneralBreakdown').innerText = breakdown;
   }
@@ -424,6 +483,59 @@ function addAttendee() {
   }
 
   loadData();
+
+function handleCSVUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+  const text = e.target.result;
+  const lines = text.trim().split('\n');
+  const header = lines.shift().split(',');
+
+  const headerIndex = {};
+  header.forEach((h, i) => {
+    headerIndex[h.trim().toLowerCase()] = i;
+  });
+
+  const newAttendees = [];
+  const newFnbPrefs = [];
+
+  lines.forEach(line => {
+    const values = line.split(',');
+    const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
+
+    const name = get("name");
+    const email = get("email");
+    const type = get("type");
+    const status = get("status");
+    const checkedIn = get("checked in").toLowerCase() === 'true';
+    const allergies = get("allergies");
+    const milk = get("milk preference");
+    const hotel = get("hotel needed?");
+
+
+    if (!name || !email) {
+  skipped++;
+  return;
+}
+    let skipped = 0;
+    
+    // Avoid duplicate by email
+    if (!attendees.some(a => a.email === email)) {
+      newAttendees.push({ name, email, type, status, checkedIn });
+      newFnbPrefs.push({ name, allergies, milk, hotel });
+    }
+  });
+
+  attendees = attendees.concat(newAttendees);
+  fnbPrefs = fnbPrefs.concat(newFnbPrefs);
+
+  saveToFirestore();
+  renderTables();
+};
+  
 </script>
   
 </body>
