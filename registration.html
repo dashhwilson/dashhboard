@@ -63,6 +63,11 @@
       max-width: 1200px;
       margin: auto;
     }
+       .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
     .card {
       background-color: white;
       border-radius: 12px;
@@ -108,6 +113,21 @@
       background-color: #6c79db;
       width: 0%;
     }
+
+.save-message {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  font-weight: bold;
+  color: green;
+  margin-top: 10px;
+}
+.save-message.show {
+  opacity: 1;
+}
+    button {
+  margin-top: 8px;
+}
+    
   </style>
 </head>
 <body>
@@ -138,6 +158,7 @@
       <p><span class="info-label">Capacity:</span> <span id="viewEventCapacity">—</span></p>
     </div>
   </div>
+
 
     <div class="card">
       <h3>📈 Registration Summary</h3>
@@ -270,6 +291,10 @@
     attendeeTable.innerHTML = '';
     fnbTable.innerHTML = '';
 
+if (attendees.length === 0) {
+  attendeeTable.innerHTML = `<tr><td colspan="5" style="text-align:center; opacity:0.7;">No attendees yet</td></tr>`;
+}
+    
     const filterType = document.getElementById('filterType')?.value || '';
     const filterStatus = document.getElementById('filterStatus')?.value || '';
 
@@ -298,7 +323,7 @@ else if (attendee.status === "Declined") declinedCount++;
 ) {
   invitationCount++;
 }
-   attendeeTable.innerHTML += `
+   attendeeTable.innerHTML += ` 
   <tr>
     <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
     <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
@@ -325,38 +350,41 @@ else if (attendee.status === "Declined") declinedCount++;
       </label>
       <br><button onclick="removeAttendee(${index})">Remove</button>
     </td>
-  </tr>`;
+  </tr>
     });
 
     fnbPrefs.forEach((pref, idx) => {
-      fnbTable.innerHTML += `
-        <tr>
-          <td>${pref.name}</td>
-          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-          <td>
-            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-            </select>
-          </td>
-        </tr>`;
-    });
+fnbTable.innerHTML += `
+  <tr>
+    <td>${pref.name}</td>
+    <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
+    <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
+    <td>
+      <select onchange="updateFnb(${idx}, 'hotel', this.value)">
+        <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
+        <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
+      </select>
+    </td>
+  </tr>
+`;
+    })
 
-    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
+   const capacityText = document.getElementById('viewEventCapacity').innerText.replace(/[^0-9]/g, '');
+const capacity = parseInt(capacityText) || 0;
     const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
     document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
     document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
-   const checkedInCount = attendees.filter(a => a.checkedIn).length;
+    let checkedInCount = attendees.filter(a => a.checkedIn).length;
 document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`;
-    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
-    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}| Invited: ${invitedCount} | Declined: ${declinedCount}`;
-    document.getElementById('invitationCount').innerText =
-  `Invitations Sent: ${invitationCount}`;
+document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount} | Invited: ${invitedCount} | Declined: ${declinedCount}`;
+document.getElementById('invitationCount').innerText = `Invitations Sent: ${invitationCount}`;
     document.getElementById('progressFill').style.width = percentFilled + '%';
     document.getElementById('csvFeedback').innerText =
-  skipped > 0 ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` : '';
+  skipped > 0
+    ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.`
+    : `✅ CSV uploaded successfully!`;
 
 const warningMessage = document.getElementById('overCapacityWarning');
 if (attendees.length > capacity) {
@@ -378,7 +406,7 @@ if (attendees.length > capacity) {
   document.getElementById('remaining').style.color = '';
 }
     
-    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
+    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}).join(' | ');
     document.getElementById('vipGeneralBreakdown').innerText = breakdown;
   }
 
@@ -416,26 +444,6 @@ function addAttendee() {
     renderTables();
   }
 
-  function saveEventInfo() {
-    const name = document.getElementById('eventName').value;
-    const location = document.getElementById('eventLocation').value;
-    const date = document.getElementById('eventDate').value;
-    const capacity = parseInt(document.getElementById('eventCapacity').value);
-
-    if (userId && eventId) {
-      db.collection('users').doc(userId).collection('events').doc(eventId).set({
-        eventName: name,
-        eventLocation: location,
-        eventDate: date,
-        eventCapacity: capacity
-      }, { merge: true });
-    }
-    saveToFirestore();
-
-    const msg = document.getElementById('saveConfirmation');
-    msg.classList.add('show');
-    setTimeout(() => msg.classList.remove('show'), 2500);
-  }
 
   function saveToFirestore() {
     if (!userId || !eventId) return;
@@ -464,10 +472,10 @@ function addAttendee() {
 }));
 fnbPrefs = data.fnbPrefs || fnbPrefs;
 
-          document.getElementById('eventName').value = data.eventName || '';
-          document.getElementById('eventLocation').value = data.eventLocation || '';
-          document.getElementById('eventDate').value = data.eventDate || '';
-          document.getElementById('eventCapacity').value = data.eventCapacity || '';
+      document.getElementById('viewEventName').innerText = data.eventName || '—';
+document.getElementById('viewEventLocation').innerText = data.eventLocation || '—';
+document.getElementById('viewEventDate').innerText = data.eventDate || '—';
+document.getElementById('viewEventCapacity').innerText = data.eventCapacity || '—';
         }
         renderTables();
       });
@@ -567,109 +575,6 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
 
   reader.readAsText(file);
 }
-
-function saveEventInfo() {
-  const name = document.getElementById("event-name").value.trim();
-  const location = document.getElementById("event-location").value.trim();
-  const date = document.getElementById("event-date").value;
-  const capacity = parseInt(document.getElementById("event-capacity").value) || 0;
-
-  const user = firebase.auth().currentUser;
-  const eventId = localStorage.getItem("activeEventId");
-
-  if (!user || !eventId) {
-    alert("User not logged in or event ID missing.");
-    return;
-  }
-
-  // Save to Firestore
-  db.collection("users").doc(user.uid).collection("events").doc(eventId).set({
-    eventName: name,
-    eventLocation: location,
-    eventDate: date,
-    eventCapacity: capacity
-  }, { merge: true })
-  .then(() => {
-    // Optional: Save to localStorage as fallback
-    localStorage.setItem("eventName", name);
-    localStorage.setItem("eventLocation", location);
-    localStorage.setItem("eventDate", date);
-    localStorage.setItem("eventCapacity", capacity);
-
-    alert("✅ Event info saved!");
-  })
-  .catch((error) => {
-    console.error("❌ Error saving event info:", error);
-    alert("Failed to save event info.");
-  });
-}
-  
-// Load all events into the dropdown and respond to selection
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  userId = user.uid;
-
-  const eventSelector = document.getElementById("eventSelector");
-
-  db.collection("users").doc(userId).collection("events")
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const option = document.createElement("option");
-        option.value = doc.id;
-        option.textContent = data.eventName || `Event: ${doc.id}`;
-        eventSelector.appendChild(option);
-      });
-
-      // Auto-select previously selected event if exists
-      const savedEventId = localStorage.getItem("activeEventId");
-      if (savedEventId) {
-        eventSelector.value = savedEventId;
-        loadEventDetails(savedEventId);
-      }
-    });
-});
-
-// Handle event change selection
-document.getElementById("eventSelector").addEventListener("change", function (e) {
-  const selectedEventId = e.target.value;
-  if (!selectedEventId) return;
-
-  localStorage.setItem("activeEventId", selectedEventId);
-  loadEventDetails(selectedEventId);
-});
-
-function loadEventDetails(eventId) {
-  if (!userId || !eventId) return;
-
-  db.collection("users").doc(userId).collection("events").doc(eventId)
-    .get()
-    .then(doc => {
-      if (!doc.exists) return;
-      const data = doc.data();
-
-      // Update read-only info cards
-      document.getElementById("viewEventName").textContent = data.eventName || "—";
-      document.getElementById("viewEventLocation").textContent = data.eventLocation || "—";
-      document.getElementById("viewEventDate").textContent = data.eventDate || "—";
-      document.getElementById("viewEventCapacity").textContent = data.eventCapacity || "—";
-
-      // Save to globals and rerender
-      eventId = doc.id;
-      attendees = (data.attendees || []).map(a => ({ ...a, checkedIn: a.checkedIn === true }));
-      fnbPrefs = data.fnbPrefs || [];
-      renderTables();
-    })
-    .catch(err => {
-      console.error("🔥 Failed to load selected event:", err);
-    });
-}
-
   
 </script>
 
