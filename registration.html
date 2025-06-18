@@ -609,6 +609,43 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
 
   reader.readAsText(file);
 }
+
+function saveEventInfo() {
+  const name = document.getElementById("event-name").value.trim();
+  const location = document.getElementById("event-location").value.trim();
+  const date = document.getElementById("event-date").value;
+  const capacity = parseInt(document.getElementById("event-capacity").value) || 0;
+
+  const user = firebase.auth().currentUser;
+  const eventId = localStorage.getItem("activeEventId");
+
+  if (!user || !eventId) {
+    alert("User not logged in or event ID missing.");
+    return;
+  }
+
+  // Save to Firestore
+  db.collection("users").doc(user.uid).collection("events").doc(eventId).set({
+    eventName: name,
+    eventLocation: location,
+    eventDate: date,
+    eventCapacity: capacity
+  }, { merge: true })
+  .then(() => {
+    // Optional: Save to localStorage as fallback
+    localStorage.setItem("eventName", name);
+    localStorage.setItem("eventLocation", location);
+    localStorage.setItem("eventDate", date);
+    localStorage.setItem("eventCapacity", capacity);
+
+    alert("✅ Event info saved!");
+  })
+  .catch((error) => {
+    console.error("❌ Error saving event info:", error);
+    alert("Failed to save event info.");
+  });
+}
+  
   
 </script>
 
