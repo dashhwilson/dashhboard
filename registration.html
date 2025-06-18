@@ -55,9 +55,9 @@
       font-weight: bold;
       text-decoration: none;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    .content {
+      display: flex;
+      flex-direction: column;
       gap: 20px;
       padding: 30px;
       max-width: 1200px;
@@ -84,6 +84,29 @@
     .info-label {
       margin-top: 8px;
       font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table th, table td {
+      border-bottom: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .progress-bar {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 20px;
+      margin-bottom: 10px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #6c79db;
+      width: 0%;
     }
   </style>
 </head>
