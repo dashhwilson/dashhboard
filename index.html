@@ -296,54 +296,56 @@
   </script>
 
 <script>
-firebase.auth().onAuthStateChanged(function(user) {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-  const userId = user.uid;
-  const eventId = localStorage.getItem('activeEventId');
+    const userId = user.uid;
+    const eventId = localStorage.getItem('activeEventId');
 
-  if (userId && eventId) {
-    db.collection('users').doc(userId).collection('events').doc(eventId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
+    if (userId && eventId) {
+      db.collection('users').doc(userId).collection('events').doc(eventId)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
 
-          // ✅ Registration Summary
-          const registered = (data.attendees || []).length;
-          const capacity = parseInt(data.eventCapacity) || 0;
-          const percent = capacity > 0 ? Math.round((registered / capacity) * 100) : 0;
+            // ✅ Registration Summary
+            const registered = (data.attendees || []).length;
+            const capacity = parseInt(data.eventCapacity) || 0;
+            const percent = capacity > 0 ? Math.round((registered / capacity) * 100) : 0;
 
-          document.getElementById('regCount').innerText = `${registered} / ${capacity}`;
-          document.getElementById('regPercent').innerText = `${percent}% complete`;
+            document.getElementById('regCount').innerText = `${registered} / ${capacity}`;
+            document.getElementById('regPercent').innerText = `${percent}% complete`;
 
-          // ✅ Event Countdown
-          const dateDisplay = document.getElementById("event-date-display");
-          const daysRemainingEl = document.getElementById("event-days-remaining");
-          const eventDate = data.eventDate;
+            // ✅ Event Countdown
+            const dateDisplay = document.getElementById("event-date-display");
+            const daysRemainingEl = document.getElementById("event-days-remaining");
+            const eventDate = data.eventDate;
 
-          if (!eventDate) {
-            dateDisplay.textContent = "Event date not set yet.";
-            daysRemainingEl.textContent = "—";
-            return;
+            if (!eventDate) {
+              dateDisplay.textContent = "Event date not set yet.";
+              daysRemainingEl.textContent = "—";
+              return;
+            }
+
+            dateDisplay.textContent = new Date(eventDate).toLocaleDateString("en-US", {
+              weekday: "short", year: "numeric", month: "short", day: "numeric"
+            });
+
+            const timeDiff = new Date(eventDate) - new Date();
+            const remaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            daysRemainingEl.textContent = remaining > 0 ? remaining : "Today!";
           }
-
-          dateDisplay.textContent = new Date(eventDate).toLocaleDateString("en-US", {
-            weekday: "short", year: "numeric", month: "short", day: "numeric"
-          });
-
-          const timeDiff = new Date(eventDate) - new Date();
-          const remaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-          daysRemainingEl.textContent = remaining > 0 ? remaining : "Today!";
-        }
-      })
-      .catch(error => {
-        console.error("🔥 Error loading event data:", error);
-      });
-  }
+        })
+        .catch(error => {
+          console.error("🔥 Error loading event data:", error);
+        });
+    }
+  });
 });
 </script>
 
