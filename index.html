@@ -304,7 +304,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const userId = user.uid;
-    const eventId = localStorage.getItem('activeEventId');
+  let eventId = localStorage.getItem('activeEventId');
+if (!eventId) {
+  alert("⚠️ No active event found. Please select or create an event first.");
+  console.warn("No activeEventId found in localStorage.");
+  return;
+}
 
     if (userId && eventId) {
       db.collection('users').doc(userId).collection('events').doc(eventId)
