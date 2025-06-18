@@ -184,12 +184,23 @@
     <a href="merch-inventory.html">Merch Inventory</a>
   </div>
 
- <h3 style="margin-left: 20px;">📅 Event Info</h3>
-<div class="event-info-card">
-  <label for="event-date">Event Date:</label>
-  <input type="date" id="event-date" value="2025-07-01" />
-<p id="countdown" style="font-style: italic; color: #1c1c3a; opacity: 0.75;">Event date not set yet.</p>
-  
+<div class="card" style="max-width: 500px; margin: 30px auto 10px;">
+  <h3>🗓️ Event Info</h3>
+  <label for="event-name">Event Name</label>
+  <input type="text" id="event-name" placeholder="e.g. Annual Gala 2025" />
+
+  <label for="event-location">Location</label>
+  <input type="text" id="event-location" placeholder="e.g. New York, NY" />
+
+  <label for="event-date">Date</label>
+  <input type="date" id="event-date" />
+  <p id="countdown" style="font-style: italic; color: #1c1c3a; opacity: 0.75;">Days Remaining: —</p>
+
+  <label for="event-capacity">Capacity</label>
+  <input type="number" id="event-capacity" placeholder="e.g. 150" />
+
+  <button onclick="saveEventInfo()">💾 Save Event Info</button>
+  <div id="saveConfirmation" class="save-message">✅ Saved!</div>
 </div>
   <div class="container">
     <div class="sidebar">
@@ -397,63 +408,76 @@
       return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     }
 
-    function updateCountdown() {
-      const eventDateInput = document.getElementById("event-date").value;
+    function updateCountdownUI(date) {
       const countdownEl = document.getElementById("countdown");
-
-      if (!eventDateInput) {
-        countdownEl.textContent = "Event date not set yet.";
+      if (!date) {
+        countdownEl.textContent = "Days Remaining: —";
         return;
       }
-
-      const daysRemaining = calculateDaysRemaining(eventDateInput);
+      const daysRemaining = calculateDaysRemaining(date);
       countdownEl.textContent = `Days Remaining: ${daysRemaining}`;
-      localStorage.setItem("eventDate", eventDateInput);
+    }
+
+    function saveEventInfo() {
+      const name = document.getElementById("event-name").value.trim();
+      const location = document.getElementById("event-location").value.trim();
+      const date = document.getElementById("event-date").value;
+      const capacity = parseInt(document.getElementById("event-capacity").value) || 0;
 
       const user = firebase.auth().currentUser;
       const eventId = localStorage.getItem("activeEventId");
 
-      if (user && eventId) {
-        db.collection("users").doc(user.uid)
-          .collection("events").doc(eventId)
-          .set({ eventDate: eventDateInput }, { merge: true })
-          .then(() => console.log("✅ Event date saved to Firestore"))
-          .catch(err => console.error("🔥 Error saving event date:", err));
+      if (!user || !eventId) {
+        alert("User not logged in or event ID missing.");
+        return;
       }
+
+      db.collection("users").doc(user.uid).collection("events").doc(eventId).set({
+        eventName: name,
+        eventLocation: location,
+        eventDate: date,
+        eventCapacity: capacity
+      }, { merge: true })
+      .then(() => {
+        localStorage.setItem("eventName", name);
+        localStorage.setItem("eventLocation", location);
+        localStorage.setItem("eventDate", date);
+        localStorage.setItem("eventCapacity", capacity);
+        updateCountdownUI(date);
+        document.getElementById("saveConfirmation").classList.add("show");
+        setTimeout(() => {
+          document.getElementById("saveConfirmation").classList.remove("show");
+        }, 2500);
+      })
+      .catch((err) => {
+        console.error("🔥 Error saving event info:", err);
+        alert("Failed to save event info.");
+      });
     }
 
-    const eventDateInputEl = document.getElementById("event-date");
+    // Load event info
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) return;
+      const eventId = localStorage.getItem("activeEventId");
+      if (!eventId) return;
 
-    // Load event date from Firebase (if available)
-    const user = firebase.auth().currentUser;
-    const eventId = localStorage.getItem("activeEventId");
-
-    if (user && eventId) {
-      db.collection("users").doc(user.uid)
-        .collection("events").doc(eventId)
-        .get()
-        .then(doc => {
-          if (doc.exists && doc.data().eventDate) {
-            eventDateInputEl.value = doc.data().eventDate;
-            updateCountdown();
-          } else {
-            document.getElementById("countdown").textContent = "Event date not set yet.";
+      db.collection("users").doc(user.uid).collection("events").doc(eventId).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("event-name").value = data.eventName || "";
+            document.getElementById("event-location").value = data.eventLocation || "";
+            document.getElementById("event-date").value = data.eventDate || "";
+            document.getElementById("event-capacity").value = data.eventCapacity || "";
+            updateCountdownUI(data.eventDate);
           }
-        })
-        .catch(err => console.error("🔥 Error loading event date:", err));
-    } else {
-      // fallback if user is not signed in yet or missing eventId
-      const storedDate = localStorage.getItem("eventDate");
-      if (storedDate) {
-        eventDateInputEl.value = storedDate;
-        updateCountdown();
-      } else {
-        document.getElementById("countdown").textContent = "Event date not set yet.";
-      }
-    }
+        });
+    });
 
-    // Update countdown on user change
-    eventDateInputEl.addEventListener('change', updateCountdown);
+    // Live update countdown on date change
+    document.getElementById("event-date").addEventListener("change", (e) => {
+      updateCountdownUI(e.target.value);
+    });
   });
 </script>
   
