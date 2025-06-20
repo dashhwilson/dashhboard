@@ -190,7 +190,8 @@
       <p id="percentFilled">Capacity Filled: 0%</p>
       <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
       <p id="vipGeneralBreakdown">VIPs: 0 | General: 0</p>
-      <p id="statusBreakdown">Confirmed: 0 | Pending: 0</p>
+      <p id="statusBreakdown">Confirmed: 0 | Pending: 0 | Invited: 0 | Declined: 0</p>
+      <p id="invitationCount">Invitations Sent: 0</p>
       <button onclick="downloadCSV()">📥 Download CSV</button>
     </div>
 
@@ -212,6 +213,8 @@
             <option value="">All</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Pending">Pending</option>
+               <option value="Invited">Invited</option>
+               <option value="Declined">Declined</option>
           </select>
         </div>
       </div>
@@ -237,7 +240,7 @@
         <th>Name</th>
         <th>Email</th>
         <th>Type (VIP, General, Panelist)</th>
-        <th>Status (Confirmed, Pending)</th>
+        <th>Status (Confirmed, Pending, Invited, Declined)</th>
         <th>Checked In (TRUE or FALSE)</th>
         <th>Allergies</th>
         <th>Milk Preference</th>
@@ -257,11 +260,14 @@
       </tr>
     </tbody>
   </table>
-  <input type="file" id="csvUpload" accept=".csv" onchange="handleCSVUpload(event)">
+  <input type="file" id="csvUpload" accept=".csv">
   <p id="csvFeedback" style="margin-top: 8px; font-size: 14px; color: #cc3300;"></p>
 <a href="/assets/attendee_template.csv" download>
   <button>📄 Download Template CSV</button>
-</a>
+  </a>
+  <button onclick="parseCSV()">📥 Upload CSV</button>
+  
+
   
 </div>
     
@@ -295,6 +301,7 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  let skipped = 0;
   let attendees = [], fnbPrefs = [];
   let userId = null, eventId = localStorage.getItem('activeEventId');
 
@@ -308,8 +315,11 @@
     const filterStatus = document.getElementById('filterStatus')?.value || '';
 
     const typeCounts = {};
-    let confirmedCount = 0, pendingCount = 0;
+    let confirmedCount = 0, pendingCount = 0, invitedCount = 0, declinedCount = 0;
 
+    let invitationCount = 0;
+
+    
     attendees.forEach((attendee, index) => {
       if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
 
@@ -317,9 +327,18 @@
       if (!typeCounts[type]) typeCounts[type] = 0;
       typeCounts[type]++;
 
-      if (attendee.status === "Confirmed") confirmedCount++;
-      else pendingCount++;
+     if (attendee.status === "Confirmed") confirmedCount++;
+else if (attendee.status === "Pending") pendingCount++;
+else if (attendee.status === "Invited") invitedCount++;
+else if (attendee.status === "Declined") declinedCount++;
 
+      if (
+  attendee.status === "Invited" ||
+  attendee.status === "Confirmed" ||
+  attendee.status === "Declined"
+) {
+  invitationCount++;
+}
    attendeeTable.innerHTML += 
   <tr>
     <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
@@ -335,6 +354,9 @@
       <select onchange="updateAttendee(${index}, 'status', this.value)">
         <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
         <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
+        <option value="Invited" ${attendee.status==='Invited'?'selected':''}>Invited</option>
+        <option value="Declined" ${attendee.status==='Declined'?'selected':''}>Declined</option>
+        
       </select>
     </td>
     <td>
@@ -370,7 +392,9 @@
 document.getElementById('checkedIn').innerText = Checked In: ${checkedInCount};
     document.getElementById('remaining').innerText = Remaining: ${capacity - attendees.length};
     document.getElementById('percentFilled').innerText = Capacity Filled: ${percentFilled}%;
-    document.getElementById('statusBreakdown').innerText = Confirmed: ${confirmedCount} | Pending: ${pendingCount};
+    document.getElementById('statusBreakdown').innerText = Confirmed: ${confirmedCount} | Pending: ${pendingCount}| Invited: ${invitedCount} | Declined: ${declinedCount};
+    document.getElementById('invitationCount').innerText =
+  Invitations Sent: ${invitationCount};
     document.getElementById('progressFill').style.width = percentFilled + '%';
     document.getElementById('csvFeedback').innerText =
   skipped > 0 ? ⚠️ ${skipped} row(s) were skipped due to missing data or duplicates. : '';
@@ -400,7 +424,7 @@ if (attendees.length > capacity) {
   }
 
 function updateAttendee(index, field, value) {
-  attendees[index][field] = value;
+  attendees[index][field] = field === 'checkedIn' ? Boolean(value) : value;
   if (field === 'name') fnbPrefs[index].name = value;
   saveToFirestore();
   renderTables();
@@ -413,8 +437,15 @@ function updateAttendee(index, field, value) {
   }
 
 function addAttendee() {
-  attendees.push({ name: '', email: '', type: 'General', status: 'Pending', checkedIn: false });
-  fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
+  const newAttendee = { name: '', email: '', type: 'General', status: 'Pending', checkedIn: false };
+  const newPref = { name: '', allergies: '', milk: '', hotel: 'No' };
+  attendees.push(newAttendee);
+  fnbPrefs.push(newPref);
+
+  // Clear filters so new row is visible
+  document.getElementById('filterType').value = '';
+  document.getElementById('filterStatus').value = '';
+
   saveToFirestore();
   renderTables();
 }
@@ -468,8 +499,11 @@ function addAttendee() {
       docRef.get().then(doc => {
         if (doc.exists) {
           const data = doc.data();
-          attendees = data.attendees || attendees;
-          fnbPrefs = data.fnbPrefs || fnbPrefs;
+         attendees = (data.attendees || []).map(a => ({
+  ...a,
+  checkedIn: a.checkedIn === true
+}));
+fnbPrefs = data.fnbPrefs || fnbPrefs;
 
           document.getElementById('eventName').value = data.eventName || '';
           document.getElementById('eventLocation').value = data.eventLocation || '';
@@ -483,58 +517,101 @@ function addAttendee() {
 
   loadData();
 
-function handleCSVUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+  new Sortable(document.getElementById('attendeeTable'), {
+  animation: 150,
+  onEnd: function (evt) {
+    const newOrder = Array.from(evt.to.children).map(row => {
+      const inputs = row.querySelectorAll('input, select');
+      return {
+        name: inputs[0].value,
+        email: inputs[1].value,
+        type: inputs[2].value,
+        status: inputs[3].value,
+        checkedIn: inputs[4].checked
+      };
+    });
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-  const text = e.target.result;
-  const lines = text.trim().split('\n');
-  const header = lines.shift().split(',');
+    const newPrefs = Array.from(evt.to.children).map(row => {
+      const name = row.querySelector('input').value;
+      const matching = fnbPrefs.find(p => p.name === name) || { allergies: '', milk: '', hotel: 'No' };
+      return { name, ...matching };
+    });
 
-  const headerIndex = {};
-  header.forEach((h, i) => {
-    headerIndex[h.trim().toLowerCase()] = i;
-  });
+    attendees = newOrder;
+    fnbPrefs = newPrefs;
+    saveToFirestore();
+    renderTables();
+  }
+});
 
-  const newAttendees = [];
-  const newFnbPrefs = [];
-
-  lines.forEach(line => {
-    const values = line.split(',');
-    const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
-
-    const name = get("name");
-    const email = get("email");
-    const type = get("type");
-    const status = get("status");
-    const checkedIn = get("checked in").toLowerCase() === 'true';
-    const allergies = get("allergies");
-    const milk = get("milk preference");
-    const hotel = get("hotel needed?");
-
-    if (!name || !email) {
-  skipped++;
-  return;
+  function handleCSVUploadClick() {
+  document.getElementById('csvUpload').click();
 }
+
+  function parseCSV() {
+  const file = document.getElementById('csvUpload').files[0];
+  if (!file) {
+    document.getElementById('csvFeedback').innerText = "⚠️ Please select a CSV file first.";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    const lines = text.trim().split('\n');
+    const header = lines.shift().split(',');
+    const headerIndex = {};
     let skipped = 0;
-    
-    // Avoid duplicate by email
-    if (!attendees.some(a => a.email === email)) {
-      newAttendees.push({ name, email, type, status, checkedIn });
-      newFnbPrefs.push({ name, allergies, milk, hotel });
-    }
-  });
 
-  attendees = attendees.concat(newAttendees);
-  fnbPrefs = fnbPrefs.concat(newFnbPrefs);
+    header.forEach((h, i) => {
+      headerIndex[h.trim().toLowerCase()] = i;
+    });
 
-  saveToFirestore();
-  renderTables();
-};
+    const newAttendees = [];
+    const newFnbPrefs = [];
+
+    lines.forEach(line => {
+      const values = line.split(',');
+      const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
+
+      const name = get("name");
+      const email = get("email");
+      const type = get("type");
+      const status = get("status");
+      const checkedIn = get("checked in").toLowerCase() === 'true';
+      const allergies = get("allergies");
+      const milk = get("milk preference");
+      const hotel = get("hotel needed?");
+
+      if (!name || !email) {
+        skipped++;
+        return;
+      }
+
+      if (!attendees.some(a => a.email === email)) {
+        newAttendees.push({ name, email, type, status, checkedIn });
+        newFnbPrefs.push({ name, allergies, milk, hotel });
+      }
+    });
+
+    attendees = attendees.concat(newAttendees);
+    fnbPrefs = fnbPrefs.concat(newFnbPrefs);
+
+    saveToFirestore();
+    renderTables();
+
+    document.getElementById('csvFeedback').innerText = 
+      skipped > 0 
+        ? ⚠️ ${skipped} row(s) were skipped due to missing data or duplicates. 
+        : ✅ CSV uploaded successfully!;
+  };
+
+  reader.readAsText(file);
+}
   
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   
 </body>
 </html>
