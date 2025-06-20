@@ -172,17 +172,16 @@
   <div class="grid">
     <div class="card">
       <h3>📝 Event Info</h3>
-      <label for="eventName">Event Name</label>
-      <input type="text" id="eventName" value="Annual Gala 2025">
-      <label for="eventLocation">Location</label>
-      <input type="text" id="eventLocation" value="New York, NY">
-      <label for="eventDate">Date</label>
-      <input type="date" id="eventDate" value="2025-06-30">
-      <label for="eventCapacity">Capacity</label>
-      <input type="number" id="eventCapacity" value="500">
-      <hr class="divider">
-      <button onclick="saveEventInfo()">💾 Save Event Info</button>
-      <div id="saveConfirmation" class="save-message">✅ Saved!</div>
+       <h3>📋 Select an Event</h3>
+  <label for="eventSelector">Choose Event:</label>
+  <select id="eventSelector" onchange="handleEventSelection(this.value)">
+    <option value="">Loading events...</option>
+  </select>
+  <div style="margin-top: 12px;">
+    <p><strong>Name:</strong> <span id="displayEventName">—</span></p>
+    <p><strong>Location:</strong> <span id="displayEventLocation">—</span></p>
+    <p><strong>Date:</strong> <span id="displayEventDate">—</span></p>
+    <p><strong>Capacity:</strong> <span id="displayEventCapacity">—</span></p>
     </div>
   </div>
 
