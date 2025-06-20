@@ -391,18 +391,18 @@ else if (attendee.status === "Declined") declinedCount++;
 
     const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
     const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
-    document.getElementById('totalReg').innerText = Total Registered: ${attendees.length};
-    document.getElementById('capacity').innerText = Capacity: ${capacity};
+    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
+    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
    const checkedInCount = attendees.filter(a => a.checkedIn).length;
-document.getElementById('checkedIn').innerText = Checked In: ${checkedInCount};
-    document.getElementById('remaining').innerText = Remaining: ${capacity - attendees.length};
-    document.getElementById('percentFilled').innerText = Capacity Filled: ${percentFilled}%;
-    document.getElementById('statusBreakdown').innerText = Confirmed: ${confirmedCount} | Pending: ${pendingCount}| Invited: ${invitedCount} | Declined: ${declinedCount};
+document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`;
+    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
+    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
+    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}| Invited: ${invitedCount} | Declined: ${declinedCount}`;
     document.getElementById('invitationCount').innerText =
-  Invitations Sent: ${invitationCount};
+  `Invitations Sent: ${invitationCount}`;
     document.getElementById('progressFill').style.width = percentFilled + '%';
     document.getElementById('csvFeedback').innerText =
-  skipped > 0 ? ⚠️ ${skipped} row(s) were skipped due to missing data or duplicates. : '';
+  skipped > 0 ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` : '';
 
 const warningMessage = document.getElementById('overCapacityWarning');
 if (attendees.length > capacity) {
@@ -424,7 +424,7 @@ if (attendees.length > capacity) {
   document.getElementById('remaining').style.color = '';
 }
     
-    const breakdown = Object.entries(typeCounts).map(([type, count]) => ${type}s: ${count}).join(' | ');
+    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
     document.getElementById('vipGeneralBreakdown').innerText = breakdown;
   }
 
@@ -483,13 +483,16 @@ function addAttendee() {
     setTimeout(() => msg.classList.remove('show'), 2500);
   }
 
-  function saveToFirestore() {
-    if (!userId || !eventId) return;
-    db.collection('users').doc(userId).collection('events').doc(eventId).set({
-      attendees,
-      fnbPrefs
-    }, { merge: true });
+function saveToFirestore() {
+  if (!userId || !eventId) {
+    console.warn("Skipping saveToFirestore: missing userId or eventId", { userId, eventId });
+    return;
   }
+  db.collection('users').doc(userId).collection('events').doc(eventId).set({
+    attendees,
+    fnbPrefs
+  }, { merge: true });
+}
 
   function loadData() {
     auth.onAuthStateChanged(user => {
@@ -514,6 +517,8 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
           document.getElementById('eventLocation').value = data.eventLocation || '';
           document.getElementById('eventDate').value = data.eventDate || '';
           document.getElementById('eventCapacity').value = data.eventCapacity || '';
+  
+        eventId = eventId || doc.id;
         }
         renderTables();
       });
