@@ -152,7 +152,12 @@
   </style>
 </head>
 <body>
-  <div class="header">Digital Dashh | Registration</div>
+  <div class="header">
+  <span style="float: left; margin-left: 20px;">
+    <a href="index.html" style="color: white; text-decoration: none; font-size: 20px;">🏠 Home</a>
+  </span>
+  Digital Dashh | Registration
+</div>
 
 <div class="menu">
   <a href="overview.html">Overview</a>
@@ -340,7 +345,7 @@ else if (attendee.status === "Declined") declinedCount++;
   invitationCount++;
 }
    attendeeTable.innerHTML += 
-  <tr>
+  `<tr>
     <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
     <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
     <td>
@@ -366,12 +371,12 @@ else if (attendee.status === "Declined") declinedCount++;
       </label>
       <br><button onclick="removeAttendee(${index})">Remove</button>
     </td>
-  </tr>;
+  </tr>`;
     });
 
     fnbPrefs.forEach((pref, idx) => {
       fnbTable.innerHTML += 
-        <tr>
+        `<tr>
           <td>${pref.name}</td>
           <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
           <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
@@ -381,7 +386,7 @@ else if (attendee.status === "Declined") declinedCount++;
               <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
             </select>
           </td>
-        </tr>;
+        </tr>`;
     });
 
     const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
@@ -602,49 +607,13 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
 
     document.getElementById('csvFeedback').innerText = 
       skipped > 0 
-        ? ⚠️ ${skipped} row(s) were skipped due to missing data or duplicates. 
-        : ✅ CSV uploaded successfully!;
+        ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` 
+        : `✅ CSV uploaded successfully!`;
   };
 
   reader.readAsText(file);
 }
 
-function saveEventInfo() {
-  const name = document.getElementById("event-name").value.trim();
-  const location = document.getElementById("event-location").value.trim();
-  const date = document.getElementById("event-date").value;
-  const capacity = parseInt(document.getElementById("event-capacity").value) || 0;
-
-  const user = firebase.auth().currentUser;
-  const eventId = localStorage.getItem("activeEventId");
-
-  if (!user || !eventId) {
-    alert("User not logged in or event ID missing.");
-    return;
-  }
-
-  // Save to Firestore
-  db.collection("users").doc(user.uid).collection("events").doc(eventId).set({
-    eventName: name,
-    eventLocation: location,
-    eventDate: date,
-    eventCapacity: capacity
-  }, { merge: true })
-  .then(() => {
-    // Optional: Save to localStorage as fallback
-    localStorage.setItem("eventName", name);
-    localStorage.setItem("eventLocation", location);
-    localStorage.setItem("eventDate", date);
-    localStorage.setItem("eventCapacity", capacity);
-
-    alert("✅ Event info saved!");
-  })
-  .catch((error) => {
-    console.error("❌ Error saving event info:", error);
-    alert("Failed to save event info.");
-  });
-}
-  
   
 </script>
 
