@@ -465,7 +465,8 @@ function addAttendee() {
     const name = document.getElementById('eventName').value;
     const location = document.getElementById('eventLocation').value;
     const date = document.getElementById('eventDate').value;
-    const capacity = parseInt(document.getElementById('eventCapacity').value);
+    const capacityText = document.getElementById('displayEventCapacity')?.innerText || '0';
+const capacity = parseInt(capacityText.replace(/\D/g, '')) || 0;
 
     if (userId && eventId) {
       db.collection('users').doc(userId).collection('events').doc(eventId).set({
