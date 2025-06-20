@@ -586,8 +586,21 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
 
       const name = get("name");
       const email = get("email");
-      const type = get("type");
-      const status = get("status");
+      const rawType = get("type").toLowerCase();
+let type = "";
+
+if (rawType === "vip") type = "VIP";
+else if (rawType === "general") type = "General";
+else if (rawType === "panelist") type = "Panelist";
+else type = "Guest"; // fallback label
+     const rawStatus = get("status").toLowerCase();
+let status = "";
+
+if (rawStatus === "confirmed") status = "Confirmed";
+else if (rawStatus === "pending") status = "Pending";
+else if (rawStatus === "invited") status = "Invited";
+else if (rawStatus === "declined") status = "Declined";
+else status = "Pending"; // default fallback
       const checkedIn = get("checked in").toLowerCase() === 'true';
       const allergies = get("allergies");
       const milk = get("milk preference");
