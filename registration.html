@@ -19,14 +19,16 @@
       padding: 0;
       color: #1c1c3a;
     }
-    .header {
-      background-color: #1c1c3a;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
+  .header {
+  background-color: #1c1c3a;
+  color: white;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
     .menu {
       background-color: #ffe066;
       display: flex;
@@ -172,17 +174,16 @@
   <div class="grid">
     <div class="card">
       <h3>📝 Event Info</h3>
-      <label for="eventName">Event Name</label>
-      <input type="text" id="eventName" value="Annual Gala 2025">
-      <label for="eventLocation">Location</label>
-      <input type="text" id="eventLocation" value="New York, NY">
-      <label for="eventDate">Date</label>
-      <input type="date" id="eventDate" value="2025-06-30">
-      <label for="eventCapacity">Capacity</label>
-      <input type="number" id="eventCapacity" value="500">
-      <hr class="divider">
-      <button onclick="saveEventInfo()">💾 Save Event Info</button>
-      <div id="saveConfirmation" class="save-message">✅ Saved!</div>
+     <h3>📋 Select an Event</h3>
+  <label for="eventSelector">Choose Event:</label>
+  <select id="eventSelector" onchange="handleEventSelection(this.value)">
+    <option value="">Loading events...</option>
+  </select>
+  <div style="margin-top: 12px;">
+    <p><strong>Name:</strong> <span id="displayEventName">—</span></p>
+    <p><strong>Location:</strong> <span id="displayEventLocation">—</span></p>
+    <p><strong>Date:</strong> <span id="displayEventDate">—</span></p>
+    <p><strong>Capacity:</strong> <span id="displayEventCapacity">—</span></p>
     </div>
 
     <div class="card">
@@ -526,6 +527,7 @@ fnbPrefs = data.fnbPrefs || fnbPrefs;
   }
 
   loadData();
+  loadEventDropdown();
 
   new Sortable(document.getElementById('attendeeTable'), {
   animation: 150,
@@ -632,6 +634,53 @@ else status = "Pending"; // default fallback
   reader.readAsText(file);
 }
 
+  function loadEventDropdown() {
+  auth.onAuthStateChanged(user => {
+    if (!user) return;
+    userId = user.uid;
+
+    db.collection('users').doc(userId).collection('events')
+      .get().then(snapshot => {
+        const selector = document.getElementById('eventSelector');
+        selector.innerHTML = '<option value="">Select an event</option>';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const option = document.createElement('option');
+          option.value = doc.id;
+          option.textContent = data.eventName || `Event on ${data.eventDate}`;
+          selector.appendChild(option);
+        });
+
+        // Try to pre-select from localStorage
+        const savedId = localStorage.getItem('activeEventId');
+        if (savedId) {
+          selector.value = savedId;
+          handleEventSelection(savedId);
+        }
+      });
+  });
+}
+
+  function handleEventSelection(eventIdFromDropdown) {
+  if (!userId || !eventIdFromDropdown) return;
+  eventId = eventIdFromDropdown;
+  localStorage.setItem('activeEventId', eventId);
+
+  db.collection('users').doc(userId).collection('events').doc(eventId)
+    .get().then(doc => {
+      if (!doc.exists) return;
+      const data = doc.data();
+
+      document.getElementById('displayEventName').innerText = data.eventName || '—';
+      document.getElementById('displayEventLocation').innerText = data.eventLocation || '—';
+      document.getElementById('displayEventDate').innerText = data.eventDate || '—';
+      document.getElementById('displayEventCapacity').innerText = data.eventCapacity || '—';
+
+      attendees = (data.attendees || []).map(a => ({ ...a, checkedIn: a.checkedIn === true }));
+      fnbPrefs = data.fnbPrefs || [];
+      renderTables();
+    });
+}
   
 </script>
 
