@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Dashh | Registration</title>
+  <title>Registration | Digital Dashh</title>
   <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-  <meta property="og:image:width" content="1280" />
-  <meta property="og:image:height" content="640" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Digital Dashh EventBoard" />
-  <meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Digital Dashh EventBoard" />
+<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -23,21 +22,10 @@
     .header {
       background-color: #1c1c3a;
       color: white;
+      text-align: center;
       padding: 20px;
       font-size: 24px;
       font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .home-button {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-      font-size: 14px;
     }
     .menu {
       background-color: #ffe066;
@@ -55,18 +43,13 @@
       font-weight: bold;
       text-decoration: none;
     }
-    .content {
-      display: flex;
-      flex-direction: column;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
       padding: 30px;
       max-width: 1200px;
       margin: auto;
-    }
-       .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
     }
     .card {
       background-color: white;
@@ -74,91 +57,128 @@
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
-    .card h3 {
-      margin-top: 0;
-    }
-    select, input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-    }
-    .info-label {
-      margin-top: 8px;
-      font-weight: 600;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-    table th, table td {
-      border-bottom: 1px solid #ddd;
-      padding: 8px;
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px 12px;
+      font-size: 14px;
       text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tr:hover {
+      background-color: #f1f7ff;
+    }
+    button {
+      background-color: #6c79db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button:hover {
+      background-color: #5a67d8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    input, select {
+      margin-top: 6px;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    input:focus, select:focus {
+      background-color: #f1f7ff;
+      outline: none;
+      border-color: #6c79db;
+    }
+    table input, table select {
+      padding: 4px 6px;
+      font-size: 13px;
+      height: 30px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .divider {
+      margin: 20px 0;
+      border: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #ccc, transparent);
+    }
+    .save-message {
+      color: green;
+      font-weight: bold;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .save-message.show {
+      opacity: 1;
     }
     .progress-bar {
       width: 100%;
-      background-color: #e0e0e0;
-      border-radius: 6px;
+      height: 12px;
+      background-color: #eee;
+      border-radius: 8px;
       overflow: hidden;
-      height: 20px;
-      margin-bottom: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
     }
     .progress-bar-fill {
       height: 100%;
       background-color: #6c79db;
       width: 0%;
+      border-radius: 8px;
+      transition: width 0.4s ease;
     }
-
-.save-message {
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
-  font-weight: bold;
-  color: green;
-  margin-top: 10px;
-}
-.save-message.show {
-  opacity: 1;
-}
-    button {
-  margin-top: 8px;
-}
-    
   </style>
 </head>
 <body>
-  <div class="header">
-    <div>Digital Dashh | Registration</div>
-    <a class="home-button" href="index.html">🏠 Home</a>
-  </div>
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
-  </div>
+  <div class="header">Digital Dashh | Registration</div>
+
+<div class="menu">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="sponsor-tracker.html">Sponsor Tracker</a>
+  <a href="merch-inventory.html">Merch Inventory</a>
+</div>
+
   <div class="grid">
     <div class="card">
-      <h3>📋 Select an Event</h3>
-      <label for="eventSelector">Choose an event:</label>
-      <select id="eventSelector">
-        <option value="">-- Select Event --</option>
-        <!-- Dynamic options loaded from Firebase -->
-      </select>
-      <p><span class="info-label">Event Name:</span> <span id="viewEventName">—</span></p>
-      <p><span class="info-label">Location:</span> <span id="viewEventLocation">—</span></p>
-      <p><span class="info-label">Date:</span> <span id="viewEventDate">—</span></p>
-      <p><span class="info-label">Capacity:</span> <span id="viewEventCapacity">—</span></p>
+      <h3>📝 Event Info</h3>
+      <label for="eventName">Event Name</label>
+      <input type="text" id="eventName" value="Annual Gala 2025">
+      <label for="eventLocation">Location</label>
+      <input type="text" id="eventLocation" value="New York, NY">
+      <label for="eventDate">Date</label>
+      <input type="date" id="eventDate" value="2025-06-30">
+      <label for="eventCapacity">Capacity</label>
+      <input type="number" id="eventCapacity" value="500">
+      <hr class="divider">
+      <button onclick="saveEventInfo()">💾 Save Event Info</button>
+      <div id="saveConfirmation" class="save-message">✅ Saved!</div>
     </div>
-  </div>
-
 
     <div class="card">
       <h3>📈 Registration Summary</h3>
@@ -170,8 +190,7 @@
       <p id="percentFilled">Capacity Filled: 0%</p>
       <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
       <p id="vipGeneralBreakdown">VIPs: 0 | General: 0</p>
-      <p id="statusBreakdown">Confirmed: 0 | Pending: 0 | Invited: 0 | Declined: 0</p>
-      <p id="invitationCount">Invitations Sent: 0</p>
+      <p id="statusBreakdown">Confirmed: 0 | Pending: 0</p>
       <button onclick="downloadCSV()">📥 Download CSV</button>
     </div>
 
@@ -193,8 +212,6 @@
             <option value="">All</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Pending">Pending</option>
-               <option value="Invited">Invited</option>
-               <option value="Declined">Declined</option>
           </select>
         </div>
       </div>
@@ -220,7 +237,7 @@
         <th>Name</th>
         <th>Email</th>
         <th>Type (VIP, General, Panelist)</th>
-        <th>Status (Confirmed, Pending, Invited, Declined)</th>
+        <th>Status (Confirmed, Pending)</th>
         <th>Checked In (TRUE or FALSE)</th>
         <th>Allergies</th>
         <th>Milk Preference</th>
@@ -240,14 +257,11 @@
       </tr>
     </tbody>
   </table>
-  <input type="file" id="csvUpload" accept=".csv">
+  <input type="file" id="csvUpload" accept=".csv" onchange="handleCSVUpload(event)">
   <p id="csvFeedback" style="margin-top: 8px; font-size: 14px; color: #cc3300;"></p>
 <a href="/assets/attendee_template.csv" download>
   <button>📄 Download Template CSV</button>
-  </a>
-  <button onclick="parseCSV()">📥 Upload CSV</button>
-  
-
+</a>
   
 </div>
     
@@ -281,7 +295,6 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  let skipped = 0;
   let attendees = [], fnbPrefs = [];
   let userId = null, eventId = localStorage.getItem('activeEventId');
 
@@ -291,19 +304,12 @@
     attendeeTable.innerHTML = '';
     fnbTable.innerHTML = '';
 
-if (attendees.length === 0) {
-  attendeeTable.innerHTML = `<tr><td colspan="5" style="text-align:center; opacity:0.7;">No attendees yet</td></tr>`;
-}
-    
     const filterType = document.getElementById('filterType')?.value || '';
     const filterStatus = document.getElementById('filterStatus')?.value || '';
 
     const typeCounts = {};
-    let confirmedCount = 0, pendingCount = 0, invitedCount = 0, declinedCount = 0;
+    let confirmedCount = 0, pendingCount = 0;
 
-    let invitationCount = 0;
-
-    
     attendees.forEach((attendee, index) => {
       if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
 
@@ -311,19 +317,10 @@ if (attendees.length === 0) {
       if (!typeCounts[type]) typeCounts[type] = 0;
       typeCounts[type]++;
 
-     if (attendee.status === "Confirmed") confirmedCount++;
-else if (attendee.status === "Pending") pendingCount++;
-else if (attendee.status === "Invited") invitedCount++;
-else if (attendee.status === "Declined") declinedCount++;
+      if (attendee.status === "Confirmed") confirmedCount++;
+      else pendingCount++;
 
-      if (
-  attendee.status === "Invited" ||
-  attendee.status === "Confirmed" ||
-  attendee.status === "Declined"
-) {
-  invitationCount++;
-}
-   attendeeTable.innerHTML += ` 
+   attendeeTable.innerHTML += 
   <tr>
     <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
     <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
@@ -338,9 +335,6 @@ else if (attendee.status === "Declined") declinedCount++;
       <select onchange="updateAttendee(${index}, 'status', this.value)">
         <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
         <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
-        <option value="Invited" ${attendee.status==='Invited'?'selected':''}>Invited</option>
-        <option value="Declined" ${attendee.status==='Declined'?'selected':''}>Declined</option>
-        
       </select>
     </td>
     <td>
@@ -350,41 +344,36 @@ else if (attendee.status === "Declined") declinedCount++;
       </label>
       <br><button onclick="removeAttendee(${index})">Remove</button>
     </td>
-  </tr>
+  </tr>;
     });
 
     fnbPrefs.forEach((pref, idx) => {
-fnbTable.innerHTML += `
-  <tr>
-    <td>${pref.name}</td>
-    <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-    <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-    <td>
-      <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-        <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-        <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-      </select>
-    </td>
-  </tr>
-`;
-    })
+      fnbTable.innerHTML += 
+        <tr>
+          <td>${pref.name}</td>
+          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
+          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
+          <td>
+            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
+              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
+              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
+            </select>
+          </td>
+        </tr>;
+    });
 
-   const capacityText = document.getElementById('viewEventCapacity').innerText.replace(/[^0-9]/g, '');
-const capacity = parseInt(capacityText) || 0;
+    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
     const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
-    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
-    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
-    let checkedInCount = attendees.filter(a => a.checkedIn).length;
-document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`;
-document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
-document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount} | Invited: ${invitedCount} | Declined: ${declinedCount}`;
-document.getElementById('invitationCount').innerText = `Invitations Sent: ${invitationCount}`;
+    document.getElementById('totalReg').innerText = Total Registered: ${attendees.length};
+    document.getElementById('capacity').innerText = Capacity: ${capacity};
+   const checkedInCount = attendees.filter(a => a.checkedIn).length;
+document.getElementById('checkedIn').innerText = Checked In: ${checkedInCount};
+    document.getElementById('remaining').innerText = Remaining: ${capacity - attendees.length};
+    document.getElementById('percentFilled').innerText = Capacity Filled: ${percentFilled}%;
+    document.getElementById('statusBreakdown').innerText = Confirmed: ${confirmedCount} | Pending: ${pendingCount};
     document.getElementById('progressFill').style.width = percentFilled + '%';
     document.getElementById('csvFeedback').innerText =
-  skipped > 0
-    ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.`
-    : `✅ CSV uploaded successfully!`;
+  skipped > 0 ? ⚠️ ${skipped} row(s) were skipped due to missing data or duplicates. : '';
 
 const warningMessage = document.getElementById('overCapacityWarning');
 if (attendees.length > capacity) {
@@ -406,12 +395,12 @@ if (attendees.length > capacity) {
   document.getElementById('remaining').style.color = '';
 }
     
-    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}).join(' | ');
+    const breakdown = Object.entries(typeCounts).map(([type, count]) => ${type}s: ${count}).join(' | ');
     document.getElementById('vipGeneralBreakdown').innerText = breakdown;
   }
 
 function updateAttendee(index, field, value) {
-  attendees[index][field] = field === 'checkedIn' ? Boolean(value) : value;
+  attendees[index][field] = value;
   if (field === 'name') fnbPrefs[index].name = value;
   saveToFirestore();
   renderTables();
@@ -424,15 +413,8 @@ function updateAttendee(index, field, value) {
   }
 
 function addAttendee() {
-  const newAttendee = { name: '', email: '', type: 'General', status: 'Pending', checkedIn: false };
-  const newPref = { name: '', allergies: '', milk: '', hotel: 'No' };
-  attendees.push(newAttendee);
-  fnbPrefs.push(newPref);
-
-  // Clear filters so new row is visible
-  document.getElementById('filterType').value = '';
-  document.getElementById('filterStatus').value = '';
-
+  attendees.push({ name: '', email: '', type: 'General', status: 'Pending', checkedIn: false });
+  fnbPrefs.push({ name: '', allergies: '', milk: '', hotel: 'No' });
   saveToFirestore();
   renderTables();
 }
@@ -444,6 +426,26 @@ function addAttendee() {
     renderTables();
   }
 
+  function saveEventInfo() {
+    const name = document.getElementById('eventName').value;
+    const location = document.getElementById('eventLocation').value;
+    const date = document.getElementById('eventDate').value;
+    const capacity = parseInt(document.getElementById('eventCapacity').value);
+
+    if (userId && eventId) {
+      db.collection('users').doc(userId).collection('events').doc(eventId).set({
+        eventName: name,
+        eventLocation: location,
+        eventDate: date,
+        eventCapacity: capacity
+      }, { merge: true });
+    }
+    saveToFirestore();
+
+    const msg = document.getElementById('saveConfirmation');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  }
 
   function saveToFirestore() {
     if (!userId || !eventId) return;
@@ -466,16 +468,13 @@ function addAttendee() {
       docRef.get().then(doc => {
         if (doc.exists) {
           const data = doc.data();
-         attendees = (data.attendees || []).map(a => ({
-  ...a,
-  checkedIn: a.checkedIn === true
-}));
-fnbPrefs = data.fnbPrefs || fnbPrefs;
+          attendees = data.attendees || attendees;
+          fnbPrefs = data.fnbPrefs || fnbPrefs;
 
-      document.getElementById('viewEventName').innerText = data.eventName || '—';
-document.getElementById('viewEventLocation').innerText = data.eventLocation || '—';
-document.getElementById('viewEventDate').innerText = data.eventDate || '—';
-document.getElementById('viewEventCapacity').innerText = data.eventCapacity || '—';
+          document.getElementById('eventName').value = data.eventName || '';
+          document.getElementById('eventLocation').value = data.eventLocation || '';
+          document.getElementById('eventDate').value = data.eventDate || '';
+          document.getElementById('eventCapacity').value = data.eventCapacity || '';
         }
         renderTables();
       });
@@ -484,101 +483,58 @@ document.getElementById('viewEventCapacity').innerText = data.eventCapacity || '
 
   loadData();
 
-  new Sortable(document.getElementById('attendeeTable'), {
-  animation: 150,
-  onEnd: function (evt) {
-    const newOrder = Array.from(evt.to.children).map(row => {
-      const inputs = row.querySelectorAll('input, select');
-      return {
-        name: inputs[0].value,
-        email: inputs[1].value,
-        type: inputs[2].value,
-        status: inputs[3].value,
-        checkedIn: inputs[4].checked
-      };
-    });
+function handleCSVUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    const newPrefs = Array.from(evt.to.children).map(row => {
-      const name = row.querySelector('input').value;
-      const matching = fnbPrefs.find(p => p.name === name) || { allergies: '', milk: '', hotel: 'No' };
-      return { name, ...matching };
-    });
+    const reader = new FileReader();
+    reader.onload = function(e) {
+  const text = e.target.result;
+  const lines = text.trim().split('\n');
+  const header = lines.shift().split(',');
 
-    attendees = newOrder;
-    fnbPrefs = newPrefs;
-    saveToFirestore();
-    renderTables();
-  }
-});
+  const headerIndex = {};
+  header.forEach((h, i) => {
+    headerIndex[h.trim().toLowerCase()] = i;
+  });
 
-  function handleCSVUploadClick() {
-  document.getElementById('csvUpload').click();
+  const newAttendees = [];
+  const newFnbPrefs = [];
+
+  lines.forEach(line => {
+    const values = line.split(',');
+    const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
+
+    const name = get("name");
+    const email = get("email");
+    const type = get("type");
+    const status = get("status");
+    const checkedIn = get("checked in").toLowerCase() === 'true';
+    const allergies = get("allergies");
+    const milk = get("milk preference");
+    const hotel = get("hotel needed?");
+
+    if (!name || !email) {
+  skipped++;
+  return;
 }
-
-  function parseCSV() {
-  const file = document.getElementById('csvUpload').files[0];
-  if (!file) {
-    document.getElementById('csvFeedback').innerText = "⚠️ Please select a CSV file first.";
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    const lines = text.trim().split('\n');
-    const header = lines.shift().split(',');
-    const headerIndex = {};
     let skipped = 0;
+    
+    // Avoid duplicate by email
+    if (!attendees.some(a => a.email === email)) {
+      newAttendees.push({ name, email, type, status, checkedIn });
+      newFnbPrefs.push({ name, allergies, milk, hotel });
+    }
+  });
 
-    header.forEach((h, i) => {
-      headerIndex[h.trim().toLowerCase()] = i;
-    });
+  attendees = attendees.concat(newAttendees);
+  fnbPrefs = fnbPrefs.concat(newFnbPrefs);
 
-    const newAttendees = [];
-    const newFnbPrefs = [];
-
-    lines.forEach(line => {
-      const values = line.split(',');
-      const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
-
-      const name = get("name");
-      const email = get("email");
-      const type = get("type");
-      const status = get("status");
-      const checkedIn = get("checked in").toLowerCase() === 'true';
-      const allergies = get("allergies");
-      const milk = get("milk preference");
-      const hotel = get("hotel needed?");
-
-      if (!name || !email) {
-        skipped++;
-        return;
-      }
-
-      if (!attendees.some(a => a.email === email)) {
-        newAttendees.push({ name, email, type, status, checkedIn });
-        newFnbPrefs.push({ name, allergies, milk, hotel });
-      }
-    });
-
-    attendees = attendees.concat(newAttendees);
-    fnbPrefs = fnbPrefs.concat(newFnbPrefs);
-
-    saveToFirestore();
-    renderTables();
-
-    document.getElementById('csvFeedback').innerText = 
-      skipped > 0 
-        ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` 
-        : `✅ CSV uploaded successfully!`;
-  };
-
-  reader.readAsText(file);
-}
+  saveToFirestore();
+  renderTables();
+};
   
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   
 </body>
 </html>
