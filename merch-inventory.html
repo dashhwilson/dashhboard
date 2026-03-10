@@ -4,294 +4,592 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Merch Inventory | Digital Dashh</title>
-<meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      margin: 0; padding: 0;
-      color: #1c1c3a;
-    }
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
 
-    body.production-theme { background-color: #eef1fb; --accent-color: #8da5e2; }
-    body.client-theme { background-color: #e9edf3; --accent-color: #2c3e50; }
-    body.partner-theme { background-color: #fdf1f5; --accent-color: #f8a9c4; }
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:26px;}
+    .stat{background:var(--white);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .stat.c-purple{border-top-color:var(--purple);}.stat.c-green{border-top-color:var(--green);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-red{border-top-color:var(--red);}
+    .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .stat-val{font-size:22px;font-weight:900;letter-spacing:-0.02em;}
+    .stat-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 
-    .header {
-      background-color: #1c1c3a;
-      color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    /* TABS */
+    .tabs-row{display:flex;gap:6px;margin-bottom:22px;background:var(--white);border-radius:12px;padding:6px;box-shadow:var(--shadow);width:fit-content;}
+    .tab-btn{background:none;border:none;padding:8px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+    .tab-btn.active{background:var(--navy);color:var(--yellow);}
 
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+    .toolbar-left{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .filter-btn{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:var(--purple);color:var(--navy);}
+    .filter-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-add{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+    .btn-add:hover{background:#2d2d5a;}
+    .search-inp{border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:var(--white);width:200px;}
+    .search-inp:focus{outline:none;border-color:var(--purple);}
 
-    .header .right {
-      text-align: right;
-    }
+    /* CARDS */
+    .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-hdr{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .card-hdr h3{font-size:14px;font-weight:800;}
+    .card-body{padding:16px 18px;}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
 
-    .header a {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
+    /* INVENTORY TABLE */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#f8f8fc;padding:9px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody td{padding:8px 8px;border-bottom:1px solid #f4f4fb;vertical-align:middle;font-size:13px;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:#fafafe;}
+    .ti{border:1.5px solid transparent;border-radius:6px;padding:5px 8px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:transparent;width:100%;transition:border-color 0.2s;}
+    .ti:focus{outline:none;border-color:var(--purple);background:white;}
+    .ti.w{min-width:110px;}.ti.n{min-width:65px;width:75px;}
+    .btn-rm{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:3px 5px;border-radius:4px;transition:color 0.2s;}
+    .btn-rm:hover{color:var(--red);}
+    .btn-add-row{background:var(--purple-light);color:var(--purple);border:none;padding:6px 13px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .btn-add-row:hover{background:#dde3f8;}
+    .btn-save-section{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;}
+    .btn-save-section:hover{background:#2d2d5a;}
 
-    .menu {
-      background-color: #ffffff;
-      padding: 10px 30px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-    }
+    /* STOCK BADGES */
+    .stock-ok{background:#e8f5ee;color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+    .stock-low{background:#fff3cd;color:#9a7000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
+    .stock-out{background:#fff0f0;color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;}
 
-    .menu a {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    /* LOW STOCK ALERT */
+    .low-stock-banner{background:#fff8e0;border:1.5px solid #f5a623;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:600;color:#9a7000;display:none;}
+    .low-stock-banner.show{display:block;}
 
-    .view-toggle-bar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-      background-color: #e9e9f2;
-      border-bottom: 1px solid #ccc;
-    }
+    /* GIVEAWAY GRID */
+    .giveaway-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+    .ga-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .ga-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+    .ga-header-left{display:flex;align-items:center;gap:10px;}
+    .ga-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .ga-general{background:#eef1fb;}.ga-assigned{background:#e8f5ee;}
+    .ga-name{font-size:14px;font-weight:800;}
+    .ga-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .ga-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+    .ga-badge-general{background:var(--purple-light);color:var(--purple);}
+    .ga-badge-assigned{background:#e8f5ee;color:var(--green);}
+    .ga-chevron{font-size:12px;color:var(--muted);transition:transform 0.2s;}
+    .ga-chevron.open{transform:rotate(180deg);}
+    .ga-body{display:none;padding:14px 16px;border-top:1px solid var(--border);}
+    .ga-body.open{display:block;}
 
-    .view-toggle-bar button {
-      font-family: 'Barlow', sans-serif;
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      background-color: var(--accent-color);
-      color: white;
-    }
+    /* ASSIGNED LIST */
+    .assigned-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f4f4fb;}
+    .assigned-item:last-child{border-bottom:none;}
+    .assigned-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.15s;}
+    .assigned-check.done{background:var(--green);border-color:var(--green);color:white;}
+    .assigned-name{flex:1;font-size:13px;font-weight:600;}
+    .assigned-name.done{text-decoration:line-through;color:var(--muted);}
+    .assigned-note{font-size:11px;color:var(--muted);}
 
-    .view-toggle-bar button.active {
-      border: 2px solid white;
-      box-shadow: 0 0 0 2px var(--accent-color);
-    }
+    /* VENDOR */
+    .vendor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .vf-item{display:flex;flex-direction:column;gap:3px;}
+    .vf-lbl{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:80px;background:#fafafa;transition:border-color 0.2s;}
+    .fi-ta:focus{outline:none;border-color:var(--purple);background:white;}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:26px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:17px;font-weight:800;margin-bottom:16px;}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
 
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card h3 {
-      font-size: 18px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      color: #1c1c3a;
-    }
-
-    .card p, .card label, .card input, .card textarea {
-      font-size: 14px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
-    }
-
-    table th {
-      background-color: #f4f4f4;
-    }
-
-    button {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .low { color: red; }
-
-    [data-view] { display: none; }
-    body.production-theme [data-view="production"],
-    body.client-theme [data-view="client"],
-    body.partner-theme [data-view="partner"] {
-      display: block;
-    }
+    /* EMPTY */
+    .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+    .empty .ei{font-size:36px;margin-bottom:8px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Digital Dashh | Event Dashboard</h1>
-    <div class="right">
-      <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html" class="active">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">👕</div>Loading Merch...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Merch <span style="color:var(--purple);">Inventory</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
     </div>
   </div>
 
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat c-purple"><div class="stat-lbl">Total Items</div><div class="stat-val" id="stat-total">0</div><div class="stat-sub">SKUs tracked</div></div>
+    <div class="stat c-green"><div class="stat-lbl">Total Units</div><div class="stat-val" id="stat-units">0</div><div class="stat-sub">ordered</div></div>
+    <div class="stat c-orange"><div class="stat-lbl">Total Value</div><div class="stat-val" id="stat-value">$0</div><div class="stat-sub">at cost</div></div>
+    <div class="stat c-red"><div class="stat-lbl">Low Stock</div><div class="stat-val" id="stat-low">0</div><div class="stat-sub">items need attention</div></div>
   </div>
 
-  <div class="view-toggle-bar">
-    <button onclick="setView('production')" id="btn-production">Production View</button>
-    <button onclick="setView('client')" id="btn-client">Client View</button>
-    <button onclick="setView('partner')" id="btn-partner">Partner View</button>
+  <!-- TABS -->
+  <div class="tabs-row">
+    <button class="tab-btn active" onclick="switchTab('inventory',this)">📦 Inventory</button>
+    <button class="tab-btn" onclick="switchTab('giveaway',this)">🎁 Giveaway Tracker</button>
+    <button class="tab-btn" onclick="switchTab('vendor',this)">🏭 Vendor Info</button>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h3>📦 Inventory Summary</h3>
-      <p>Total: 250 items</p>
-      <p>Remaining: 84 items</p>
-      <p class="low">Low Stock Alerts: 3 items</p>
+  <!-- ── INVENTORY TAB ── -->
+  <div id="tab-inventory">
+    <div class="low-stock-banner" id="low-stock-banner">⚠️ Low stock alert: <span id="low-stock-items"></span></div>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input class="search-inp" placeholder="🔍 Search items..." oninput="filterInventory(this.value)" />
+        <button class="filter-btn active" onclick="setCatFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setCatFilter('Apparel',this)">Apparel</button>
+        <button class="filter-btn" onclick="setCatFilter('Drinkware',this)">Drinkware</button>
+        <button class="filter-btn" onclick="setCatFilter('Accessories',this)">Accessories</button>
+        <button class="filter-btn" onclick="setCatFilter('Print',this)">Print</button>
+        <button class="filter-btn" onclick="setCatFilter('Other',this)">Other</button>
+      </div>
+      <button class="btn-add" onclick="openAddItemModal()">+ Add Item</button>
     </div>
-
     <div class="card">
-      <h3>📋 Product List</h3>
-      <table>
-        <thead><tr><th>Item</th><th>Qty</th><th>Type</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>Hoodie - Navy L</td><td>10</td><td>Apparel</td><td>In Stock</td></tr>
-          <tr><td>Water Bottle - Yellow</td><td>5</td><td>Drinkware</td><td>Low</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <h3>🎁 Giveaway Tracker</h3>
-      <ul>
-        <li>VIP Tote Bags - 25 packed, 5 remaining</li>
-        <li>Panelist Gifts - 15 ready</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>📂 Upload & Assets</h3>
-      <button>Open Merch Drive Folder</button>
+      <div class="card-hdr"><h3>📦 Inventory List</h3><span class="saved-flash" id="flash-inv">✓ Saved</span></div>
+      <div class="card-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Item Name</th><th>Category</th><th>Size / Variant</th><th>Ordered</th><th>Remaining</th><th>Unit Cost</th><th>Total Cost</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addInvRow()">+ Add Row</button>
+        <button class="btn-save-section" onclick="saveInventory()">💾 Save Inventory</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
-    document.getElementById('current-date').textContent = dateString;
+  <!-- ── GIVEAWAY TAB ── -->
+  <div id="tab-giveaway" style="display:none;">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="filter-btn active" onclick="setGaFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setGaFilter('general',this)">General</button>
+        <button class="filter-btn" onclick="setGaFilter('assigned',this)">Pre-Assigned</button>
+      </div>
+      <button class="btn-add" onclick="openAddGaModal()">+ Add Giveaway</button>
+    </div>
+    <div class="giveaway-grid" id="ga-grid"></div>
+  </div>
 
-    const eventDate = new Date('2025-06-30T00:00:00');
-    const diff = eventDate - today;
-    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+  <!-- ── VENDOR TAB ── -->
+  <div id="tab-vendor" style="display:none;">
+    <div class="card">
+      <div class="card-hdr"><h3>🏭 Vendor & Supplier Info</h3><span class="saved-flash" id="flash-vendor">✓ Saved</span></div>
+      <div class="card-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Vendor / Supplier</th><th>Contact Name</th><th>Email</th><th>Phone</th><th>Website</th><th>Lead Time</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="vendor-tbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addVendorRow()">+ Add Vendor</button>
+        <button class="btn-save-section" onclick="saveVendors()">💾 Save Vendors</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <div class="card-hdr"><h3>📝 General Merch Notes</h3><span class="saved-flash" id="flash-notes">✓ Saved</span></div>
+      <div class="card-body">
+        <textarea class="fi-ta" id="merch-notes" placeholder="Shipping deadlines, packing instructions, storage location, special handling notes..."></textarea>
+        <button class="btn-save-section" onclick="saveNotes()">💾 Save Notes</button>
+      </div>
+    </div>
+  </div>
 
-    function setView(view) {
-      const body = document.body;
-      const views = ['production', 'client', 'partner'];
-      views.forEach(v => body.classList.remove(`${v}-theme`));
-      body.classList.add(`${view}-theme`);
-      localStorage.setItem('dashhboardView', view);
-      views.forEach(v => {
-        const btn = document.getElementById(`btn-${v}`);
-        if (btn) btn.classList.remove('active');
-      });
-      const activeBtn = document.getElementById(`btn-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-    }
+</div>
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const savedView = localStorage.getItem('dashhboardView') || 'production';
-      setView(savedView);
-    });
-  </script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- ADD ITEM MODAL -->
+<div class="modal-overlay" id="add-item-modal">
+  <div class="modal">
+    <h3>📦 Add Merch Item</h3>
+    <label class="fi-lbl">Item Name *</label>
+    <input class="fi" id="ai-name" placeholder="e.g. Hoodie - Navy" style="width:100%;margin-bottom:12px;" />
+    <div class="modal-row">
+      <div><label class="fi-lbl">Category</label>
+        <select class="fi" id="ai-cat" style="width:100%;margin:0;">
+          <option>Apparel</option><option>Drinkware</option><option>Accessories</option><option>Print</option><option>Other</option>
+        </select>
+      </div>
+      <div><label class="fi-lbl">Size / Variant</label><input class="fi" id="ai-size" placeholder="L, XL, One Size..." style="width:100%;margin:0;" /></div>
+    </div>
+    <div class="modal-row" style="margin-top:10px;">
+      <div><label class="fi-lbl">Qty Ordered</label><input class="fi" id="ai-qty" type="number" min="0" placeholder="0" style="width:100%;margin:0;" /></div>
+      <div><label class="fi-lbl">Unit Cost ($)</label><input class="fi" id="ai-cost" type="number" min="0" step="0.01" placeholder="0.00" style="width:100%;margin:0;" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddItemModal()">Cancel</button>
+      <button class="btn-primary" onclick="addItem()">Add Item</button>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
-      authDomain: "quantum-beach-394503.firebaseapp.com",
-      projectId: "quantum-beach-394503",
-      storageBucket: "quantum-beach-394503.firebasestorage.app",
-      messagingSenderId: "1002514430184",
-      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
-    };
+<!-- ADD GIVEAWAY MODAL -->
+<div class="modal-overlay" id="add-ga-modal">
+  <div class="modal">
+    <h3>🎁 Add Giveaway</h3>
+    <label class="fi-lbl">Giveaway Name *</label>
+    <input class="fi" id="ag-name" placeholder="e.g. VIP Tote Bag, Speaker Gift" style="width:100%;margin-bottom:12px;" />
+    <div class="modal-row">
+      <div><label class="fi-lbl">Type</label>
+        <select class="fi" id="ag-type" style="width:100%;margin:0;">
+          <option value="general">General (first come first served)</option>
+          <option value="assigned">Pre-Assigned</option>
+        </select>
+      </div>
+      <div><label class="fi-lbl">Total Qty</label><input class="fi" id="ag-qty" type="number" min="0" placeholder="0" style="width:100%;margin:0;" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddGaModal()">Cancel</button>
+      <button class="btn-primary" onclick="addGiveaway()">Add Giveaway</button>
+    </div>
+  </div>
+</div>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+<div class="toast" id="toast"></div>
 
-  <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
+<script>
+  const firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(),db=firebase.firestore();
+  let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
+  let inventory=[],giveaways=[],vendors=[],merchNotes='';
+  let activeCatFilter='all',activeGaFilter='all',searchQuery='',authDone=false;
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
   });
+
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        inventory=d.merchInventory||[];
+        giveaways=d.giveaways||[];
+        vendors=d.merchVendors||[];
+        merchNotes=d.merchNotes||'';
+        renderAll();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+
+  function renderAll(){updateStats();renderInventory();renderGiveaways();renderVendors();document.getElementById('merch-notes').value=merchNotes;}
+
+  // ── STATS ──
+  function updateStats(){
+    const totalUnits=inventory.reduce((a,i)=>a+(parseInt(i.qty)||0),0);
+    const totalValue=inventory.reduce((a,i)=>a+(parseFloat(i.cost)||0)*(parseInt(i.qty)||0),0);
+    const lowItems=inventory.filter(i=>{const rem=parseInt(i.remaining??i.qty)??0;return rem>0&&rem<=5;});
+    const outItems=inventory.filter(i=>(parseInt(i.remaining??i.qty)||0)===0&&(parseInt(i.qty)||0)>0);
+    document.getElementById('stat-total').textContent=inventory.length;
+    document.getElementById('stat-units').textContent=totalUnits.toLocaleString();
+    document.getElementById('stat-value').textContent='$'+totalValue.toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('stat-low').textContent=lowItems.length+outItems.length;
+    const banner=document.getElementById('low-stock-banner');
+    if(lowItems.length||outItems.length){
+      banner.classList.add('show');
+      document.getElementById('low-stock-items').textContent=[...outItems.map(i=>i.name+' (OUT)'),...lowItems.map(i=>i.name+' ('+((parseInt(i.remaining??i.qty)||0))+' left)')].join(', ');
+    } else {banner.classList.remove('show');}
+  }
+
+  // ── INVENTORY ──
+  function renderInventory(){
+    const tbody=document.getElementById('inv-tbody');
+    const cats=['Apparel','Drinkware','Accessories','Print','Other'];
+    let rows=inventory;
+    if(activeCatFilter!=='all') rows=rows.filter(r=>r.category===activeCatFilter);
+    if(searchQuery) rows=rows.filter(r=>(r.name||'').toLowerCase().includes(searchQuery.toLowerCase()));
+    if(!rows.length){tbody.innerHTML=`<tr><td colspan="10"><div class="empty"><div class="ei">📦</div>No items yet</div></td></tr>`;return;}
+    tbody.innerHTML=rows.map((r,fi)=>{
+      const si=inventory.indexOf(r);
+      const rem=parseInt(r.remaining??r.qty)||0;
+      const qty=parseInt(r.qty)||0;
+      const badge=qty===0?'':(rem===0?'<span class="stock-out">Out</span>':rem<=5?'<span class="stock-low">Low</span>':'<span class="stock-ok">OK</span>');
+      const total=((parseFloat(r.cost)||0)*(qty)).toFixed(2);
+      return `<tr>
+        <td><input class="ti w" value="${esc(r.name||'')}" placeholder="Item name" onchange="inventory[${si}].name=this.value;updateStats();" /></td>
+        <td><select class="ti" onchange="inventory[${si}].category=this.value;">${cats.map(c=>`<option${r.category===c?' selected':''}>${c}</option>`).join('')}</select></td>
+        <td><input class="ti" value="${esc(r.size||'')}" placeholder="L / One Size" onchange="inventory[${si}].size=this.value;" /></td>
+        <td><input class="ti n" type="number" min="0" value="${qty||''}" placeholder="0" onchange="inventory[${si}].qty=this.value;this.closest('tr').querySelector('.total-cost').textContent='$'+((parseFloat(inventory[${si}].cost)||0)*(parseInt(this.value)||0)).toFixed(2);updateStats();" /></td>
+        <td><input class="ti n" type="number" min="0" value="${r.remaining??r.qty??''}" placeholder="0" onchange="inventory[${si}].remaining=this.value;updateStats();" /></td>
+        <td><input class="ti n" type="number" min="0" step="0.01" value="${r.cost||''}" placeholder="$0" onchange="inventory[${si}].cost=this.value;this.closest('tr').querySelector('.total-cost').textContent='$'+((parseFloat(this.value)||0)*(parseInt(inventory[${si}].qty)||0)).toFixed(2);updateStats();" /></td>
+        <td class="total-cost" style="font-weight:700;">$${total}</td>
+        <td>${badge}</td>
+        <td><input class="ti w" value="${esc(r.notes||'')}" placeholder="Notes..." onchange="inventory[${si}].notes=this.value;" /></td>
+        <td><button class="btn-rm" onclick="removeItem(${si})">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function addInvRow(){
+    inventory.push({name:'',category:'Apparel',size:'',qty:'',remaining:'',cost:'',notes:''});
+    renderInventory();
+  }
+  function removeItem(si){
+    inventory.splice(si,1);
+    persistAll(()=>{renderInventory();updateStats();});
+  }
+  function saveInventory(){
+    // Read current table values back into inventory array
+    const rows=document.querySelectorAll('#inv-tbody tr');
+    let visibleIdx=0;
+    let filtered=inventory;
+    if(activeCatFilter!=='all') filtered=inventory.filter(r=>r.category===activeCatFilter);
+    if(searchQuery) filtered=filtered.filter(r=>(r.name||'').toLowerCase().includes(searchQuery.toLowerCase()));
+    rows.forEach((tr,i)=>{
+      const inputs=tr.querySelectorAll('input,select');
+      if(inputs.length<5)return;
+      const si=inventory.indexOf(filtered[i]);
+      if(si<0)return;
+      inventory[si]={...inventory[si],name:inputs[0].value,category:inputs[1].value,size:inputs[2].value,qty:inputs[3].value,remaining:inputs[4].value,cost:inputs[5].value,notes:inputs[6].value};
+    });
+    persistAll(()=>{flash('flash-inv');updateStats();renderInventory();showToast('✓ Inventory saved!','success');});
+  }
+
+  function filterInventory(q){searchQuery=q;renderInventory();}
+  function setCatFilter(f,btn){activeCatFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>{if([...b.classList].includes('filter-btn')&&b.closest('#tab-inventory'))b.classList.remove('active')});btn.classList.add('active');renderInventory();}
+
+  // ── GIVEAWAYS ──
+  function renderGiveaways(){
+    const grid=document.getElementById('ga-grid');
+    let filtered=giveaways;
+    if(activeGaFilter!=='all') filtered=giveaways.filter(g=>g.type===activeGaFilter);
+    if(!filtered.length){grid.innerHTML=`<div style="grid-column:1/-1"><div class="empty"><div class="ei">🎁</div>No giveaways yet. Click + Add Giveaway.</div></div>`;return;}
+    grid.innerHTML=filtered.map(g=>{
+      const gi=giveaways.indexOf(g);
+      const doneCount=(g.assignees||[]).filter(a=>a.done).length;
+      const totalCount=g.type==='assigned'?(g.assignees||[]).length:(parseInt(g.qty)||0);
+      const distributed=g.type==='assigned'?doneCount:(parseInt(g.distributed)||0);
+      return `<div class="ga-card">
+        <div class="ga-header" onclick="toggleGa(${gi})">
+          <div class="ga-header-left">
+            <div class="ga-icon ${g.type==='assigned'?'ga-assigned':'ga-general'}">${g.type==='assigned'?'🎯':'🎁'}</div>
+            <div>
+              <div class="ga-name">${esc(g.name)}</div>
+              <div class="ga-meta">${distributed}/${totalCount} distributed</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="ga-badge ${g.type==='assigned'?'ga-badge-assigned':'ga-badge-general'}">${g.type==='assigned'?'Pre-Assigned':'General'}</span>
+            <span class="ga-chevron" id="ga-chev-${gi}">▼</span>
+          </div>
+        </div>
+        <div class="ga-body" id="ga-body-${gi}">
+          ${g.type==='general'?renderGeneralGa(gi):renderAssignedGa(gi)}
+          <button style="background:none;border:none;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;margin-top:12px;padding:0;" onclick="removeGiveaway(${gi})">🗑 Remove Giveaway</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderGeneralGa(gi){
+    const g=giveaways[gi];
+    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div><div class="vf-lbl">Total Qty</div><input class="fi" type="number" min="0" value="${g.qty||''}" placeholder="0" onchange="giveaways[${gi}].qty=this.value;persistAll();" /></div>
+      <div><div class="vf-lbl">Distributed</div><input class="fi" type="number" min="0" value="${g.distributed||''}" placeholder="0" onchange="giveaways[${gi}].distributed=this.value;persistAll(()=>renderGiveaways());" /></div>
+    </div>
+    <div><div class="vf-lbl" style="margin-bottom:4px;">Notes</div><input class="fi" value="${esc(g.notes||'')}" placeholder="Distribution notes..." onchange="giveaways[${gi}].notes=this.value;persistAll();" /></div>`;
+  }
+
+  function renderAssignedGa(gi){
+    const g=giveaways[gi];
+    const assignees=g.assignees||[];
+    return `<div id="assignees-${gi}">${assignees.map((a,ai)=>`
+      <div class="assigned-item">
+        <div class="assigned-check${a.done?' done':''}" onclick="toggleAssignee(${gi},${ai})">${a.done?'✓':''}</div>
+        <span class="assigned-name${a.done?' done':''}">${esc(a.name)}</span>
+        <span class="assigned-note">${esc(a.note||'')}</span>
+        <button class="btn-rm" onclick="removeAssignee(${gi},${ai})">✕</button>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <input class="fi" id="assignee-inp-${gi}" placeholder="Name..." style="flex:1;" onkeydown="if(event.key==='Enter')addAssignee(${gi})" />
+      <input class="fi" id="assignee-note-${gi}" placeholder="Note (optional)" style="flex:1;" onkeydown="if(event.key==='Enter')addAssignee(${gi})" />
+      <button class="btn-deliv-add" onclick="addAssignee(${gi})" style="background:var(--purple);color:white;border:none;padding:6px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Add</button>
+    </div>`;
+  }
+
+  function toggleGa(gi){
+    const body=document.getElementById(`ga-body-${gi}`);
+    const chev=document.getElementById(`ga-chev-${gi}`);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+  }
+
+  function toggleAssignee(gi,ai){
+    giveaways[gi].assignees[ai].done=!giveaways[gi].assignees[ai].done;
+    persistAll(()=>renderGiveaways());
+  }
+  function addAssignee(gi){
+    const inp=document.getElementById(`assignee-inp-${gi}`);
+    const noteInp=document.getElementById(`assignee-note-${gi}`);
+    if(!inp.value.trim())return;
+    giveaways[gi].assignees=[...(giveaways[gi].assignees||[]),{name:inp.value.trim(),note:noteInp.value.trim(),done:false}];
+    inp.value='';noteInp.value='';
+    persistAll(()=>renderGiveaways());
+  }
+  function removeAssignee(gi,ai){
+    giveaways[gi].assignees.splice(ai,1);
+    persistAll(()=>renderGiveaways());
+  }
+  function removeGiveaway(gi){
+    if(!confirm(`Remove "${giveaways[gi].name}"?`))return;
+    giveaways.splice(gi,1);
+    persistAll(()=>renderGiveaways());
+  }
+  function setGaFilter(f,btn){activeGaFilter=f;document.querySelectorAll('#tab-giveaway .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGiveaways();}
+
+  // ── VENDORS ──
+  function renderVendors(){
+    const tbody=document.getElementById('vendor-tbody');
+    tbody.innerHTML='';
+    if(!vendors.length){addVendorRow();return;}
+    vendors.forEach((v,i)=>tbody.appendChild(makeVendorRow(v,i)));
+  }
+  function makeVendorRow(v={},i){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(v.vendor||'')}" placeholder="Vendor name" /></td>
+      <td><input class="ti w" value="${esc(v.contact||'')}" placeholder="Contact name" /></td>
+      <td><input class="ti w" value="${esc(v.email||'')}" placeholder="Email" /></td>
+      <td><input class="ti w" value="${esc(v.phone||'')}" placeholder="Phone" /></td>
+      <td><input class="ti w" value="${esc(v.website||'')}" placeholder="website.com" /></td>
+      <td><input class="ti" value="${esc(v.leadTime||'')}" placeholder="e.g. 3 weeks" /></td>
+      <td><input class="ti w" value="${esc(v.notes||'')}" placeholder="Notes..." /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addVendorRow(){document.getElementById('vendor-tbody').appendChild(makeVendorRow());}
+  function saveVendors(){
+    vendors=[...document.querySelectorAll('#vendor-tbody tr')].map(tr=>{
+      const c=tr.querySelectorAll('input');
+      return{vendor:c[0].value,contact:c[1].value,email:c[2].value,phone:c[3].value,website:c[4].value,leadTime:c[5].value,notes:c[6].value};
+    }).filter(v=>v.vendor);
+    persistAll(()=>flash('flash-vendor'));
+  }
+  function saveNotes(){
+    merchNotes=document.getElementById('merch-notes').value.trim();
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({merchNotes}).then(()=>flash('flash-notes')).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── ADD MODALS ──
+  function openAddItemModal(){document.getElementById('add-item-modal').classList.add('open');}
+  function closeAddItemModal(){
+    document.getElementById('add-item-modal').classList.remove('open');
+    ['ai-name','ai-size','ai-qty','ai-cost'].forEach(id=>document.getElementById(id).value='');
+  }
+  function addItem(){
+    const name=document.getElementById('ai-name').value.trim();
+    if(!name){showToast('Item name required.','error');return;}
+    const qty=document.getElementById('ai-qty').value;
+    inventory.push({name,category:document.getElementById('ai-cat').value,size:document.getElementById('ai-size').value.trim(),qty,remaining:qty,cost:document.getElementById('ai-cost').value,notes:''});
+    closeAddItemModal();
+    persistAll(()=>{renderInventory();updateStats();showToast('✓ Item added!','success');});
+  }
+
+  function openAddGaModal(){document.getElementById('add-ga-modal').classList.add('open');}
+  function closeAddGaModal(){
+    document.getElementById('add-ga-modal').classList.remove('open');
+    document.getElementById('ag-name').value='';document.getElementById('ag-qty').value='';
+  }
+  function addGiveaway(){
+    const name=document.getElementById('ag-name').value.trim();
+    if(!name){showToast('Giveaway name required.','error');return;}
+    const type=document.getElementById('ag-type').value;
+    giveaways.push({name,type,qty:document.getElementById('ag-qty').value,distributed:'0',assignees:[],notes:''});
+    closeAddGaModal();
+    persistAll(()=>{renderGiveaways();showToast('✓ Giveaway added!','success');});
+  }
+
+  // ── TABS ──
+  function switchTab(tab,btn){
+    ['inventory','giveaway','vendor'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+    document.getElementById('tab-'+tab).style.display='block';
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── FIRESTORE ──
+  function persistAll(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({merchInventory:inventory,giveaways,merchVendors:vendors})
+      .then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
 </script>
-  
 </body>
 </html>
