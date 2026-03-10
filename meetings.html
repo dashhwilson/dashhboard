@@ -799,7 +799,10 @@
       'If no action items exist, return [].';
 
     try {
-      var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      // ── REPLACE THIS URL with your Cloudflare Worker URL after deploying ai-proxy-worker.js ──
+      var PROXY_URL = 'https://ai-proxy.YOUR-SUBDOMAIN.workers.dev';
+
+      var resp = await fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
