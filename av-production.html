@@ -1,24 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AV Production</title>
-  <link rel="stylesheet" href="/dashhboard/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AV Production | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;
+      --green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;
+      --muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
+    .page-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px;}
+    .page-title-row h1{font-size:26px;font-weight:900;letter-spacing:-0.02em;}
+    .page-title-row h1 span{color:var(--purple);}
+
+    /* ROOM TABS */
+    .tabs-row{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+    .tab{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:10px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+    .tab:hover{border-color:var(--purple);color:var(--navy);}
+    .tab.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-add-room{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+    .btn-add-room:hover{background:#2d2d5a;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:28px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:18px;font-weight:800;margin-bottom:18px;}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--navy);background:#fafafa;margin-bottom:12px;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-primary:hover{background:#2d2d5a;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+    /* ROOM HERO */
+    .room-hero{background:linear-gradient(135deg,var(--navy) 0%,#2d2d5a 100%);border-radius:14px;padding:22px 26px;color:white;margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;}
+    .room-hero h2{font-size:22px;font-weight:900;margin-bottom:4px;}
+    .room-hero-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;}
+    .room-hero-meta span{font-size:13px;opacity:0.75;}
+    .btn-delete-room{background:rgba(229,90,90,0.2);border:1px solid rgba(229,90,90,0.3);color:#ffaaaa;padding:7px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* GRID */
+    .sections-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:800px){.sections-grid{grid-template-columns:1fr;}}
+    .section-wide{grid-column:span 2;}
+    @media(max-width:800px){.section-wide{grid-column:span 1;}}
+
+    /* CARDS */
+    .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-hdr{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .card-hdr h3{font-size:14px;font-weight:800;}
+    .card-body{padding:16px 18px;}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
+
+    /* TABLES */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#f8f8fc;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody td{padding:7px 8px;border-bottom:1px solid #f4f4fb;vertical-align:middle;font-size:13px;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:#fafafe;}
+    .ti{border:1.5px solid transparent;border-radius:6px;padding:5px 8px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:transparent;width:100%;transition:border-color 0.2s;}
+    .ti:focus{outline:none;border-color:var(--purple);background:white;}
+    .ti.w{min-width:120px;}.ti.n{min-width:70px;width:80px;}
+    .btn-rm{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:3px 5px;border-radius:4px;transition:color 0.2s;}
+    .btn-rm:hover{color:var(--red);}
+    .btn-add-row{background:var(--purple-light);color:var(--purple);border:none;padding:6px 13px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .btn-add-row:hover{background:#dde3f8;}
+    .btn-save-section{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;}
+    .btn-save-section:hover{background:#2d2d5a;}
+
+    /* ROS */
+    .ros-row{display:grid;grid-template-columns:90px 90px 1fr 130px 1fr auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid #f4f4fb;}
+    .ros-row:last-child{border-bottom:none;}
+    .ros-hdr{display:grid;grid-template-columns:90px 90px 1fr 130px 1fr auto;gap:6px;padding:6px 0 8px;border-bottom:1px solid var(--border);}
+    .ros-hdr span{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+
+    /* SCHEDULE */
+    .sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+    .sched-item{display:flex;flex-direction:column;gap:4px;}
+    .sched-item label{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+
+    /* NOTES */
+    .notes-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:80px;background:#fafafa;transition:border-color 0.2s;}
+    .notes-ta:focus{outline:none;border-color:var(--purple);background:white;}
+
+    /* EMPTY */
+    .empty-state{background:var(--white);border-radius:14px;padding:52px 32px;text-align:center;box-shadow:var(--shadow);border:2px dashed #dde;}
+    .empty-state .ei{font-size:44px;margin-bottom:12px;}
+    .empty-state h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+    .empty-state p{color:var(--muted);font-size:14px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+
+    /* STATUS BADGES */
+    .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.04em;}
+    .badge-pending{background:#fff8e0;color:#b08000;}
+    .badge-confirmed{background:#e8f5ee;color:var(--green);}
+    .badge-na{background:#f4f4fb;color:var(--muted);}
+  </style>
 </head>
 <body>
-  <div class="container">
-    <nav class="menu">
-      <a href="/dashhboard/overview.html">Overview</a>
-      <a href="/dashhboard/creative-content.html">Creative Content</a>
-      <a href="/dashhboard/av-production.html" class="active">AV Production</a>
-      <a href="/dashhboard/venues.html">Venues</a>
-      <a href="/dashhboard/merch-inventory.html">Merch Inventory</a>
-      <a href="/dashhboard/sponsor-tracker.html">Sponsor Tracker</a>
-    </nav>
-    <main>
-      <h1>AV Production Page</h1>
-    </main>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
   </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html" class="active">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">🎛️</div>Loading AV Production...</div>
+
+<div class="page" id="page-content" style="display:none;">
+  <div class="page-title-row">
+    <div>
+      <h1>AV <span>Production</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+    </div>
+  </div>
+
+  <!-- ROOM TABS -->
+  <div class="tabs-row">
+    <div class="tabs" id="room-tabs"></div>
+    <button class="btn-add-room" onclick="openAddModal()">+ Add Room / Stage</button>
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <div class="ei">🎛️</div>
+    <h3>No rooms or stages yet</h3>
+    <p>Click <strong>+ Add Room / Stage</strong> to get started.</p>
+  </div>
+
+  <div id="rooms-container"></div>
+</div>
+
+<!-- ADD ROOM MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>🎛️ Add Room / Stage</h3>
+    <label class="fi-lbl">Room / Stage Name *</label>
+    <input class="fi" id="ar-name" placeholder="e.g. Main Stage, Breakout 1" />
+    <label class="fi-lbl">Type</label>
+    <select class="fi" id="ar-type">
+      <option value="">Select type...</option>
+      <option>Main Stage</option><option>Breakout Room</option><option>General Session</option>
+      <option>Outdoor Stage</option><option>Green Room</option><option>Registration Area</option><option>Other</option>
+    </select>
+    <label class="fi-lbl">Capacity</label>
+    <input class="fi" id="ar-cap" type="number" min="0" placeholder="e.g. 500" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-primary" onclick="addRoom()">Add Room</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h3>Delete Room?</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;" id="del-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelModal()">Cancel</button>
+      <button style="background:var(--red);color:white;border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-weight:700;cursor:pointer;" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const firebaseConfig = {
+    apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+    authDomain:"digitaldashh.com",
+    projectId:"quantum-beach-394503",
+    storageBucket:"quantum-beach-394503.firebasestorage.app",
+    messagingSenderId:"1002514430184",
+    appId:"1:1002514430184:web:07ffbe7190df810494b15d"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(), db=firebase.firestore();
+
+  let currentUser=null, activeEventId=localStorage.getItem('activeEventId');
+  let rooms=[], activeIdx=0, pendingDeleteIdx=null, authDone=false;
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
+  });
+
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        rooms=d.avRooms||[];
+        render();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){
+    document.getElementById('page-loader').style.display='none';
+    document.getElementById('page-content').style.display='block';
+  }
+
+  function render(){renderTabs();renderDetail();}
+
+  function renderTabs(){
+    const tabs=document.getElementById('room-tabs');
+    const empty=document.getElementById('empty-state');
+    const container=document.getElementById('rooms-container');
+    if(!rooms.length){tabs.innerHTML='';empty.style.display='block';container.innerHTML='';return;}
+    empty.style.display='none';
+    tabs.innerHTML=rooms.map((r,i)=>`
+      <button class="tab${i===activeIdx?' active':''}" onclick="switchRoom(${i})">
+        🎛️ ${esc(r.name||'Room '+(i+1))}
+      </button>`).join('');
+  }
+
+  function switchRoom(i){activeIdx=i;renderTabs();renderDetail();}
+
+  function renderDetail(){
+    const container=document.getElementById('rooms-container');
+    if(!rooms.length){container.innerHTML='';return;}
+    const r=rooms[activeIdx], ri=activeIdx;
+
+    container.innerHTML=`
+    <div>
+      <!-- ROOM HERO -->
+      <div class="room-hero">
+        <div>
+          <h2>🎛️ ${esc(r.name||'Unnamed Room')}</h2>
+          <div class="room-hero-meta">
+            ${r.type?`<span>🏷️ ${esc(r.type)}</span>`:''}
+            ${r.capacity?`<span>👥 ${esc(r.capacity)} cap.</span>`:''}
+          </div>
+        </div>
+        <button class="btn-delete-room" onclick="openDelModal(${ri})">🗑 Delete Room</button>
+      </div>
+
+      <div class="sections-grid">
+
+        <!-- AV EQUIPMENT ORDER -->
+        <div class="card section-wide">
+          <div class="card-hdr">
+            <h3>📋 AV Equipment Order</h3>
+            <span class="saved-flash" id="flash-eq-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Item / Equipment</th><th>Qty</th><th>Vendor</th><th>Status</th><th>Est. Cost</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="eq-tbody-${ri}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addEqRow(${ri})">+ Add Item</button>
+            <button class="btn-save-section" onclick="saveEq(${ri})">💾 Save Equipment</button>
+          </div>
+        </div>
+
+        <!-- TECH STAFF -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>👷 Tech Staff Assignments</h3>
+            <span class="saved-flash" id="flash-staff-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Role</th><th>Call Time</th><th>Phone</th><th></th></tr></thead>
+                <tbody id="staff-tbody-${ri}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addStaffRow(${ri})">+ Add Staff</button>
+            <button class="btn-save-section" onclick="saveStaff(${ri})">💾 Save Staff</button>
+          </div>
+        </div>
+
+        <!-- AV CONTACTS / VENDOR -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>📞 AV Contacts & Vendors</h3>
+            <span class="saved-flash" id="flash-contacts-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Company</th><th>Role</th><th>Email</th><th>Phone</th><th></th></tr></thead>
+                <tbody id="contacts-tbody-${ri}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addContactRow(${ri})">+ Add Contact</button>
+            <button class="btn-save-section" onclick="saveContacts(${ri})">💾 Save Contacts</button>
+          </div>
+        </div>
+
+        <!-- LOAD-IN / LOAD-OUT -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>🧭 Load-In / Load-Out Schedule</h3>
+            <span class="saved-flash" id="flash-sched-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="sched-grid">
+              <div class="sched-item"><label>Vendor Arrival</label><input class="fi" type="datetime-local" id="sched-arrival-${ri}" style="margin:0;" /></div>
+              <div class="sched-item"><label>AV Setup Start</label><input class="fi" type="datetime-local" id="sched-setup-${ri}" style="margin:0;" /></div>
+              <div class="sched-item"><label>Sound Check</label><input class="fi" type="datetime-local" id="sched-soundcheck-${ri}" style="margin:0;" /></div>
+              <div class="sched-item"><label>Doors Open</label><input class="fi" type="datetime-local" id="sched-doors-${ri}" style="margin:0;" /></div>
+              <div class="sched-item"><label>Show Start</label><input class="fi" type="datetime-local" id="sched-show-${ri}" style="margin:0;" /></div>
+              <div class="sched-item"><label>Strike / Load-Out</label><input class="fi" type="datetime-local" id="sched-strike-${ri}" style="margin:0;" /></div>
+            </div>
+            <button class="btn-save-section" onclick="saveSched(${ri})">💾 Save Schedule</button>
+          </div>
+        </div>
+
+        <!-- RUN OF SHOW -->
+        <div class="card section-wide">
+          <div class="card-hdr">
+            <h3>🎬 Run of Show</h3>
+            <span class="saved-flash" id="flash-ros-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="ros-hdr">
+              <span>Start</span><span>End</span><span>Segment</span><span>Speaker / Talent</span><span>AV Notes</span><span></span>
+            </div>
+            <div id="ros-list-${ri}"></div>
+            <button class="btn-add-row" onclick="addRosRow(${ri})">+ Add Segment</button>
+            <button class="btn-save-section" onclick="saveRos(${ri})">💾 Save Run of Show</button>
+          </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="card section-wide">
+          <div class="card-hdr">
+            <h3>📝 AV Notes & Instructions</h3>
+            <span class="saved-flash" id="flash-notes-${ri}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <textarea class="notes-ta" id="notes-ta-${ri}" placeholder="General AV notes, technical requirements, special instructions..."></textarea>
+            <button class="btn-save-section" onclick="saveNotes(${ri})">💾 Save Notes</button>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+
+    populateEq(ri);
+    populateStaff(ri);
+    populateContacts(ri);
+    populateSched(ri);
+    populateRos(ri);
+    populateNotes(ri);
+  }
+
+  // ── EQUIPMENT ──
+  function populateEq(ri){
+    const rows=rooms[ri].equipment||[];
+    const tbody=document.getElementById(`eq-tbody-${ri}`);
+    tbody.innerHTML='';
+    if(!rows.length){addEqRow(ri);return;}
+    rows.forEach(r=>tbody.appendChild(makeEqRow(ri,r)));
+  }
+  function makeEqRow(ri,r={}){
+    const tr=document.createElement('tr');
+    const statuses=['Pending','Confirmed','Cancelled','N/A'];
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.item||'')}" placeholder="e.g. LED Wall 10x20" /></td>
+      <td><input class="ti n" type="number" min="1" value="${r.qty||''}" placeholder="1" /></td>
+      <td><input class="ti w" value="${esc(r.vendor||'')}" placeholder="Vendor name" /></td>
+      <td><select class="ti">${statuses.map(s=>`<option${r.status===s?' selected':''}>${s}</option>`).join('')}</select></td>
+      <td><input class="ti n" value="${esc(r.cost||'')}" placeholder="$0" /></td>
+      <td><input class="ti w" value="${esc(r.notes||'')}" placeholder="Notes..." /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addEqRow(ri){document.getElementById(`eq-tbody-${ri}`).appendChild(makeEqRow(ri));}
+  function saveEq(ri){
+    const rows=[...document.querySelectorAll(`#eq-tbody-${ri} tr`)].map(tr=>{
+      const c=tr.querySelectorAll('input,select');
+      return{item:c[0].value,qty:c[1].value,vendor:c[2].value,status:c[3].value,cost:c[4].value,notes:c[5].value};
+    }).filter(r=>r.item);
+    rooms[ri].equipment=rows;
+    persist(()=>flash(`flash-eq-${ri}`));
+  }
+
+  // ── TECH STAFF ──
+  function populateStaff(ri){
+    const rows=rooms[ri].staff||[];
+    const tbody=document.getElementById(`staff-tbody-${ri}`);
+    tbody.innerHTML='';
+    if(!rows.length){addStaffRow(ri);return;}
+    rows.forEach(r=>tbody.appendChild(makeStaffRow(ri,r)));
+  }
+  function makeStaffRow(ri,r={}){
+    const tr=document.createElement('tr');
+    const roles=['Audio Engineer','Video Engineer','TD / Technical Director','Lighting Tech','Stage Manager','Crew / General','Other'];
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.name||'')}" placeholder="Name" /></td>
+      <td><select class="ti">${roles.map(s=>`<option${r.role===s?' selected':''}>${s}</option>`).join('')}</select></td>
+      <td><input class="ti" type="time" value="${r.callTime||''}" /></td>
+      <td><input class="ti w" value="${esc(r.phone||'')}" placeholder="Phone" /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addStaffRow(ri){document.getElementById(`staff-tbody-${ri}`).appendChild(makeStaffRow(ri));}
+  function saveStaff(ri){
+    const rows=[...document.querySelectorAll(`#staff-tbody-${ri} tr`)].map(tr=>{
+      const c=tr.querySelectorAll('input,select');
+      return{name:c[0].value,role:c[1].value,callTime:c[2].value,phone:c[3].value};
+    }).filter(r=>r.name);
+    rooms[ri].staff=rows;
+    persist(()=>flash(`flash-staff-${ri}`));
+  }
+
+  // ── CONTACTS ──
+  function populateContacts(ri){
+    const rows=rooms[ri].contacts||[];
+    const tbody=document.getElementById(`contacts-tbody-${ri}`);
+    tbody.innerHTML='';
+    if(!rows.length){addContactRow(ri);return;}
+    rows.forEach(r=>tbody.appendChild(makeContactRow(ri,r)));
+  }
+  function makeContactRow(ri,r={}){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.name||'')}" placeholder="Name" /></td>
+      <td><input class="ti w" value="${esc(r.company||'')}" placeholder="Company" /></td>
+      <td><input class="ti w" value="${esc(r.role||'')}" placeholder="Role" /></td>
+      <td><input class="ti w" value="${esc(r.email||'')}" placeholder="Email" /></td>
+      <td><input class="ti w" value="${esc(r.phone||'')}" placeholder="Phone" /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addContactRow(ri){document.getElementById(`contacts-tbody-${ri}`).appendChild(makeContactRow(ri));}
+  function saveContacts(ri){
+    const rows=[...document.querySelectorAll(`#contacts-tbody-${ri} tr`)].map(tr=>{
+      const c=tr.querySelectorAll('input');
+      return{name:c[0].value,company:c[1].value,role:c[2].value,email:c[3].value,phone:c[4].value};
+    }).filter(r=>r.name);
+    rooms[ri].contacts=rows;
+    persist(()=>flash(`flash-contacts-${ri}`));
+  }
+
+  // ── SCHEDULE ──
+  function populateSched(ri){
+    const s=rooms[ri].schedule||{};
+    ['arrival','setup','soundcheck','doors','show','strike'].forEach(k=>{
+      const el=document.getElementById(`sched-${k}-${ri}`);
+      if(el)el.value=s[k]||'';
+    });
+  }
+  function saveSched(ri){
+    const s={};
+    ['arrival','setup','soundcheck','doors','show','strike'].forEach(k=>{
+      const el=document.getElementById(`sched-${k}-${ri}`);
+      if(el)s[k]=el.value;
+    });
+    rooms[ri].schedule=s;
+    persist(()=>flash(`flash-sched-${ri}`));
+  }
+
+  // ── RUN OF SHOW ──
+  function populateRos(ri){
+    const rows=rooms[ri].runOfShow||[];
+    const list=document.getElementById(`ros-list-${ri}`);
+    list.innerHTML='';
+    if(!rows.length){addRosRow(ri);return;}
+    rows.forEach(r=>list.appendChild(makeRosRow(ri,r)));
+  }
+  function makeRosRow(ri,r={}){
+    const div=document.createElement('div');
+    div.className='ros-row';
+    div.innerHTML=`
+      <input class="ti" type="time" value="${r.start||''}" />
+      <input class="ti" type="time" value="${r.end||''}" />
+      <input class="ti w" value="${esc(r.segment||'')}" placeholder="Segment name" />
+      <input class="ti w" value="${esc(r.talent||'')}" placeholder="Speaker / Talent" />
+      <input class="ti w" value="${esc(r.avNotes||'')}" placeholder="AV cues, notes..." />
+      <button class="btn-rm" onclick="this.closest('.ros-row').remove()">✕</button>`;
+    return div;
+  }
+  function addRosRow(ri){document.getElementById(`ros-list-${ri}`).appendChild(makeRosRow(ri));}
+  function saveRos(ri){
+    const rows=[...document.querySelectorAll(`#ros-list-${ri} .ros-row`)].map(div=>{
+      const c=div.querySelectorAll('input');
+      return{start:c[0].value,end:c[1].value,segment:c[2].value,talent:c[3].value,avNotes:c[4].value};
+    }).filter(r=>r.segment);
+    rooms[ri].runOfShow=rows;
+    persist(()=>flash(`flash-ros-${ri}`));
+  }
+
+  // ── NOTES ──
+  function populateNotes(ri){
+    const el=document.getElementById(`notes-ta-${ri}`);
+    if(el)el.value=rooms[ri].notes||'';
+  }
+  function saveNotes(ri){
+    rooms[ri].notes=document.getElementById(`notes-ta-${ri}`).value.trim();
+    persist(()=>flash(`flash-notes-${ri}`));
+  }
+
+  // ── ADD ROOM MODAL ──
+  function openAddModal(){document.getElementById('add-modal').classList.add('open');}
+  function closeAddModal(){
+    document.getElementById('add-modal').classList.remove('open');
+    ['ar-name','ar-cap'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ar-type').value='';
+  }
+  function addRoom(){
+    const name=document.getElementById('ar-name').value.trim();
+    if(!name){showToast('Room name required.','error');return;}
+    rooms.push({
+      name,
+      type:document.getElementById('ar-type').value,
+      capacity:document.getElementById('ar-cap').value,
+      equipment:[],staff:[],contacts:[],schedule:{},runOfShow:[],notes:''
+    });
+    activeIdx=rooms.length-1;
+    closeAddModal();
+    persist(()=>{render();showToast('✓ Room added!','success');});
+  }
+
+  // ── DELETE ──
+  function openDelModal(ri){
+    pendingDeleteIdx=ri;
+    document.getElementById('del-msg').textContent=`Permanently delete "${rooms[ri].name}"? All data will be lost.`;
+    document.getElementById('del-modal').classList.add('open');
+  }
+  function closeDelModal(){document.getElementById('del-modal').classList.remove('open');pendingDeleteIdx=null;}
+  function confirmDelete(){
+    if(pendingDeleteIdx===null)return;
+    rooms.splice(pendingDeleteIdx,1);
+    activeIdx=Math.max(0,activeIdx-1);
+    closeDelModal();
+    persist(()=>{render();showToast('🗑 Room deleted.','success');});
+  }
+
+  // ── FIRESTORE ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({avRooms:rooms})
+      .then(()=>{if(cb)cb();})
+      .catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
+</script>
 </body>
 </html>
