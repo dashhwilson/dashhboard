@@ -1,68 +1,703 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Venues | Digital Dashh</title>
-  <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #1c1c3a;
+    :root {
+      --navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;
+      --green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;
+      --muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);
     }
-    body.production-theme { background-color: #eef1fb; --accent-color: #8da5e2; }
-    body.client-theme { background-color: #e9edf3; --accent-color: #2c3e50; }
-    body.partner-theme { background-color: #fdf1f5; --accent-color: #f8a9c4; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
 
-    .header {
-      background-color: #1c1c3a;
-      color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .header h1 { margin: 0; font-size: 22px; }
-    .header a {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      font-weight: bold;
-      margin-right: 10px;
-    }
+    /* HEADER / NAV */
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
 
-    .menu {
-      background-color: #ffffff;
-      padding: 10px 30px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .menu a {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    /* PAGE */
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
+    .page-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px;}
+    .page-title-row h1{font-size:26px;font-weight:900;letter-spacing:-0.02em;}
+    .page-title-row h1 span{color:var(--purple);}
+    .event-badge{background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
 
-    .view-toggle-bar {
-      display: flex;
+    /* VENUE TABS */
+    .venue-tabs-row{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+    .venue-tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+    .venue-tab{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:10px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+    .venue-tab:hover{border-color:var(--purple);color:var(--navy);}
+    .venue-tab.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-add-venue{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+    .btn-add-venue:hover{background:#2d2d5a;}
+
+    /* ADD VENUE MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:18px;font-weight:800;margin-bottom:18px;}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--navy);background:#fafafa;margin-bottom:12px;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background 0.2s;}
+    .btn-primary:hover{background:#2d2d5a;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+    /* VENUE DETAIL */
+    .venue-detail{display:none;}
+    .venue-detail.active{display:block;}
+
+    /* VENUE HEADER CARD */
+    .venue-hero{background:linear-gradient(135deg,var(--navy) 0%,#2d2d5a 100%);border-radius:14px;padding:22px 26px;color:white;margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;}
+    .venue-hero-left h2{font-size:22px;font-weight:900;margin-bottom:4px;}
+    .venue-hero-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;}
+    .venue-hero-meta span{font-size:13px;opacity:0.75;}
+    .venue-hero-actions{display:flex;gap:8px;flex-shrink:0;}
+    .btn-edit-venue{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:7px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-delete-venue{background:rgba(229,90,90,0.2);border:1px solid rgba(229,90,90,0.3);color:#ffaaaa;padding:7px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* SECTIONS GRID */
+    .sections-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:800px){.sections-grid{grid-template-columns:1fr;}}
+    .section-wide{grid-column:span 2;}
+    @media(max-width:800px){.section-wide{grid-column:span 1;}}
+
+    /* CARDS */
+    .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-hdr{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .card-hdr h3{font-size:14px;font-weight:800;}
+    .card-body{padding:16px 18px;}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
+
+    /* TABLE */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#f8f8fc;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody td{padding:8px 8px;border-bottom:1px solid #f4f4fb;vertical-align:middle;font-size:13px;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:#fafafe;}
+    .ti{border:1.5px solid transparent;border-radius:6px;padding:5px 8px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:transparent;width:100%;transition:border-color 0.2s;}
+    .ti:focus{outline:none;border-color:var(--purple);background:white;}
+    .ti.w{min-width:110px;}.ti.n{min-width:70px;width:80px;}
+    .btn-rm{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:3px 5px;border-radius:4px;transition:color 0.2s;}
+    .btn-rm:hover{color:var(--red);}
+    .btn-add-row{background:var(--purple-light);color:var(--purple);border:none;padding:6px 13px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .btn-add-row:hover{background:#dde3f8;}
+    .btn-save-section{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;transition:background 0.2s;}
+    .btn-save-section:hover{background:#2d2d5a;}
+
+    /* NOTES */
+    .notes-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:80px;background:#fafafa;transition:border-color 0.2s;}
+    .notes-ta:focus{outline:none;border-color:var(--purple);background:white;}
+
+    /* BUDGET CHART */
+    .budget-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+    .budget-item{display:flex;flex-direction:column;gap:4px;}
+    .budget-item label{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+
+    /* EMPTY / LOADING */
+    .empty-venues{background:var(--white);border-radius:14px;padding:52px 32px;text-align:center;box-shadow:var(--shadow);border:2px dashed #dde;}
+    .empty-venues .ei{font-size:44px;margin-bottom:12px;}
+    .empty-venues h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+    .empty-venues p{color:var(--muted);font-size:14px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html" class="active">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">🏨</div>Loading venues...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <div class="page-title-row">
+    <div>
+      <h1>Event <span>Venues</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+    </div>
+    <span class="event-badge" id="event-badge">—</span>
+  </div>
+
+  <!-- VENUE TABS + ADD BUTTON -->
+  <div class="venue-tabs-row">
+    <div class="venue-tabs" id="venue-tabs"></div>
+    <button class="btn-add-venue" onclick="openAddVenueModal()">+ Add Venue</button>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-venues" id="empty-state" style="display:none;">
+    <div class="ei">🏨</div>
+    <h3>No venues yet</h3>
+    <p>Click <strong>+ Add Venue</strong> to get started.</p>
+  </div>
+
+  <!-- VENUE DETAILS (rendered per venue) -->
+  <div id="venues-container"></div>
+
+</div>
+
+<!-- ADD VENUE MODAL -->
+<div class="modal-overlay" id="add-venue-modal">
+  <div class="modal">
+    <h3>➕ Add Venue</h3>
+    <label class="fi-lbl">Venue Name *</label>
+    <input class="fi" id="av-name" placeholder="e.g. Grand Hyatt Austin" />
+    <label class="fi-lbl">Address</label>
+    <input class="fi" id="av-address" placeholder="e.g. 123 Main St, Austin TX" />
+    <label class="fi-lbl">Venue Type</label>
+    <select class="fi" id="av-type">
+      <option value="">Select type...</option>
+      <option>Hotel</option><option>Conference Center</option><option>Ballroom</option>
+      <option>Outdoor</option><option>Arena</option><option>Restaurant</option><option>Other</option>
+    </select>
+    <label class="fi-lbl">Primary Contact Name</label>
+    <input class="fi" id="av-contact" placeholder="e.g. Jordan Williams" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddVenueModal()">Cancel</button>
+      <button class="btn-primary" onclick="addVenue()">Add Venue</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h3>Delete Venue?</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;" id="del-msg">This will permanently remove this venue and all its data.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDelModal()">Cancel</button>
+      <button style="background:var(--red);color:white;border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-weight:700;cursor:pointer;" onclick="confirmDeleteVenue()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const firebaseConfig = {
+    apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+    authDomain:"digitaldashh.com",
+    projectId:"quantum-beach-394503",
+    storageBucket:"quantum-beach-394503.firebasestorage.app",
+    messagingSenderId:"1002514430184",
+    appId:"1:1002514430184:web:07ffbe7190df810494b15d"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(), db=firebase.firestore();
+
+  let currentUser=null, activeEventId=localStorage.getItem('activeEventId');
+  let venues=[], activeVenueIdx=0, pendingDeleteIdx=null;
+  let chartInstances={};
+  let authDone=false;
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
+  });
+
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        document.getElementById('event-badge').textContent=d.eventName||'—';
+        venues=d.venues||[];
+        render();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){
+    document.getElementById('page-loader').style.display='none';
+    document.getElementById('page-content').style.display='block';
+  }
+
+  function render(){
+    renderTabs();
+    renderVenueDetail();
+  }
+
+  function renderTabs(){
+    const tabs=document.getElementById('venue-tabs');
+    const empty=document.getElementById('empty-state');
+    const container=document.getElementById('venues-container');
+    if(!venues.length){
+      tabs.innerHTML=''; empty.style.display='block'; container.innerHTML=''; return;
+    }
+    empty.style.display='none';
+    tabs.innerHTML=venues.map((v,i)=>`
+      <button class="venue-tab${i===activeVenueIdx?' active':''}" onclick="switchVenue(${i})">
+        🏨 ${esc(v.name||'Venue '+(i+1))}
+      </button>`).join('');
+  }
+
+  function switchVenue(i){
+    activeVenueIdx=i;
+    renderTabs();
+    renderVenueDetail();
+  }
+
+  function renderVenueDetail(){
+    const container=document.getElementById('venues-container');
+    if(!venues.length){container.innerHTML='';return;}
+    const v=venues[activeVenueIdx];
+    const vi=activeVenueIdx;
+
+    // Destroy old chart if exists
+    if(chartInstances[vi]){chartInstances[vi].destroy();delete chartInstances[vi];}
+
+    container.innerHTML=`
+    <div class="venue-detail active" id="vd-${vi}">
+
+      <!-- VENUE HERO -->
+      <div class="venue-hero">
+        <div class="venue-hero-left">
+          <h2>${esc(v.name||'Unnamed Venue')}</h2>
+          <div class="venue-hero-meta">
+            ${v.address?`<span>📍 ${esc(v.address)}</span>`:''}
+            ${v.type?`<span>🏷️ ${esc(v.type)}</span>`:''}
+            ${v.primaryContact?`<span>🧑‍💼 ${esc(v.primaryContact)}</span>`:''}
+          </div>
+        </div>
+        <div class="venue-hero-actions">
+          <button class="btn-delete-venue" onclick="openDelModal(${vi})">🗑 Delete Venue</button>
+        </div>
+      </div>
+
+      <div class="sections-grid">
+
+        <!-- ROOM BLOCKS -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>🏨 Room Blocks</h3>
+            <span class="saved-flash" id="flash-rooms-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Hotel / Block Name</th><th>Check-in</th><th>Check-out</th><th>Rooms</th><th>Rate/Night</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="rooms-tbody-${vi}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addRoomRow(${vi})">+ Add Row</button>
+            <button class="btn-save-section" onclick="saveRooms(${vi})">💾 Save Room Blocks</button>
+          </div>
+        </div>
+
+        <!-- VENUE CONTACTS -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>🧑‍💼 Venue Contacts</h3>
+            <span class="saved-flash" id="flash-contacts-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Phone</th><th></th></tr></thead>
+                <tbody id="contacts-tbody-${vi}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addContactRow(${vi})">+ Add Row</button>
+            <button class="btn-save-section" onclick="saveContacts(${vi})">💾 Save Contacts</button>
+          </div>
+        </div>
+
+        <!-- BEO & F&B (wide) -->
+        <div class="card section-wide">
+          <div class="card-hdr">
+            <h3>🍽️ BEO & F&B</h3>
+            <span class="saved-flash" id="flash-beo-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Meal Service</p>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Day</th><th>Meal</th><th>Time</th><th>Description</th><th>Est. Count</th><th></th></tr></thead>
+                <tbody id="meals-tbody-${vi}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addMealRow(${vi})">+ Add Meal</button>
+            <div style="margin-top:18px;">
+              <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Dietary / Allergy Notes</p>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Guest Name</th><th>Allergy / Restriction</th><th>Table / Room</th><th></th></tr></thead>
+                  <tbody id="allergies-tbody-${vi}"></tbody>
+                </table>
+              </div>
+              <button class="btn-add-row" onclick="addAllergyRow(${vi})">+ Add Entry</button>
+            </div>
+            <button class="btn-save-section" onclick="saveBEO(${vi})">💾 Save BEO & F&B</button>
+          </div>
+        </div>
+
+        <!-- VENUE PROVIDED -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>🛠️ Venue-Provided Items</h3>
+            <span class="saved-flash" id="flash-provided-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Category</th><th>Details</th><th></th></tr></thead>
+                <tbody id="provided-tbody-${vi}"></tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addProvidedRow(${vi})">+ Add Item</button>
+            <button class="btn-save-section" onclick="saveProvided(${vi})">💾 Save Items</button>
+          </div>
+        </div>
+
+        <!-- BUDGET BREAKDOWN -->
+        <div class="card">
+          <div class="card-hdr">
+            <h3>💰 Budget Breakdown</h3>
+            <span class="saved-flash" id="flash-budget-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <div class="budget-inputs" id="budget-inputs-${vi}"></div>
+            <canvas id="budget-chart-${vi}" height="200"></canvas>
+            <button class="btn-save-section" onclick="saveBudget(${vi})">💾 Save Budget</button>
+          </div>
+        </div>
+
+        <!-- CONTRACT NOTES (wide) -->
+        <div class="card section-wide">
+          <div class="card-hdr">
+            <h3>📝 Contract & General Notes</h3>
+            <span class="saved-flash" id="flash-notes-${vi}">✓ Saved</span>
+          </div>
+          <div class="card-body">
+            <textarea class="notes-ta" id="notes-ta-${vi}" placeholder="Add contract terms, concessions, important deadlines, or any general venue notes..."></textarea>
+            <button class="btn-save-section" onclick="saveNotes(${vi})">💾 Save Notes</button>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+
+    // Populate all sections
+    populateRooms(vi);
+    populateContacts(vi);
+    populateMeals(vi);
+    populateAllergies(vi);
+    populateProvided(vi);
+    populateBudget(vi);
+    populateNotes(vi);
+  }
+
+  // ── ROOM BLOCKS ──
+  function populateRooms(vi){
+    const rows=venues[vi].roomBlocks||[];
+    const tbody=document.getElementById(`rooms-tbody-${vi}`);
+    tbody.innerHTML='';
+    if(!rows.length){addRoomRow(vi);return;}
+    rows.forEach((_,i)=>tbody.appendChild(makeRoomRow(vi,i,rows[i])));
+  }
+  function makeRoomRow(vi,i,r={}){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.hotel||'')}" placeholder="Hotel name" /></td>
+      <td><input class="ti" type="date" value="${r.checkIn||''}" /></td>
+      <td><input class="ti" type="date" value="${r.checkOut||''}" /></td>
+      <td><input class="ti n" type="number" value="${r.rooms||''}" placeholder="0" min="0" /></td>
+      <td><input class="ti n" value="${esc(r.rate||'')}" placeholder="$0" /></td>
+      <td><input class="ti w" value="${esc(r.notes||'')}" placeholder="Notes..." /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addRoomRow(vi){
+    document.getElementById(`rooms-tbody-${vi}`).appendChild(makeRoomRow(vi,null));
+  }
+  function saveRooms(vi){
+    const rows=[...document.querySelectorAll(`#rooms-tbody-${vi} tr`)].map(tr=>{
+      const inp=tr.querySelectorAll('input');
+      return{hotel:inp[0].value,checkIn:inp[1].value,checkOut:inp[2].value,rooms:inp[3].value,rate:inp[4].value,notes:inp[5].value};
+    }).filter(r=>r.hotel||r.rooms);
+    venues[vi].roomBlocks=rows;
+    persist(()=>flash(`flash-rooms-${vi}`));
+  }
+
+  // ── CONTACTS ──
+  function populateContacts(vi){
+    const rows=venues[vi].contacts||[];
+    const tbody=document.getElementById(`contacts-tbody-${vi}`);
+    tbody.innerHTML='';
+    if(!rows.length){addContactRow(vi);return;}
+    rows.forEach(r=>tbody.appendChild(makeContactRow(vi,r)));
+  }
+  function makeContactRow(vi,r={}){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.name||'')}" placeholder="Name" /></td>
+      <td><input class="ti w" value="${esc(r.role||'')}" placeholder="Role" /></td>
+      <td><input class="ti w" value="${esc(r.email||'')}" placeholder="Email" /></td>
+      <td><input class="ti w" value="${esc(r.phone||'')}" placeholder="Phone" /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addContactRow(vi){
+    document.getElementById(`contacts-tbody-${vi}`).appendChild(makeContactRow(vi));
+  }
+  function saveContacts(vi){
+    const rows=[...document.querySelectorAll(`#contacts-tbody-${vi} tr`)].map(tr=>{
+      const inp=tr.querySelectorAll('input');
+      return{name:inp[0].value,role:inp[1].value,email:inp[2].value,phone:inp[3].value};
+    }).filter(r=>r.name);
+    venues[vi].contacts=rows;
+    persist(()=>flash(`flash-contacts-${vi}`));
+  }
+
+  // ── BEO MEALS ──
+  function populateMeals(vi){
+    const rows=venues[vi].meals||[];
+    const tbody=document.getElementById(`meals-tbody-${vi}`);
+    tbody.innerHTML='';
+    if(!rows.length){addMealRow(vi);return;}
+    rows.forEach(r=>tbody.appendChild(makeMealRow(vi,r)));
+  }
+  function makeMealRow(vi,r={}){
+    const tr=document.createElement('tr');
+    const mealTypes=['Breakfast','Lunch','Dinner','Reception','Break','Banquet','Other'];
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.day||'')}" placeholder="Day 1" /></td>
+      <td><select class="ti">${mealTypes.map(m=>`<option${r.meal===m?' selected':''}>${m}</option>`).join('')}</select></td>
+      <td><input class="ti" type="time" value="${r.time||''}" /></td>
+      <td><input class="ti w" value="${esc(r.description||'')}" placeholder="Menu description..." /></td>
+      <td><input class="ti n" type="number" value="${r.count||''}" placeholder="0" min="0" /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addMealRow(vi){
+    document.getElementById(`meals-tbody-${vi}`).appendChild(makeMealRow(vi));
+  }
+
+  // ── ALLERGIES ──
+  function populateAllergies(vi){
+    const rows=venues[vi].allergies||[];
+    const tbody=document.getElementById(`allergies-tbody-${vi}`);
+    tbody.innerHTML='';
+    rows.forEach(r=>tbody.appendChild(makeAllergyRow(vi,r)));
+  }
+  function makeAllergyRow(vi,r={}){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input class="ti w" value="${esc(r.guest||'')}" placeholder="Guest name" /></td>
+      <td><input class="ti w" value="${esc(r.allergy||'')}" placeholder="e.g. Shellfish, Gluten-free" /></td>
+      <td><input class="ti" value="${esc(r.table||'')}" placeholder="Table / Room" /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addAllergyRow(vi){
+    document.getElementById(`allergies-tbody-${vi}`).appendChild(makeAllergyRow(vi));
+  }
+  function saveBEO(vi){
+    const meals=[...document.querySelectorAll(`#meals-tbody-${vi} tr`)].map(tr=>{
+      const inp=tr.querySelectorAll('input,select');
+      return{day:inp[0].value,meal:inp[1].value,time:inp[2].value,description:inp[3].value,count:inp[4].value};
+    }).filter(r=>r.day||r.description);
+    const allergies=[...document.querySelectorAll(`#allergies-tbody-${vi} tr`)].map(tr=>{
+      const inp=tr.querySelectorAll('input');
+      return{guest:inp[0].value,allergy:inp[1].value,table:inp[2].value};
+    }).filter(r=>r.guest||r.allergy);
+    venues[vi].meals=meals;
+    venues[vi].allergies=allergies;
+    persist(()=>flash(`flash-beo-${vi}`));
+  }
+
+  // ── VENUE PROVIDED ──
+  function populateProvided(vi){
+    const rows=venues[vi].provided||[];
+    const tbody=document.getElementById(`provided-tbody-${vi}`);
+    tbody.innerHTML='';
+    if(!rows.length){addProvidedRow(vi);return;}
+    rows.forEach(r=>tbody.appendChild(makeProvidedRow(vi,r)));
+  }
+  function makeProvidedRow(vi,r={}){
+    const tr=document.createElement('tr');
+    const cats=['AV Equipment','Furniture','Lighting','Catering','Wi-Fi','Parking','Security','Concessions','Other'];
+    tr.innerHTML=`
+      <td><select class="ti">${cats.map(c=>`<option${r.category===c?' selected':''}>${c}</option>`).join('')}</select></td>
+      <td><input class="ti w" value="${esc(r.details||'')}" placeholder="Describe what's included..." /></td>
+      <td><button class="btn-rm" onclick="this.closest('tr').remove()">✕</button></td>`;
+    return tr;
+  }
+  function addProvidedRow(vi){
+    document.getElementById(`provided-tbody-${vi}`).appendChild(makeProvidedRow(vi));
+  }
+  function saveProvided(vi){
+    const rows=[...document.querySelectorAll(`#provided-tbody-${vi} tr`)].map(tr=>{
+      const els=tr.querySelectorAll('input,select');
+      return{category:els[0].value,details:els[1].value};
+    }).filter(r=>r.details);
+    venues[vi].provided=rows;
+    persist(()=>flash(`flash-provided-${vi}`));
+  }
+
+  // ── BUDGET ──
+  const BUDGET_CATS=['F&B','Room Blocks','AV','Decor','Staffing','Other'];
+  function populateBudget(vi){
+    const bud=venues[vi].budget||{};
+    const wrap=document.getElementById(`budget-inputs-${vi}`);
+    wrap.innerHTML=BUDGET_CATS.map(cat=>`
+      <div class="budget-item">
+        <label>${cat}</label>
+        <input class="fi" type="number" min="0" placeholder="$0" value="${bud[cat]||''}" data-cat="${cat}" style="margin:0;" />
+      </div>`).join('');
+    // Attach listeners for live chart update
+    wrap.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('input',()=>renderBudgetChart(vi));
+    });
+    renderBudgetChart(vi);
+  }
+  function renderBudgetChart(vi){
+    const wrap=document.getElementById(`budget-inputs-${vi}`);
+    if(!wrap)return;
+    const vals=BUDGET_CATS.map(cat=>{
+      const inp=wrap.querySelector(`[data-cat="${cat}"]`);
+      return parseFloat(inp?.value)||0;
+    });
+    const ctx=document.getElementById(`budget-chart-${vi}`)?.getContext('2d');
+    if(!ctx)return;
+    if(chartInstances[vi])chartInstances[vi].destroy();
+    chartInstances[vi]=new Chart(ctx,{
+      type:'pie',
+      data:{
+        labels:BUDGET_CATS,
+        datasets:[{data:vals,backgroundColor:['#ffe066','#6c79db','#4caf82','#f5a623','#a78bfa','#60a5fa'],borderColor:'#fff',borderWidth:2}]
+      },
+      options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{family:'Barlow',size:11}}}}}
+    });
+  }
+  function saveBudget(vi){
+    const wrap=document.getElementById(`budget-inputs-${vi}`);
+    const bud={};
+    BUDGET_CATS.forEach(cat=>{
+      const inp=wrap.querySelector(`[data-cat="${cat}"]`);
+      bud[cat]=parseFloat(inp?.value)||0;
+    });
+    venues[vi].budget=bud;
+    persist(()=>flash(`flash-budget-${vi}`));
+  }
+
+  // ── NOTES ──
+  function populateNotes(vi){
+    document.getElementById(`notes-ta-${vi}`).value=venues[vi].notes||'';
+  }
+  function saveNotes(vi){
+    venues[vi].notes=document.getElementById(`notes-ta-${vi}`).value.trim();
+    persist(()=>flash(`flash-notes-${vi}`));
+  }
+
+  // ── ADD VENUE MODAL ──
+  function openAddVenueModal(){
+    document.getElementById('add-venue-modal').classList.add('open');
+  }
+  function closeAddVenueModal(){
+    document.getElementById('add-venue-modal').classList.remove('open');
+    ['av-name','av-address','av-contact'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('av-type').value='';
+  }
+  function addVenue(){
+    const name=document.getElementById('av-name').value.trim();
+    if(!name){showToast('Venue name required.','error');return;}
+    venues.push({
+      name,
+      address:document.getElementById('av-address').value.trim(),
+      type:document.getElementById('av-type').value,
+      primaryContact:document.getElementById('av-contact').value.trim(),
+      roomBlocks:[],contacts:[],meals:[],allergies:[],provided:[],budget:{},notes:''
+    });
+    activeVenueIdx=venues.length-1;
+    closeAddVenueModal();
+    persist(()=>{render();showToast('✓ Venue added!','success');});
+  }
+
+  // ── DELETE VENUE ──
+  function openDelModal(vi){
+    pendingDeleteIdx=vi;
+    document.getElementById('del-msg').textContent=`Permanently delete "${venues[vi].name}"? All venue data will be lost.`;
+    document.getElementById('del-modal').classList.add('open');
+  }
+  function closeDelModal(){
+    document.getElementById('del-modal').classList.remove('open');
+    pendingDeleteIdx=null;
+  }
+  function confirmDeleteVenue(){
+    if(pendingDeleteIdx===null)return;
+    venues.splice(pendingDeleteIdx,1);
+    activeVenueIdx=Math.max(0,activeVenueIdx-1);
+    closeDelModal();
+    persist(()=>{render();showToast('🗑 Venue deleted.','success');});
+  }
+
+  // ── FIRESTORE ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({venues})
+      .then(()=>{if(cb)cb();})
+      .catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
+</script>
+</body>
+</html>      display: flex;
       justify-content: center;
       gap: 10px;
       padding: 12px;
