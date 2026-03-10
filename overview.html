@@ -4,287 +4,513 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Overview | Digital Dashh</title>
-  <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f4f8;
-      color: #1c1c3a;
+    :root {
+      --navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;
+      --green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;
+      --muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);
     }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
 
-    /* Toggle Themes */
-    body.production-theme {
-      background-color: #eef1fb;
-      --accent-color: #8da5e2;
-    }
-    body.client-theme {
-      background-color: #e9edf3;
-      --accent-color: #2c3e50;
-    }
-    body.partner-theme {
-      background-color: #fdf1f5;
-      --accent-color: #f8a9c4;
-    }
+    /* HERO */
+    .hero{background:linear-gradient(135deg,var(--navy) 0%,#2d2d5a 100%);border-radius:18px;padding:32px 36px;color:white;margin-bottom:26px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;box-shadow:0 8px 32px rgba(28,28,58,0.18);position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,224,102,0.06);border-radius:50%;}
+    .hero-left{flex:1;min-width:0;}
+    .hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--yellow);margin-bottom:8px;opacity:0.9;}
+    .hero-name{font-size:32px;font-weight:900;letter-spacing:-0.02em;line-height:1.1;margin-bottom:10px;}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:6px;}
+    .hero-meta-item{display:flex;align-items:center;gap:6px;font-size:14px;opacity:0.8;}
+    .hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+    .countdown-block{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:16px 24px;text-align:center;}
+    .countdown-number{font-size:42px;font-weight:900;letter-spacing:-0.03em;color:var(--yellow);line-height:1;}
+    .countdown-label{font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.65;margin-top:4px;}
+    .status-pill{font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:0.05em;}
+    .status-pill.on-track{background:rgba(76,175,130,0.2);color:#7effc7;border:1px solid rgba(76,175,130,0.3);}
+    .status-pill.at-risk{background:rgba(245,166,35,0.2);color:#ffd680;border:1px solid rgba(245,166,35,0.3);}
+    .status-pill.behind{background:rgba(229,90,90,0.2);color:#ffaaaa;border:1px solid rgba(229,90,90,0.3);}
 
-    .header {
-      background-color: #1c1c3a;
-      color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .header h1 { margin: 0; font-size: 22px; }
-    .header .right { text-align: right; }
-    .header a {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
+    /* QUICK STATS */
+    .quick-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:26px;}
+    .qs{background:var(--white);border-radius:13px;padding:18px 20px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .qs.c-purple{border-top-color:var(--purple);}.qs.c-green{border-top-color:var(--green);}
+    .qs.c-orange{border-top-color:var(--orange);}.qs.c-blue{border-top-color:#60a5fa;}
+    .qs-lbl{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+    .qs-val{font-size:24px;font-weight:900;letter-spacing:-0.02em;}
+    .qs-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+    .prog{background:#eef0f8;border-radius:20px;height:4px;margin-top:8px;overflow:hidden;}
+    .prog-fill{height:100%;border-radius:20px;transition:width 0.5s;}
 
-    .menu {
-      background-color: #ffffff;
-      padding: 10px 30px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .menu a {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    /* GRID */
+    .main-grid{display:grid;grid-template-columns:1fr 1fr 320px;gap:22px;align-items:start;}
+    @media(max-width:1000px){.main-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:640px){.main-grid{grid-template-columns:1fr;}}
+    .col{display:flex;flex-direction:column;gap:22px;}
 
-    .view-toggle-bar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-      background-color: #e9e9f2;
-      border-bottom: 1px solid #ccc;
-    }
-    .view-toggle-bar button {
-      font-family: 'Barlow', sans-serif;
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      background-color: var(--accent-color);
-      color: white;
-    }
-    .view-toggle-bar button.active {
-      border: 2px solid white;
-      box-shadow: 0 0 0 2px var(--accent-color);
-    }
+    /* CARDS */
+    .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-hdr{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .card-hdr h3{font-size:14px;font-weight:800;letter-spacing:0.02em;}
+    .card-body{padding:18px 20px;}
+    .lnk{font-size:12px;color:var(--purple);font-weight:700;text-decoration:none;}
+    .lnk:hover{text-decoration:underline;}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-left: 6px solid var(--accent-color, #6c79db);
-    }
-    .card h3, .card h2 { font-size: 18px; margin-top: 0; margin-bottom: 12px; color: #1c1c3a; }
-    .card p, .card label, .card input, .card textarea { font-size: 14px; }
+    /* DETAIL ROWS */
+    .dr{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid #f4f4fb;font-size:14px;gap:12px;}
+    .dr:last-child{border-bottom:none;}
+    .dr-lbl{color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap;flex-shrink:0;}
+    .dr-val{font-weight:700;text-align:right;}
 
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-    }
+    /* STATUS */
+    .field-lbl{font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+    .sel-inp{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;cursor:pointer;transition:border-color 0.2s;}
+    .sel-inp:focus{outline:none;border-color:var(--purple);}
+    .txt-inp{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:90px;transition:border-color 0.2s;background:#fafafa;}
+    .txt-inp:focus{outline:none;border-color:var(--purple);background:white;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background 0.2s;margin-top:10px;}
+    .btn-primary:hover{background:#2d2d5a;}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;margin-left:8px;}
+    .saved-flash.show{opacity:1;}
 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 14px; }
-    table th { background-color: #f4f4f4; }
+    /* MILESTONES */
+    .ms-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f4f4fb;}
+    .ms-item:last-child{border-bottom:none;}
+    .ms-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+    .ms-dot.done{background:var(--green);}.ms-dot.upcoming{background:#d0d4f0;}.ms-dot.overdue{background:var(--red);}
+    .ms-info{flex:1;min-width:0;}
+    .ms-name{font-size:13px;font-weight:700;}
+    .ms-date{font-size:12px;color:var(--muted);margin-top:2px;}
+    .ms-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;flex-shrink:0;align-self:center;}
+    .ms-tag.done{background:#e8f5ee;color:var(--green);}.ms-tag.upcoming{background:var(--purple-light);color:var(--purple);}.ms-tag.overdue{background:#fff0f0;color:var(--red);}
+    .btn-sm{background:var(--purple-light);color:var(--purple);border:none;padding:6px 13px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-sm:hover{background:#dde3f8;}
+    .btn-rm{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:3px 5px;border-radius:4px;transition:color 0.2s;}
+    .btn-rm:hover{color:var(--red);}
 
-    button {
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    /* ADD FORMS */
+    .add-form{background:#fafafe;border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;display:none;}
+    .add-form.open{display:block;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:white;margin-bottom:8px;}
+    .fi:focus{outline:none;border-color:var(--purple);}
+    .form-actions{display:flex;gap:8px;}
+    .btn-add-save{background:var(--purple);color:white;border:none;padding:8px 16px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-add-cancel{background:#eee;color:var(--navy);border:none;padding:8px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
 
-    /* View-specific visibility rules */
-    [data-view] { display: none; }
-    body.production-theme [data-view="production"],
-    body.client-theme [data-view="client"],
-    body.partner-theme [data-view="partner"] {
-      display: block;
-    }
+    /* CONTACTS */
+    .ct-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f4f4fb;}
+    .ct-item:last-child{border-bottom:none;}
+    .ct-avatar{width:36px;height:36px;border-radius:50%;background:var(--purple-light);color:var(--purple);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .ct-info{flex:1;min-width:0;}
+    .ct-name{font-size:13px;font-weight:700;}
+    .ct-role{font-size:12px;color:var(--muted);margin-top:1px;}
+    .ct-email{font-size:12px;color:var(--purple);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+    /* BUDGET ROWS */
+    .br{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f4f4fb;font-size:13px;}
+    .br:last-child{border-bottom:none;}
+    .br .bl{color:var(--muted);font-weight:600;}.br .bv{font-weight:800;}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:18px 0;color:var(--muted);font-size:13px;}
+    .empty .ei{font-size:26px;margin-bottom:6px;}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Digital Dashh | Event Dashboard</h1>
-    <div class="right">
-      <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html" class="active">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">📋</div>Loading overview...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">⚡ Active Event</div>
+      <div class="hero-name" id="hero-name">—</div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">📍 <span id="hero-loc">—</span></div>
+        <div class="hero-meta-item">📅 <span id="hero-date">—</span></div>
+        <div class="hero-meta-item">🏷️ <span id="hero-type">—</span></div>
+        <div class="hero-meta-item">👥 <span id="hero-cap">—</span></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="countdown-block">
+        <div class="countdown-number" id="cd-num">—</div>
+        <div class="countdown-label" id="cd-lbl">Days to Event</div>
+      </div>
+      <span class="status-pill on-track" id="status-pill">✅ On Track</span>
     </div>
   </div>
 
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
-  </div>
-
-  <div class="view-toggle-bar">
-    <button onclick="setView('production')" id="btn-production">Production View</button>
-    <button onclick="setView('client')" id="btn-client">Client View</button>
-    <button onclick="setView('partner')" id="btn-partner">Partner View</button>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <h3>📌 Event Details</h3>
-      <p><strong>Name:</strong> Digital Dashh Conference 2025</p>
-      <p><strong>Location:</strong> Austin, TX</p>
-      <p><strong>Dates:</strong> June 10–12, 2025</p>
-      <p><strong>Event Manager:</strong> D'Ashley Wilson</p>
+  <!-- QUICK STATS -->
+  <div class="quick-stats">
+    <div class="qs c-purple"><div class="qs-lbl">Total Budget</div><div class="qs-val" id="qs-bud">$0</div><div class="qs-sub" id="qs-bud-sub">Not set</div></div>
+    <div class="qs c-orange">
+      <div class="qs-lbl">Spent</div><div class="qs-val" id="qs-spent">$0</div>
+      <div class="qs-sub" id="qs-spent-pct">0% of budget</div>
+      <div class="prog"><div class="prog-fill" id="prog-spend" style="width:0%;background:var(--orange);"></div></div>
     </div>
-
-    <div class="card">
-      <h3>📊 Status</h3>
-      <p><strong>Current:</strong> On Track</p>
-      <p><strong>Notes:</strong> All teams tracking well. AV and content finalizing this week.</p>
+    <div class="qs c-green">
+      <div class="qs-lbl">Registration</div><div class="qs-val" id="qs-reg">0</div>
+      <div class="qs-sub" id="qs-reg-sub">No capacity set</div>
+      <div class="prog"><div class="prog-fill" id="prog-reg" style="width:0%;background:var(--green);"></div></div>
     </div>
-
-    <div class="card">
-      <h3>📅 Key Milestones</h3>
-      <p>Kickoff: Apr 18</p>
-      <p>Walkthrough: Apr 25</p>
-      <p>Final Content: May 2</p>
-      <p>Rehearsal: May 9</p>
-      <p>Go-Live: May 10</p>
-    </div>
-
-    <div class="card">
-      <h3>💰 Budget Overview</h3>
-      <p><strong>Total Budget:</strong> $150,000</p>
-      <p><strong>Spent:</strong> $45,000</p>
-      <p><strong>Remaining:</strong> $105,000</p>
-    </div>
-
-    <div class="card">
-      <h3>📌 Upcoming Deadlines</h3>
-      <p>Finalize stage design – Apr 22</p>
-      <p>Confirm food vendor – Apr 24</p>
-    </div>
-
-    <!-- Example: Card only visible in Client View -->
-    <div class="card" data-view="client">
-      <h3>🔒 Client Access Only</h3>
-      <p>This section is visible only when 'Client View' is active.</p>
+    <div class="qs c-blue">
+      <div class="qs-lbl">Milestones</div><div class="qs-val" id="qs-ms">0/0</div>
+      <div class="qs-sub" id="qs-ms-sub">No milestones</div>
+      <div class="prog"><div class="prog-fill" id="prog-ms" style="width:0%;background:#60a5fa;"></div></div>
     </div>
   </div>
 
-  <script>
-    // Date countdown logic
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
-    document.getElementById('current-date').textContent = dateString;
+  <!-- MAIN GRID -->
+  <div class="main-grid">
 
-    const eventDate = new Date('2025-06-30T00:00:00');
-    const diff = eventDate - today;
-    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+    <!-- COL 1 -->
+    <div class="col">
+      <!-- Event Details -->
+      <div class="card">
+        <div class="card-hdr"><h3>📌 Event Details</h3><a href="events.html" class="lnk">Edit →</a></div>
+        <div class="card-body">
+          <div class="dr"><span class="dr-lbl">Name</span><span class="dr-val" id="d-name">—</span></div>
+          <div class="dr"><span class="dr-lbl">Location</span><span class="dr-val" id="d-loc">—</span></div>
+          <div class="dr"><span class="dr-lbl">Date</span><span class="dr-val" id="d-date">—</span></div>
+          <div class="dr"><span class="dr-lbl">Type</span><span class="dr-val" id="d-type">—</span></div>
+          <div class="dr"><span class="dr-lbl">Capacity</span><span class="dr-val" id="d-cap">—</span></div>
+          <div class="dr"><span class="dr-lbl">Notes</span><span class="dr-val" id="d-notes" style="font-weight:400;color:var(--muted);font-size:13px;">—</span></div>
+        </div>
+      </div>
 
-    // View logic
-    function setView(view) {
-      const body = document.body;
-      const views = ['production', 'client', 'partner'];
+      <!-- Status Notes -->
+      <div class="card">
+        <div class="card-hdr"><h3>📊 Status &amp; Notes</h3><span class="saved-flash" id="notes-flash">✓ Saved</span></div>
+        <div class="card-body">
+          <label class="field-lbl">Overall Status</label>
+          <select class="sel-inp" id="status-sel" onchange="updatePill()">
+            <option value="on-track">✅ On Track</option>
+            <option value="at-risk">⚠️ At Risk</option>
+            <option value="behind">🔴 Behind Schedule</option>
+          </select>
+          <label class="field-lbl">Status Notes</label>
+          <textarea class="txt-inp" id="status-notes" placeholder="Notes on current status, blockers, or updates..."></textarea>
+          <button class="btn-primary" onclick="saveNotes()">💾 Save Notes</button>
+        </div>
+      </div>
+    </div>
 
-      views.forEach(v => body.classList.remove(`${v}-theme`));
-      body.classList.add(`${view}-theme`);
-      localStorage.setItem('dashhboardView', view);
+    <!-- COL 2: Milestones -->
+    <div class="card" style="height:fit-content;">
+      <div class="card-hdr">
+        <h3>🗓️ Key Milestones</h3>
+        <button class="btn-sm" onclick="toggleForm('ms-form')">+ Add</button>
+      </div>
+      <div class="card-body" style="padding-bottom:10px;">
+        <div id="ms-list"><div class="empty"><div class="ei">🗓️</div>No milestones yet</div></div>
+        <div class="add-form" id="ms-form">
+          <div class="form-row">
+            <input class="fi" id="mf-name" placeholder="Milestone name" style="margin:0;" />
+            <input class="fi" id="mf-date" type="date" style="margin:0;" />
+          </div>
+          <select class="fi" id="mf-status">
+            <option value="upcoming">Upcoming</option>
+            <option value="done">Done</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          <div class="form-actions">
+            <button class="btn-add-save" onclick="addMilestone()">Add</button>
+            <button class="btn-add-cancel" onclick="toggleForm('ms-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      views.forEach(v => {
-        const btn = document.getElementById(`btn-${v}`);
-        if (btn) btn.classList.remove('active');
-      });
-      const activeBtn = document.getElementById(`btn-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-    }
+    <!-- COL 3: Sidebar -->
+    <div class="col">
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const savedView = localStorage.getItem('dashhboardView') || 'production';
-      setView(savedView);
-    });
-  </script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+      <!-- Budget Summary -->
+      <div class="card">
+        <div class="card-hdr"><h3>💰 Budget Summary</h3><a href="budget.html" class="lnk">Full Budget →</a></div>
+        <div class="card-body">
+          <div class="br"><span class="bl">Total Budget</span><span class="bv" id="b-total">—</span></div>
+          <div class="br"><span class="bl">Spent</span><span class="bv" id="b-spent">—</span></div>
+          <div class="br"><span class="bl">Remaining</span><span class="bv" id="b-rem">—</span></div>
+          <div class="br"><span class="bl">Overages</span><span class="bv" id="b-over">—</span></div>
+          <div class="prog" style="margin-top:12px;height:6px;"><div class="prog-fill" id="b-prog" style="width:0%;background:var(--orange);height:100%;"></div></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:5px;text-align:right;" id="b-pct">0% spent</div>
+        </div>
+      </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
-      authDomain: "quantum-beach-394503.firebaseapp.com",
-      projectId: "quantum-beach-394503",
-      storageBucket: "quantum-beach-394503.firebasestorage.app",
-      messagingSenderId: "1002514430184",
-      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
-    };
+      <!-- Team Contacts -->
+      <div class="card">
+        <div class="card-hdr"><h3>👥 Team Contacts</h3><button class="btn-sm" onclick="toggleForm('ct-form')">+ Add</button></div>
+        <div class="card-body" style="padding-bottom:10px;">
+          <div id="ct-list"><div class="empty"><div class="ei">👥</div>No contacts yet</div></div>
+          <div class="add-form" id="ct-form">
+            <input class="fi" id="cf-name" placeholder="Full name" />
+            <input class="fi" id="cf-role" placeholder="Role (e.g. AV Lead)" />
+            <input class="fi" id="cf-email" placeholder="Email" type="email" />
+            <div class="form-actions">
+              <button class="btn-add-save" onclick="addContact()">Add</button>
+              <button class="btn-add-cancel" onclick="toggleForm('ct-form')">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+    </div>
+  </div>
+</div>
 
-  <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
+<div class="toast" id="toast"></div>
+
+<script>
+  const firebaseConfig = {
+    apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+    authDomain:"digitaldashh.com",
+    projectId:"quantum-beach-394503",
+    storageBucket:"quantum-beach-394503.firebasestorage.app",
+    messagingSenderId:"1002514430184",
+    appId:"1:1002514430184:web:07ffbe7190df810494b15d"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUser=null, activeEventId=localStorage.getItem('activeEventId'), ev={}, authDone=false;
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
   });
+
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        ev=doc.data(); populate();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){
+    document.getElementById('page-loader').style.display='none';
+    document.getElementById('page-content').style.display='block';
+  }
+
+  function populate(){
+    // Hero
+    document.getElementById('hero-name').textContent=ev.eventName||'Untitled Event';
+    document.getElementById('hero-loc').textContent=ev.eventLocation||'TBD';
+    document.getElementById('hero-type').textContent=ev.eventType||'TBD';
+    document.getElementById('hero-cap').textContent=ev.eventCapacity?ev.eventCapacity+' cap.':'TBD';
+    // Countdown
+    if(ev.eventDate){
+      const dt=new Date(ev.eventDate+'T00:00:00');
+      const diff=Math.ceil((dt-new Date())/(1000*60*60*24));
+      document.getElementById('hero-date').textContent=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      document.getElementById('d-date').textContent=dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+      if(diff>0){document.getElementById('cd-num').textContent=diff;document.getElementById('cd-lbl').textContent='Days to Event';}
+      else if(diff===0){document.getElementById('cd-num').textContent='🎉';document.getElementById('cd-lbl').textContent="It's Today!";}
+      else{document.getElementById('cd-num').textContent=Math.abs(diff);document.getElementById('cd-lbl').textContent='Days Ago';}
+    } else {
+      document.getElementById('hero-date').textContent='Date TBD';
+      document.getElementById('cd-num').textContent='—';
+      document.getElementById('d-date').textContent='Not set';
+    }
+    // Detail rows
+    document.getElementById('d-name').textContent=ev.eventName||'—';
+    document.getElementById('d-loc').textContent=ev.eventLocation||'—';
+    document.getElementById('d-type').textContent=ev.eventType||'—';
+    document.getElementById('d-cap').textContent=ev.eventCapacity?ev.eventCapacity+' people':'—';
+    document.getElementById('d-notes').textContent=ev.notes||'—';
+    // Status
+    const ov=ev.overview||{};
+    const st=ov.status||'on-track';
+    document.getElementById('status-sel').value=st;
+    document.getElementById('status-notes').value=ov.statusNotes||'';
+    applyPill(st);
+    // Budget
+    const b=ev.budget||{};
+    const total=b.total||0,spent=b.spent||0,rem=total-spent;
+    const pct=total>0?Math.min(Math.round(spent/total*100),100):0;
+    const overs=(b.dollarRows||[]).filter(r=>(r.actual||0)>(r.budgeted||0)).length;
+    document.getElementById('qs-bud').textContent=fd(total);
+    document.getElementById('qs-bud-sub').textContent=total>0?'Total allocated':'Not set yet';
+    document.getElementById('qs-spent').textContent=fd(spent);
+    document.getElementById('qs-spent-pct').textContent=pct+'% of budget';
+    document.getElementById('prog-spend').style.width=pct+'%';
+    document.getElementById('b-total').textContent=fd(total);
+    document.getElementById('b-spent').textContent=fd(spent);
+    document.getElementById('b-rem').textContent=fd(rem);
+    document.getElementById('b-rem').style.color=rem<0?'var(--red)':'var(--green)';
+    document.getElementById('b-over').textContent=overs>0?overs+' item'+(overs>1?'s':''):'None ✓';
+    document.getElementById('b-prog').style.width=pct+'%';
+    document.getElementById('b-pct').textContent=pct+'% spent';
+    // Reg
+    const reg=(ev.attendees||[]).length,cap=parseInt(ev.eventCapacity)||0;
+    const rPct=cap>0?Math.min(Math.round(reg/cap*100),100):0;
+    document.getElementById('qs-reg').textContent=reg;
+    document.getElementById('qs-reg-sub').textContent=cap>0?'of '+cap+' capacity':'No capacity set';
+    document.getElementById('prog-reg').style.width=rPct+'%';
+    // Milestones & contacts
+    renderMilestones(ov.milestones||[]);
+    renderContacts(ov.contacts||[]);
+  }
+
+  // STATUS
+  function updatePill(){applyPill(document.getElementById('status-sel').value);}
+  function applyPill(s){
+    const p=document.getElementById('status-pill');
+    p.className='status-pill '+s;
+    p.textContent={
+      'on-track':'✅ On Track','at-risk':'⚠️ At Risk','behind':'🔴 Behind Schedule'
+    }[s]||'On Track';
+  }
+  function saveNotes(){
+    const s=document.getElementById('status-sel').value;
+    const n=document.getElementById('status-notes').value.trim();
+    persist({'overview.status':s,'overview.statusNotes':n},()=>{
+      flash('notes-flash'); applyPill(s);
+    });
+  }
+
+  // MILESTONES
+  function renderMilestones(ms){
+    const done=ms.filter(m=>m.status==='done').length,total=ms.length;
+    const pct=total>0?Math.round(done/total*100):0;
+    document.getElementById('qs-ms').textContent=done+'/'+total;
+    document.getElementById('qs-ms-sub').textContent=total>0?pct+'% complete':'No milestones';
+    document.getElementById('prog-ms').style.width=pct+'%';
+    const el=document.getElementById('ms-list');
+    if(!ms.length){el.innerHTML='<div class="empty"><div class="ei">🗓️</div>No milestones yet</div>';return;}
+    el.innerHTML=ms.map((m,i)=>`
+      <div class="ms-item">
+        <div class="ms-dot ${m.status||'upcoming'}"></div>
+        <div class="ms-info">
+          <div class="ms-name">${esc(m.name)}</div>
+          <div class="ms-date">${m.date?new Date(m.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'No date'}</div>
+        </div>
+        <span class="ms-tag ${m.status||'upcoming'}">${cap1(m.status||'upcoming')}</span>
+        <button class="btn-rm" onclick="removeMilestone(${i})">✕</button>
+      </div>`).join('');
+  }
+  function addMilestone(){
+    const name=document.getElementById('mf-name').value.trim();
+    if(!name){showToast('Name required.','error');return;}
+    const ov=ev.overview||{};
+    const ms=[...(ov.milestones||[]),{name,date:document.getElementById('mf-date').value||null,status:document.getElementById('mf-status').value}];
+    persist({'overview.milestones':ms},()=>{
+      ev.overview={...ov,milestones:ms};
+      renderMilestones(ms);
+      document.getElementById('mf-name').value='';
+      document.getElementById('mf-date').value='';
+      toggleForm('ms-form');
+      showToast('✓ Milestone added!','success');
+    });
+  }
+  function removeMilestone(i){
+    const ov=ev.overview||{};
+    const ms=(ov.milestones||[]).filter((_,idx)=>idx!==i);
+    persist({'overview.milestones':ms},()=>{ev.overview={...ov,milestones:ms};renderMilestones(ms);});
+  }
+
+  // CONTACTS
+  function renderContacts(cs){
+    const el=document.getElementById('ct-list');
+    if(!cs.length){el.innerHTML='<div class="empty"><div class="ei">👥</div>No contacts yet</div>';return;}
+    el.innerHTML=cs.map((c,i)=>`
+      <div class="ct-item">
+        <div class="ct-avatar">${esc(initials(c.name))}</div>
+        <div class="ct-info">
+          <div class="ct-name">${esc(c.name)}</div>
+          <div class="ct-role">${esc(c.role||'—')}</div>
+          ${c.email?`<div class="ct-email">${esc(c.email)}</div>`:''}
+        </div>
+        <button class="btn-rm" onclick="removeContact(${i})">✕</button>
+      </div>`).join('');
+  }
+  function addContact(){
+    const name=document.getElementById('cf-name').value.trim();
+    if(!name){showToast('Name required.','error');return;}
+    const ov=ev.overview||{};
+    const cs=[...(ov.contacts||[]),{name,role:document.getElementById('cf-role').value.trim(),email:document.getElementById('cf-email').value.trim()}];
+    persist({'overview.contacts':cs},()=>{
+      ev.overview={...ov,contacts:cs};
+      renderContacts(cs);
+      ['cf-name','cf-role','cf-email'].forEach(id=>document.getElementById(id).value='');
+      toggleForm('ct-form');
+      showToast('✓ Contact added!','success');
+    });
+  }
+  function removeContact(i){
+    const ov=ev.overview||{};
+    const cs=(ov.contacts||[]).filter((_,idx)=>idx!==i);
+    persist({'overview.contacts':cs},()=>{ev.overview={...ov,contacts:cs};renderContacts(cs);});
+  }
+
+  // FIRESTORE
+  function persist(fields,cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update(fields).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // UTILS
+  function toggleForm(id){document.getElementById(id).classList.toggle('open');}
+  function flash(id){const el=document.getElementById(id);el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function fd(n){const a=Math.abs(n);return(n<0?'-$':'$')+(a>=1000?a.toLocaleString('en-US',{maximumFractionDigits:0}):a);}
+  function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+  function cap1(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
 </script>
-  
 </body>
 </html>
