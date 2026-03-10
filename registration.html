@@ -2,640 +2,568 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registration | Digital Dashh</title>
-  <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 0;
-      color: #1c1c3a;
-    }
-    .header {
-      background-color: #1c1c3a;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .menu {
-      background-color: #ffe066;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-    }
-    .menu a {
-      background-color: #6c79db;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .card {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px 12px;
-      font-size: 14px;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    tr:hover {
-      background-color: #f1f7ff;
-    }
-    button {
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    button:hover {
-      background-color: #5a67d8;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-    input, select {
-      margin-top: 6px;
-      margin-bottom: 10px;
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-      font-size: 14px;
-      transition: background-color 0.3s ease;
-    }
-    input:focus, select:focus {
-      background-color: #f1f7ff;
-      outline: none;
-      border-color: #6c79db;
-    }
-    table input, table select {
-      padding: 4px 6px;
-      font-size: 13px;
-      height: 30px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .divider {
-      margin: 20px 0;
-      border: 0;
-      height: 1px;
-      background: linear-gradient(to right, transparent, #ccc, transparent);
-    }
-    .save-message {
-      color: green;
-      font-weight: bold;
-      margin-top: 8px;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .save-message.show {
-      opacity: 1;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 12px;
-      background-color: #eee;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background-color: #6c79db;
-      width: 0%;
-      border-radius: 8px;
-      transition: width 0.4s ease;
-    }
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px;}
+    .stat{background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .stat.c-purple{border-top-color:var(--purple);}.stat.c-green{border-top-color:var(--green);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-red{border-top-color:var(--red);}.stat.c-blue{border-top-color:#60a5fa;}
+    .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+    .stat-val{font-size:22px;font-weight:900;}
+    .stat-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+    /* CAPACITY BAR */
+    .cap-card{background:var(--white);border-radius:13px;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .cap-label{font-size:13px;font-weight:700;white-space:nowrap;}
+    .cap-bar-wrap{flex:1;min-width:200px;}
+    .cap-bar{background:#eef0f8;border-radius:20px;height:10px;overflow:hidden;}
+    .cap-bar-fill{height:100%;border-radius:20px;background:var(--purple);transition:width 0.5s;}
+    .cap-bar-fill.warn{background:var(--orange);}.cap-bar-fill.full{background:var(--red);}
+    .cap-pct{font-size:13px;font-weight:800;white-space:nowrap;}
+    .cap-edit{display:flex;align-items:center;gap:8px;}
+    .cap-inp{border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-family:'Barlow',sans-serif;font-size:13px;width:90px;color:var(--navy);}
+    .cap-inp:focus{outline:none;border-color:var(--purple);}
+    .btn-cap-save{background:var(--purple);color:white;border:none;padding:7px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+    .toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .filter-btn{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:var(--purple);color:var(--navy);}
+    .filter-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .toolbar-right{display:flex;gap:8px;}
+    .btn-secondary{background:var(--white);color:var(--navy);border:2px solid var(--border);padding:8px 16px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+    .btn-secondary:hover{border-color:var(--purple);}
+    .btn-add{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-add:hover{background:#2d2d5a;}
+    .search-inp{border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:var(--white);width:200px;}
+    .search-inp:focus{outline:none;border-color:var(--purple);}
+
+    /* ATTENDEE TABLE */
+    .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .card-hdr{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+    .card-hdr h3{font-size:14px;font-weight:800;}
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#f8f8fc;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody td{padding:9px 10px;border-bottom:1px solid #f4f4fb;vertical-align:middle;font-size:13px;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:#fafafe;}
+    .avatar{width:30px;height:30px;border-radius:8px;background:var(--purple-light);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+    .att-name{font-weight:700;font-size:13px;}
+    .att-email{font-size:11px;color:var(--muted);}
+
+    /* BADGES */
+    .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;}
+    .b-vip{background:#fff8e0;color:#9a7000;}
+    .b-general{background:var(--purple-light);color:var(--purple);}
+    .b-speaker{background:#e8f5ee;color:var(--green);}
+    .b-press{background:#f0f4ff;color:#4060cc;}
+    .b-staff{background:#f4f4fb;color:var(--muted);}
+    .b-sponsor{background:#fff0f5;color:#cc3366;}
+    .rsvp-confirmed{background:#e8f5ee;color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+    .rsvp-pending{background:#fff8e0;color:#9a7000;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+    .rsvp-declined{background:#fff0f0;color:var(--red);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;}
+    .checkin-yes{background:#d4f0e4;color:#2d8a60;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;cursor:pointer;}
+    .checkin-no{background:#f4f4fb;color:var(--muted);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;cursor:pointer;}
+    .btn-row-edit{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:3px 5px;border-radius:4px;}
+    .btn-row-edit:hover{color:var(--purple);}
+    .btn-row-rm{background:none;border:none;color:#ccc;font-size:13px;cursor:pointer;padding:3px 5px;border-radius:4px;}
+    .btn-row-rm:hover{color:var(--red);}
+
+    /* DIETARY SUMMARY */
+    .dietary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:16px 18px;}
+    .dietary-pill{background:#fafafe;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+    .dp-name{font-size:13px;font-weight:700;}
+    .dp-count{font-size:18px;font-weight:900;color:var(--purple);}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:26px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:17px;font-weight:800;margin-bottom:16px;}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .modal-actions{display:flex;gap:10px;justify-content:space-between;margin-top:16px;flex-wrap:wrap;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;margin-bottom:10px;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:60px;background:#fafafa;margin-bottom:10px;}
+    .fi-ta:focus{outline:none;border-color:var(--purple);background:white;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+    .btn-delete{background:none;border:1.5px solid var(--border);color:var(--red);padding:10px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+    /* CSV MODAL */
+    .csv-modal{max-width:560px;}
+    .csv-preview{background:#f8f8fc;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;font-family:monospace;max-height:160px;overflow-y:auto;color:var(--navy);margin-bottom:10px;}
+
+    /* EXPORT */
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
+    .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+    .empty .ei{font-size:36px;margin-bottom:8px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
   </style>
 </head>
 <body>
-  <div class="header">
-  <span style="float: left; margin-left: 20px;">
-    <a href="index.html" style="color: white; text-decoration: none; font-size: 20px;">🏠 Home</a>
-  </span>
-  Digital Dashh | Registration
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
 </div>
 
-<div class="menu">
+<nav class="nav">
   <a href="overview.html">Overview</a>
   <a href="budget.html">Budget</a>
   <a href="venues.html">Venues</a>
   <a href="av.html">AV Production</a>
   <a href="content.html">Creative Content</a>
-  <a href="sponsor-tracker.html">Sponsor Tracker</a>
-  <a href="merch-inventory.html">Merch Inventory</a>
-</div>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html" class="active">Registration</a>
+</nav>
 
-  <div class="grid">
-    <div class="card">
-       <h3>📋 Select an Event</h3>
-  <label for="eventSelector">Choose Event:</label>
-  <select id="eventSelector" onchange="handleEventSelection(this.value)">
-    <option value="">Loading events...</option>
-  </select>
-  <div style="margin-top: 12px;">
-    <p><strong>Name:</strong> <span id="displayEventName">—</span></p>
-    <p><strong>Location:</strong> <span id="displayEventLocation">—</span></p>
-    <p><strong>Date:</strong> <span id="displayEventDate">—</span></p>
-    <p><strong>Capacity:</strong> <span id="displayEventCapacity">—</span></p>
+<div id="page-loader"><div style="font-size:36px;">🎟️</div>Loading Registration...</div>
+
+<div class="page" id="page-content" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Registration <span style="color:var(--purple);">&amp; Guests</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
     </div>
   </div>
 
-    <div class="card">
-      <h3>📈 Registration Summary</h3>
-      <p id="totalReg">Total Registered: 0</p>
-      <p id="capacity">Capacity: 0</p>
-      <p id="checkedIn">Checked In: 0</p>
-      <p id="remaining">Remaining: 0</p>
-      <hr class="divider">
-      <p id="percentFilled">Capacity Filled: 0%</p>
-      <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
-      <p id="vipGeneralBreakdown">VIPs: 0 | General: 0</p>
-      <p id="statusBreakdown">Confirmed: 0 | Pending: 0  |  Invited: 0 | Declined: 0</p>
-      <p id="invitationCount">Invitations Sent: 0</p>
-      <button onclick="downloadCSV()">📥 Download CSV</button>
-    </div>
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat c-purple"><div class="stat-lbl">Total Registered</div><div class="stat-val" id="st-total">0</div></div>
+    <div class="stat c-green"><div class="stat-lbl">Confirmed</div><div class="stat-val" id="st-confirmed">0</div></div>
+    <div class="stat c-blue"><div class="stat-lbl">Checked In</div><div class="stat-val" id="st-checkedin">0</div><div class="stat-sub" id="st-checkedin-pct"></div></div>
+    <div class="stat c-orange"><div class="stat-lbl">Pending</div><div class="stat-val" id="st-pending">0</div></div>
+    <div class="stat c-red"><div class="stat-lbl">Declined</div><div class="stat-val" id="st-declined">0</div></div>
+  </div>
 
-    <div class="card" style="grid-column: span 2;">
-      <h3>🔎 Filter Attendees</h3>
-      <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-        <div style="flex: 1;">
-          <label for="filterType">Type</label>
-          <select id="filterType" onchange="renderTables()" style="width: 100%;">
-            <option value="">All</option>
-            <option value="VIP">VIP</option>
-            <option value="General">General</option>
-            <option value="Panelist">Panelist</option>
-          </select>
-        </div>
-        <div style="flex: 1;">
-          <label for="filterStatus">Status</label>
-          <select id="filterStatus" onchange="renderTables()" style="width: 100%;">
-            <option value="">All</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Pending">Pending</option>
-               <option value="Invited">Invited</option>
-               <option value="Declined">Declined</option>
-          </select>
-        </div>
+  <!-- CAPACITY BAR -->
+  <div class="cap-card">
+    <span class="cap-label">Capacity</span>
+    <div class="cap-bar-wrap">
+      <div class="cap-bar"><div class="cap-bar-fill" id="cap-fill" style="width:0%;"></div></div>
+    </div>
+    <span class="cap-pct" id="cap-pct">0 / 0</span>
+    <div class="cap-edit">
+      <input class="cap-inp" id="cap-inp" type="number" min="1" placeholder="Max" />
+      <button class="btn-cap-save" onclick="saveCapacity()">Set</button>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input class="search-inp" placeholder="🔍 Search name, email, company..." oninput="searchQ=this.value;renderTable();" />
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('Confirmed',this)">Confirmed</button>
+      <button class="filter-btn" onclick="setFilter('Pending',this)">Pending</button>
+      <button class="filter-btn" onclick="setFilter('Declined',this)">Declined</button>
+      <button class="filter-btn" onclick="setFilter('checkedin',this)">✅ Checked In</button>
+      <button class="filter-btn" onclick="setFilter('VIP',this)">⭐ VIP</button>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn-secondary" onclick="openCSVModal()">📥 Bulk Import</button>
+      <button class="btn-secondary" onclick="exportCSV()">📤 Export CSV</button>
+      <button class="btn-add" onclick="openModal()">+ Add Attendee</button>
+    </div>
+  </div>
+
+  <!-- ATTENDEE TABLE -->
+  <div class="card" style="margin-bottom:22px;">
+    <div class="card-hdr">
+      <h3>🎟️ Attendee List</h3>
+      <span class="saved-flash" id="flash-main">✓ Saved</span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px;"></th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Role / Title</th>
+            <th>Ticket Type</th>
+            <th>RSVP</th>
+            <th>Checked In</th>
+            <th>Dietary</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="att-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DIETARY SUMMARY -->
+  <div class="card">
+    <div class="card-hdr"><h3>🥗 Dietary & Special Requests Summary</h3></div>
+    <div class="dietary-grid" id="dietary-grid"></div>
+  </div>
+</div>
+
+<!-- ADD / EDIT ATTENDEE MODAL -->
+<div class="modal-overlay" id="att-modal">
+  <div class="modal">
+    <h3 id="modal-title">🎟️ Add Attendee</h3>
+    <div class="modal-row">
+      <div><label class="fi-lbl">First Name *</label><input class="fi" id="a-fname" placeholder="First" style="margin:0;" /></div>
+      <div><label class="fi-lbl">Last Name</label><input class="fi" id="a-lname" placeholder="Last" style="margin:0;" /></div>
+    </div>
+    <label class="fi-lbl" style="margin-top:10px;">Email</label>
+    <input class="fi" id="a-email" type="email" placeholder="email@company.com" />
+    <div class="modal-row">
+      <div><label class="fi-lbl">Company</label><input class="fi" id="a-company" placeholder="Company" style="margin:0;" /></div>
+      <div><label class="fi-lbl">Role / Title</label><input class="fi" id="a-role" placeholder="Title" style="margin:0;" /></div>
+    </div>
+    <div class="modal-row" style="margin-top:10px;">
+      <div>
+        <label class="fi-lbl">Ticket Type</label>
+        <select class="fi" id="a-ticket" style="margin:0;">
+          <option>General</option><option>VIP</option><option>Speaker</option>
+          <option>Press</option><option>Staff</option><option>Sponsor</option>
+        </select>
+      </div>
+      <div>
+        <label class="fi-lbl">RSVP Status</label>
+        <select class="fi" id="a-rsvp" style="margin:0;">
+          <option>Confirmed</option><option>Pending</option><option>Declined</option>
+        </select>
       </div>
     </div>
-
-    <div class="card" style="grid-column: span 2;">
-      <h3>👥 Attendee List</h3>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Status</th><th>Actions</th></tr>
-        </thead>
-        <tbody id="attendeeTable"></tbody>
-      </table>
-      <button onclick="addAttendee()">➕ Add Attendee</button>
+    <div class="modal-row" style="margin-top:10px;">
+      <div>
+        <label class="fi-lbl">Dietary Restrictions</label>
+        <input class="fi" id="a-dietary" placeholder="e.g. Vegan, Gluten-free" style="margin:0;" />
+      </div>
+      <div>
+        <label class="fi-lbl">Checked In?</label>
+        <select class="fi" id="a-checkin" style="margin:0;">
+          <option value="no">No</option><option value="yes">Yes</option>
+        </select>
+      </div>
     </div>
-
-<div class="card" style="grid-column: span 2;">
-  <h3>📤 Import Attendees via CSV</h3>
-  <p>You can upload a CSV file with the following format:</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Type (VIP, General, Panelist)</th>
-        <th>Status (Confirmed, Pending, Invited, Declined)</th>
-        <th>Checked In (TRUE or FALSE)</th>
-        <th>Allergies</th>
-        <th>Milk Preference</th>
-        <th>Hotel Needed? (Yes or No)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Jane Doe</td>
-        <td>jane@example.com</td>
-        <td>VIP</td>
-        <td>Confirmed</td>
-        <td>TRUE</td>
-        <td>Peanuts</td>
-        <td>Oat</td>
-        <td>Yes</td>
-      </tr>
-    </tbody>
-  </table>
-  <input type="file" id="csvUpload" accept=".csv">
-  <p id="csvFeedback" style="margin-top: 8px; font-size: 14px; color: #cc3300;"></p>
-<a href="/assets/attendee_template.csv" download>
-  <button>📄 Download Template CSV</button>
-  </a>
-  <button onclick="parseCSV()">📥 Upload CSV</button>
-  
-
-  
-</div>
-    
-    <div class="card" style="grid-column: span 2;">
-      <h3>🍽️ Lodging, Food & Beverage Details</h3>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Allergies</th><th>Milk Preference</th><th>Hotel Needed?</th></tr>
-        </thead>
-        <tbody id="fnbTable"></tbody>
-      </table>
+    <label class="fi-lbl" style="margin-top:10px;">Notes</label>
+    <textarea class="fi-ta" id="a-notes" placeholder="Special requests, seating, access notes..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-delete" id="modal-del-btn" style="display:none;" onclick="deleteAttendee()">🗑 Delete</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveAttendee()">💾 Save</button>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- CSV IMPORT MODAL -->
+<div class="modal-overlay" id="csv-modal">
+  <div class="modal csv-modal">
+    <h3>📥 Bulk Import via CSV</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Paste CSV rows below. Expected columns (in order):<br>
+    <strong>First Name, Last Name, Email, Company, Role, Ticket Type, RSVP, Dietary, Notes</strong><br>
+    Header row is optional — it will be auto-detected and skipped.</p>
+    <textarea class="fi-ta" id="csv-inp" style="min-height:120px;font-family:monospace;font-size:12px;" placeholder="John,Smith,john@co.com,Acme,CEO,VIP,Confirmed,Vegan,
+Jane,Doe,jane@co.com,Beta,CTO,General,Pending,,Needs parking"></textarea>
+    <div id="csv-preview" class="csv-preview" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCSVModal()">Cancel</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" onclick="previewCSV()" style="padding:10px 16px;">Preview</button>
+        <button class="btn-primary" onclick="importCSV()">Import</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
-    authDomain: "digital-dashh.firebaseapp.com",
-    projectId: "digital-dashh",
-    storageBucket: "digital-dashh.appspot.com",
-    messagingSenderId: "535613848097",
-    appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
-  };
-
+  const firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
   firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  const auth=firebase.auth(),db=firebase.firestore();
+  let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
+  let attendees=[],eventCapacity=0,activeFilter='all',searchQ='',editingIdx=null,authDone=false;
 
-  let skipped = 0;
-  let attendees = [], fnbPrefs = [];
-  let userId = null, eventId = localStorage.getItem('activeEventId');
+  const TICKET_BADGE={VIP:'b-vip',General:'b-general',Speaker:'b-speaker',Press:'b-press',Staff:'b-staff',Sponsor:'b-sponsor'};
+  const RSVP_CLASS={Confirmed:'rsvp-confirmed',Pending:'rsvp-pending',Declined:'rsvp-declined'};
 
-  function renderTables() {
-    const attendeeTable = document.getElementById('attendeeTable');
-    const fnbTable = document.getElementById('fnbTable');
-    attendeeTable.innerHTML = '';
-    fnbTable.innerHTML = '';
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
+  });
 
-    const filterType = document.getElementById('filterType')?.value || '';
-    const filterStatus = document.getElementById('filterStatus')?.value || '';
-
-    const typeCounts = {};
-    let confirmedCount = 0, pendingCount = 0, invitedCount = 0, declinedCount = 0;
-
-    let invitationCount = 0;
-
-    
-    attendees.forEach((attendee, index) => {
-      if ((filterType && attendee.type !== filterType) || (filterStatus && attendee.status !== filterStatus)) return;
-
-      const type = attendee.type || "Unknown";
-      if (!typeCounts[type]) typeCounts[type] = 0;
-      typeCounts[type]++;
-
-     if (attendee.status === "Confirmed") confirmedCount++;
-else if (attendee.status === "Pending") pendingCount++;
-else if (attendee.status === "Invited") invitedCount++;
-else if (attendee.status === "Declined") declinedCount++;
-
-      if (
-  attendee.status === "Invited" ||
-  attendee.status === "Confirmed" ||
-  attendee.status === "Declined"
-) {
-  invitationCount++;
-}
-   attendeeTable.innerHTML += 
-  `<tr>
-    <td><input type="text" value="${attendee.name}" onchange="updateAttendee(${index}, 'name', this.value)"></td>
-    <td><input type="email" value="${attendee.email}" onchange="updateAttendee(${index}, 'email', this.value)"></td>
-    <td>
-      <select onchange="updateAttendee(${index}, 'type', this.value)">
-        <option value="VIP" ${attendee.type==='VIP'?'selected':''}>VIP</option>
-        <option value="General" ${attendee.type==='General'?'selected':''}>General</option>
-        <option value="Panelist" ${attendee.type==='Panelist'?'selected':''}>Panelist</option>
-      </select>
-    </td>
-    <td>
-      <select onchange="updateAttendee(${index}, 'status', this.value)">
-        <option value="Confirmed" ${attendee.status==='Confirmed'?'selected':''}>Confirmed</option>
-        <option value="Pending" ${attendee.status==='Pending'?'selected':''}>Pending</option>
-        <option value="Invited" ${attendee.status==='Invited'?'selected':''}>Invited</option>
-        <option value="Declined" ${attendee.status==='Declined'?'selected':''}>Declined</option>
-        
-      </select>
-    </td>
-    <td>
-      <label style="font-size: 13px;">
-        <input type="checkbox" ${attendee.checkedIn ? 'checked' : ''} onchange="updateAttendee(${index}, 'checkedIn', this.checked)">
-        Checked In
-      </label>
-      <br><button onclick="removeAttendee(${index})">Remove</button>
-    </td>
-  </tr>`;
-    });
-
-    fnbPrefs.forEach((pref, idx) => {
-      fnbTable.innerHTML += 
-        `<tr>
-          <td>${pref.name}</td>
-          <td><input type="text" value="${pref.allergies}" onchange="updateFnb(${idx}, 'allergies', this.value)"></td>
-          <td><input type="text" value="${pref.milk}" onchange="updateFnb(${idx}, 'milk', this.value)"></td>
-          <td>
-            <select onchange="updateFnb(${idx}, 'hotel', this.value)">
-              <option value="Yes" ${pref.hotel==='Yes'?'selected':''}>Yes</option>
-              <option value="No" ${pref.hotel==='No'?'selected':''}>No</option>
-            </select>
-          </td>
-        </tr>`;
-    });
-
-    const capacity = parseInt(document.getElementById('eventCapacity').value) || 0;
-    const percentFilled = capacity > 0 ? Math.round((attendees.length / capacity) * 100) : 0;
-    document.getElementById('totalReg').innerText = `Total Registered: ${attendees.length}`;
-    document.getElementById('capacity').innerText = `Capacity: ${capacity}`;
-   const checkedInCount = attendees.filter(a => a.checkedIn).length;
-document.getElementById('checkedIn').innerText = `Checked In: ${checkedInCount}`;
-    document.getElementById('remaining').innerText = `Remaining: ${capacity - attendees.length}`;
-    document.getElementById('percentFilled').innerText = `Capacity Filled: ${percentFilled}%`;
-    document.getElementById('statusBreakdown').innerText = `Confirmed: ${confirmedCount} | Pending: ${pendingCount}| Invited: ${invitedCount} | Declined: ${declinedCount}`;
-    document.getElementById('invitationCount').innerText =
-  `Invitations Sent: ${invitationCount}`;
-    document.getElementById('progressFill').style.width = percentFilled + '%';
-    document.getElementById('csvFeedback').innerText =
-  skipped > 0 ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` : '';
-
-const warningMessage = document.getElementById('overCapacityWarning');
-if (attendees.length > capacity) {
-  if (!warningMessage) {
-    const warning = document.createElement('p');
-    warning.id = 'overCapacityWarning';
-    warning.innerText = '⚠️ Over Capacity!';
-    warning.style.color = 'red';
-    warning.style.fontWeight = 'bold';
-    warning.style.marginTop = '8px';
-    document.querySelector('.card:nth-of-type(2)').appendChild(warning);
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        attendees=d.attendees||[];
+        eventCapacity=parseInt(d.eventCapacity)||0;
+        document.getElementById('cap-inp').value=eventCapacity||'';
+        renderAll();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
   }
 
-  document.getElementById('capacity').style.color = 'red';
-  document.getElementById('remaining').style.color = 'red';
-} else {
-  if (warningMessage) warningMessage.remove();
-  document.getElementById('capacity').style.color = '';
-  document.getElementById('remaining').style.color = '';
-}
-    
-    const breakdown = Object.entries(typeCounts).map(([type, count]) => `${type}s: ${count}`).join(' | ');
-    document.getElementById('vipGeneralBreakdown').innerText = breakdown;
+  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+  function renderAll(){updateStats();renderTable();renderDietary();}
+
+  // ── STATS & CAPACITY ──
+  function updateStats(){
+    const confirmed=attendees.filter(a=>a.rsvp==='Confirmed').length;
+    const pending=attendees.filter(a=>a.rsvp==='Pending').length;
+    const declined=attendees.filter(a=>a.rsvp==='Declined').length;
+    const checkedIn=attendees.filter(a=>a.checkin==='yes').length;
+    const total=attendees.length;
+    document.getElementById('st-total').textContent=total;
+    document.getElementById('st-confirmed').textContent=confirmed;
+    document.getElementById('st-checkedin').textContent=checkedIn;
+    document.getElementById('st-checkedin-pct').textContent=total?Math.round(checkedIn/total*100)+'% of registered':'';
+    document.getElementById('st-pending').textContent=pending;
+    document.getElementById('st-declined').textContent=declined;
+    // capacity bar
+    const cap=eventCapacity||0;
+    const pct=cap>0?Math.min(Math.round(confirmed/cap*100),100):0;
+    document.getElementById('cap-pct').textContent=confirmed+' / '+(cap||'?');
+    const fill=document.getElementById('cap-fill');
+    fill.style.width=pct+'%';
+    fill.className='cap-bar-fill'+(pct>=100?' full':pct>=80?' warn':'');
   }
 
-function updateAttendee(index, field, value) {
-  attendees[index][field] = field === 'checkedIn' ? Boolean(value) : value;
-  if (field === 'name') fnbPrefs[index].name = value;
-  saveToFirestore();
-  renderTables();
-}
-
-  function updateFnb(index, field, value) {
-    fnbPrefs[index][field] = value;
-    saveToFirestore();
-    renderTables();
+  function saveCapacity(){
+    const v=parseInt(document.getElementById('cap-inp').value)||0;
+    eventCapacity=v;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({eventCapacity:v}).then(()=>{updateStats();showToast('✓ Capacity updated!','success');}).catch(err=>showToast('Save failed: '+err.message,'error'));
   }
 
-function addAttendee() {
-  const newAttendee = { name: '', email: '', type: 'General', status: 'Pending', checkedIn: false };
-  const newPref = { name: '', allergies: '', milk: '', hotel: 'No' };
-  attendees.push(newAttendee);
-  fnbPrefs.push(newPref);
-
-  // Clear filters so new row is visible
-  document.getElementById('filterType').value = '';
-  document.getElementById('filterStatus').value = '';
-
-  saveToFirestore();
-  renderTables();
-}
-
-  function removeAttendee(index) {
-    attendees.splice(index, 1);
-    fnbPrefs.splice(index, 1);
-    saveToFirestore();
-    renderTables();
+  // ── FILTER ──
+  function setFilter(f,btn){
+    activeFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTable();
   }
 
-  function saveEventInfo() {
-    const name = document.getElementById('eventName').value;
-    const location = document.getElementById('eventLocation').value;
-    const date = document.getElementById('eventDate').value;
-    const capacityText = document.getElementById('displayEventCapacity')?.innerText || '0';
-const capacity = parseInt(capacityText.replace(/\D/g, '')) || 0;
-
-    if (userId && eventId) {
-      db.collection('users').doc(userId).collection('events').doc(eventId).set({
-        eventName: name,
-        eventLocation: location,
-        eventDate: date,
-        eventCapacity: capacity
-      }, { merge: true });
+  function getFiltered(){
+    let a=[...attendees];
+    if(searchQ){
+      const q=searchQ.toLowerCase();
+      a=a.filter(x=>(x.fname+' '+x.lname+' '+x.email+' '+x.company).toLowerCase().includes(q));
     }
-    saveToFirestore();
-
-    const msg = document.getElementById('saveConfirmation');
-    msg.classList.add('show');
-    setTimeout(() => msg.classList.remove('show'), 2500);
+    if(activeFilter==='Confirmed') a=a.filter(x=>x.rsvp==='Confirmed');
+    else if(activeFilter==='Pending') a=a.filter(x=>x.rsvp==='Pending');
+    else if(activeFilter==='Declined') a=a.filter(x=>x.rsvp==='Declined');
+    else if(activeFilter==='checkedin') a=a.filter(x=>x.checkin==='yes');
+    else if(activeFilter==='VIP') a=a.filter(x=>x.ticket==='VIP');
+    return a;
   }
 
-function saveToFirestore() {
-  if (!userId || !eventId) {
-    console.warn("Skipping saveToFirestore: missing userId or eventId", { userId, eventId });
-    return;
+  // ── TABLE ──
+  function renderTable(){
+    const tbody=document.getElementById('att-tbody');
+    const filtered=getFiltered();
+    if(!filtered.length){
+      tbody.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="ei">🎟️</div>${activeFilter==='all'&&!searchQ?'No attendees yet. Click <strong>+ Add Attendee</strong> or use <strong>Bulk Import</strong>.':'No attendees match this filter.'}</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML=filtered.map(a=>{
+      const si=attendees.indexOf(a);
+      const initials=((a.fname||'?')[0]+(a.lname||'')[0]||'').toUpperCase();
+      const ticketBadge=TICKET_BADGE[a.ticket]||'b-general';
+      return `<tr>
+        <td><div class="avatar">${esc(initials)}</div></td>
+        <td><div class="att-name">${esc((a.fname||'')+' '+(a.lname||'')).trim()||'—'}</div></td>
+        <td><div class="att-email">${esc(a.email||'—')}</div></td>
+        <td style="font-size:13px;">${esc(a.company||'—')}</td>
+        <td style="font-size:13px;color:var(--muted);">${esc(a.role||'—')}</td>
+        <td><span class="badge ${ticketBadge}">${esc(a.ticket||'General')}</span></td>
+        <td><span class="${RSVP_CLASS[a.rsvp]||'rsvp-pending'}">${esc(a.rsvp||'Pending')}</span></td>
+        <td><span class="${a.checkin==='yes'?'checkin-yes':'checkin-no'}" onclick="toggleCheckin(${si})">${a.checkin==='yes'?'✓ Yes':'— No'}</span></td>
+        <td style="font-size:12px;color:var(--muted);max-width:120px;">${esc(a.dietary||'—')}</td>
+        <td style="font-size:12px;color:var(--muted);max-width:140px;">${esc(a.notes||'—')}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-row-edit" onclick="openModal(${si})" title="Edit">✏️</button>
+          <button class="btn-row-rm" onclick="removeAttendee(${si})" title="Remove">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
   }
-  db.collection('users').doc(userId).collection('events').doc(eventId).set({
-    attendees,
-    fnbPrefs
-  }, { merge: true });
-}
 
-  function loadData() {
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-      userId = user.uid;
-      if (!eventId) return;
+  function toggleCheckin(si){
+    attendees[si].checkin=attendees[si].checkin==='yes'?'no':'yes';
+    persist(()=>{updateStats();renderTable();});
+  }
 
-      const docRef = db.collection('users').doc(userId).collection('events').doc(eventId);
-      docRef.get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-         attendees = (data.attendees || []).map(a => ({
-  ...a,
-  checkedIn: a.checkedIn === true
-}));
-fnbPrefs = data.fnbPrefs || fnbPrefs;
-
-          document.getElementById('eventName').value = data.eventName || '';
-          document.getElementById('eventLocation').value = data.eventLocation || '';
-          document.getElementById('eventDate').value = data.eventDate || '';
-          document.getElementById('eventCapacity').value = data.eventCapacity || '';
-  
-        eventId = eventId || doc.id;
-        }
-        renderTables();
+  // ── DIETARY SUMMARY ──
+  function renderDietary(){
+    const counts={};
+    attendees.forEach(a=>{
+      if(!a.dietary||a.dietary.trim()==='')return;
+      a.dietary.split(',').forEach(d=>{
+        const k=d.trim();
+        if(k) counts[k]=(counts[k]||0)+1;
       });
     });
+    const grid=document.getElementById('dietary-grid');
+    if(!Object.keys(counts).length){grid.innerHTML='<div style="padding:8px 0;font-size:13px;color:var(--muted);">No dietary restrictions recorded.</div>';return;}
+    grid.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+      <div class="dietary-pill">
+        <span class="dp-name">${esc(k)}</span>
+        <span class="dp-count">${v}</span>
+      </div>`).join('');
   }
 
-  loadData();
-
-  new Sortable(document.getElementById('attendeeTable'), {
-  animation: 150,
-  onEnd: function (evt) {
-    const newOrder = Array.from(evt.to.children).map(row => {
-      const inputs = row.querySelectorAll('input, select');
-      return {
-        name: inputs[0].value,
-        email: inputs[1].value,
-        type: inputs[2].value,
-        status: inputs[3].value,
-        checkedIn: inputs[4].checked
-      };
-    });
-
-    const newPrefs = Array.from(evt.to.children).map(row => {
-      const name = row.querySelector('input').value;
-      const matching = fnbPrefs.find(p => p.name === name) || { allergies: '', milk: '', hotel: 'No' };
-      return { name, ...matching };
-    });
-
-    attendees = newOrder;
-    fnbPrefs = newPrefs;
-    saveToFirestore();
-    renderTables();
+  // ── MODAL ──
+  function openModal(si=null){
+    editingIdx=si;
+    const a=si!==null?attendees[si]:{};
+    document.getElementById('modal-title').textContent=si!==null?'✏️ Edit Attendee':'🎟️ Add Attendee';
+    document.getElementById('a-fname').value=a.fname||'';
+    document.getElementById('a-lname').value=a.lname||'';
+    document.getElementById('a-email').value=a.email||'';
+    document.getElementById('a-company').value=a.company||'';
+    document.getElementById('a-role').value=a.role||'';
+    document.getElementById('a-ticket').value=a.ticket||'General';
+    document.getElementById('a-rsvp').value=a.rsvp||'Confirmed';
+    document.getElementById('a-dietary').value=a.dietary||'';
+    document.getElementById('a-checkin').value=a.checkin||'no';
+    document.getElementById('a-notes').value=a.notes||'';
+    document.getElementById('modal-del-btn').style.display=si!==null?'block':'none';
+    document.getElementById('att-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('a-fname').focus(),100);
   }
-});
+  function closeModal(){document.getElementById('att-modal').classList.remove('open');editingIdx=null;}
 
-  function handleCSVUploadClick() {
-  document.getElementById('csvUpload').click();
-}
-
-  function parseCSV() {
-  const file = document.getElementById('csvUpload').files[0];
-  if (!file) {
-    document.getElementById('csvFeedback').innerText = "⚠️ Please select a CSV file first.";
-    return;
+  function saveAttendee(){
+    const fname=document.getElementById('a-fname').value.trim();
+    if(!fname){showToast('First name required.','error');return;}
+    const a={fname,lname:document.getElementById('a-lname').value.trim(),email:document.getElementById('a-email').value.trim(),company:document.getElementById('a-company').value.trim(),role:document.getElementById('a-role').value.trim(),ticket:document.getElementById('a-ticket').value,rsvp:document.getElementById('a-rsvp').value,dietary:document.getElementById('a-dietary').value.trim(),checkin:document.getElementById('a-checkin').value,notes:document.getElementById('a-notes').value.trim()};
+    if(editingIdx!==null) attendees[editingIdx]={...attendees[editingIdx],...a};
+    else attendees.push(a);
+    closeModal();
+    persist(()=>{renderAll();showToast('✓ Saved!','success');});
   }
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    const lines = text.trim().split('\n');
-    const header = lines.shift().split(',');
-    const headerIndex = {};
-    let skipped = 0;
+  function deleteAttendee(){
+    if(editingIdx===null)return;
+    if(!confirm(`Remove ${attendees[editingIdx].fname} ${attendees[editingIdx].lname}?`))return;
+    attendees.splice(editingIdx,1);
+    closeModal();
+    persist(()=>{renderAll();showToast('🗑 Removed.','success');});
+  }
 
-    header.forEach((h, i) => {
-      headerIndex[h.trim().toLowerCase()] = i;
+  function removeAttendee(si){
+    if(!confirm(`Remove ${attendees[si].fname} ${attendees[si].lname}?`))return;
+    attendees.splice(si,1);
+    persist(()=>renderAll());
+  }
+
+  // ── CSV IMPORT ──
+  function openCSVModal(){document.getElementById('csv-modal').classList.add('open');}
+  function closeCSVModal(){document.getElementById('csv-modal').classList.remove('open');document.getElementById('csv-inp').value='';document.getElementById('csv-preview').style.display='none';}
+
+  function parseCSVRows(raw){
+    const lines=raw.trim().split('\n').map(l=>l.trim()).filter(Boolean);
+    const HEADERS=['fname','lname','email','company','role','ticket','rsvp','dietary','notes'];
+    const TICKETS=['General','VIP','Speaker','Press','Staff','Sponsor'];
+    const RSVPS=['Confirmed','Pending','Declined'];
+    const rows=[];
+    lines.forEach((line,li)=>{
+      // simple CSV split respecting quoted fields
+      const cols=[];let cur='',inQ=false;
+      for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=c;}
+      cols.push(cur.trim());
+      if(li===0){const h=cols[0].toLowerCase();if(h==='first name'||h==='fname'||h==='name')return;}
+      const ticket=TICKETS.find(t=>t.toLowerCase()===(cols[5]||'').toLowerCase())||'General';
+      const rsvp=RSVPS.find(r=>r.toLowerCase()===(cols[6]||'').toLowerCase())||'Confirmed';
+      rows.push({fname:cols[0]||'',lname:cols[1]||'',email:cols[2]||'',company:cols[3]||'',role:cols[4]||'',ticket,rsvp,dietary:cols[7]||'',checkin:'no',notes:cols[8]||''});
     });
+    return rows.filter(r=>r.fname);
+  }
 
-    const newAttendees = [];
-    const newFnbPrefs = [];
+  function previewCSV(){
+    const raw=document.getElementById('csv-inp').value;
+    const rows=parseCSVRows(raw);
+    const prev=document.getElementById('csv-preview');
+    if(!rows.length){prev.style.display='block';prev.textContent='No valid rows found.';return;}
+    prev.style.display='block';
+    prev.innerHTML=`<strong>${rows.length} attendee(s) ready to import:</strong><br><br>`+
+      rows.map(r=>`${r.fname} ${r.lname} · ${r.email||'no email'} · ${r.ticket} · ${r.rsvp}`).join('<br>');
+  }
 
-    lines.forEach(line => {
-      const values = line.split(',');
-      const get = key => values[headerIndex[key.toLowerCase()]]?.trim() || "";
+  function importCSV(){
+    const raw=document.getElementById('csv-inp').value;
+    const rows=parseCSVRows(raw);
+    if(!rows.length){showToast('No valid rows found.','error');return;}
+    attendees=[...attendees,...rows];
+    closeCSVModal();
+    persist(()=>{renderAll();showToast(`✓ Imported ${rows.length} attendee(s)!`,'success');});
+  }
 
-      const name = get("name");
-      const email = get("email");
-      const rawType = get("type").toLowerCase();
-let type = "";
+  // ── EXPORT ──
+  function exportCSV(){
+    const headers=['First Name','Last Name','Email','Company','Role','Ticket Type','RSVP','Checked In','Dietary','Notes'];
+    const rows=attendees.map(a=>[a.fname,a.lname,a.email,a.company,a.role,a.ticket,a.rsvp,a.checkin==='yes'?'Yes':'No',a.dietary,a.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+    const csv=[headers.join(','),...rows].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='attendees.csv';a.click();URL.revokeObjectURL(url);
+    showToast('✓ CSV exported!','success');
+  }
 
-if (rawType === "vip") type = "VIP";
-else if (rawType === "general") type = "General";
-else if (rawType === "panelist") type = "Panelist";
-else type = "Guest"; // fallback label
-     const rawStatus = get("status").toLowerCase();
-let status = "";
+  // ── FIRESTORE ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({attendees}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
 
-if (rawStatus === "confirmed") status = "Confirmed";
-else if (rawStatus === "pending") status = "Pending";
-else if (rawStatus === "invited") status = "Invited";
-else if (rawStatus === "declined") status = "Declined";
-else status = "Pending"; // default fallback
-      const checkedIn = get("checked in").toLowerCase() === 'true';
-      const allergies = get("allergies");
-      const milk = get("milk preference");
-      const hotel = get("hotel needed?");
-
-      if (!name || !email) {
-        skipped++;
-        return;
-      }
-
-      if (!attendees.some(a => a.email === email)) {
-        newAttendees.push({ name, email, type, status, checkedIn });
-        newFnbPrefs.push({ name, allergies, milk, hotel });
-      }
-    });
-
-    attendees = attendees.concat(newAttendees);
-    fnbPrefs = fnbPrefs.concat(newFnbPrefs);
-
-    saveToFirestore();
-    renderTables();
-
-    document.getElementById('csvFeedback').innerText = 
-      skipped > 0 
-        ? `⚠️ ${skipped} row(s) were skipped due to missing data or duplicates.` 
-        : `✅ CSV uploaded successfully!`;
-  };
-
-  reader.readAsText(file);
-}
-
-  
+  // ── UTILS ──
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  
 </body>
 </html>
