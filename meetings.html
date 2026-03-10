@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meetings | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-bottom:24px;}
+    .stat{background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .stat.c-purple{border-top-color:var(--purple);}.stat.c-green{border-top-color:var(--green);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-red{border-top-color:var(--red);}
+    .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+    .stat-val{font-size:20px;font-weight:900;}
+    .stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start;}
+    @media(max-width:800px){.layout{grid-template-columns:1fr;}}
+
+    /* LEFT PANEL — meeting list */
+    .meeting-list-panel{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;position:sticky;top:20px;}
+    .mlp-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .mlp-hdr h3{font-size:13px;font-weight:800;}
+    .mlp-search{width:100%;border:none;border-bottom:1px solid var(--border);padding:10px 16px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafe;}
+    .mlp-search:focus{outline:none;background:white;}
+    .mlp-filters{display:flex;gap:4px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .mlp-filter{background:none;border:1.5px solid var(--border);color:var(--muted);padding:3px 10px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+    .mlp-filter:hover{border-color:var(--purple);color:var(--navy);}
+    .mlp-filter.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .meeting-list{max-height:calc(100vh - 280px);overflow-y:auto;}
+    .meeting-item{padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;border-left:3px solid transparent;}
+    .meeting-item:hover{background:#fafafe;}
+    .meeting-item.active{background:var(--purple-light);border-left-color:var(--purple);}
+    .mi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+    .mi-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+    .mi-date{font-size:11px;color:var(--muted);font-weight:600;flex-shrink:0;}
+    .mi-meta{display:flex;gap:5px;flex-wrap:wrap;}
+    .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;}
+    .b-budget{background:#fff8e0;color:#9a7000;}.b-av{background:var(--purple-light);color:var(--purple);}
+    .b-venues{background:#e8f5ee;color:var(--green);}.b-sponsor{background:#fff0e8;color:#cc6600;}
+    .b-tasks{background:#f4f4fb;color:var(--muted);}.b-content{background:#fdf0f5;color:#cc3366;}
+    .b-merch{background:#f0f4ff;color:#4060cc;}.b-registration{background:#e8fbf5;color:#2d8a60;}
+    .b-general{background:#f4f4fb;color:var(--muted);}.b-timeline{background:#eef1fb;color:var(--purple);}
+    .mi-action-count{font-size:10px;font-weight:700;background:#fff0f0;color:var(--red);padding:2px 7px;border-radius:8px;}
+    .mi-action-count.done{background:#e8f5ee;color:var(--green);}
+    .mlp-add{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:12px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--purple);cursor:pointer;transition:background 0.15s;}
+    .mlp-add:hover{background:var(--purple-light);}
+    .mlp-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px;}
+
+    /* RIGHT PANEL — meeting detail */
+    .meeting-detail{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .md-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px;text-align:center;color:var(--muted);}
+    .md-empty .ei{font-size:40px;margin-bottom:12px;}
+    .md-hdr{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .md-hdr-left{flex:1;min-width:0;}
+    .md-title-inp{font-family:'Barlow',sans-serif;font-size:20px;font-weight:800;color:var(--navy);border:none;width:100%;background:transparent;letter-spacing:-0.02em;padding:0;}
+    .md-title-inp:focus{outline:none;}
+    .md-meta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+    .md-meta-inp{border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-family:'Barlow',sans-serif;font-size:12px;color:var(--navy);background:#fafafa;transition:border-color 0.2s;}
+    .md-meta-inp:focus{outline:none;border-color:var(--purple);background:white;}
+    .md-hdr-actions{display:flex;gap:8px;flex-shrink:0;}
+    .btn-save{background:var(--navy);color:var(--yellow);border:none;padding:8px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-save:hover{background:#2d2d5a;}
+    .btn-del-meet{background:none;border:1.5px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-del-meet:hover{border-color:var(--red);color:var(--red);}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;align-self:center;}
+    .saved-flash.show{opacity:1;}
+
+    /* TABS inside detail */
+    .md-tabs{display:flex;border-bottom:1px solid var(--border);}
+    .md-tab{padding:11px 20px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+    .md-tab:hover{color:var(--navy);}
+    .md-tab.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .md-body{padding:22px 24px;}
+
+    /* NOTES TAB */
+    .notes-ta{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--navy);resize:vertical;min-height:260px;line-height:1.7;background:#fafafe;transition:border-color 0.2s;}
+    .notes-ta:focus{outline:none;border-color:var(--purple);background:white;}
+    .notes-tip{font-size:12px;color:var(--muted);margin-top:8px;}
+
+    /* ATTENDEES */
+    .attendee-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .chip{background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+    .chip-rm{background:none;border:none;color:var(--purple);cursor:pointer;font-size:11px;padding:0;line-height:1;}
+    .chip-rm:hover{color:var(--red);}
+    .attendee-add-row{display:flex;gap:8px;}
+    .attendee-inp{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;}
+    .attendee-inp:focus{outline:none;border-color:var(--purple);}
+    .btn-chip-add{background:var(--purple);color:white;border:none;padding:7px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* ACTION ITEMS TAB */
+    .ai-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+    .ai-filter-row{display:flex;gap:6px;}
+    .ai-filter{background:var(--white);border:1.5px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+    .ai-filter:hover{border-color:var(--purple);color:var(--navy);}
+    .ai-filter.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .ai-item{background:#fafafe;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;transition:box-shadow 0.15s;}
+    .ai-item:hover{box-shadow:var(--shadow);}
+    .ai-item.pushed{border-color:#c8e6d4;background:#f0faf5;}
+    .ai-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;transition:all 0.15s;margin-top:1px;}
+    .ai-check.done{background:var(--green);border-color:var(--green);color:white;}
+    .ai-info{flex:1;min-width:0;}
+    .ai-text{font-size:13px;font-weight:600;margin-bottom:5px;}
+    .ai-text.done{text-decoration:line-through;color:var(--muted);}
+    .ai-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+    .ai-due{font-size:11px;color:var(--muted);font-weight:600;}
+    .ai-due.overdue{color:var(--red);}
+    .ai-assignee{font-size:10px;font-weight:700;background:#fff8e0;color:#9a7000;padding:2px 7px;border-radius:8px;}
+    .pushed-lbl{font-size:10px;font-weight:700;background:#e8f5ee;color:var(--green);padding:2px 7px;border-radius:8px;}
+    .btn-push{background:var(--navy);color:var(--yellow);border:none;padding:5px 11px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    .btn-push:hover{background:#2d2d5a;}
+    .btn-push.pushed{background:#e8f5ee;color:var(--green);cursor:default;}
+    .btn-ai-rm{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:3px 5px;border-radius:4px;flex-shrink:0;}
+    .btn-ai-rm:hover{color:var(--red);}
+    .ai-add-row{display:grid;grid-template-columns:1fr 120px 120px auto auto;gap:8px;margin-top:12px;align-items:center;}
+    @media(max-width:700px){.ai-add-row{grid-template-columns:1fr 1fr;}}
+    .ai-inp{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;width:100%;}
+    .ai-inp:focus{outline:none;border-color:var(--purple);}
+    .btn-ai-add{background:var(--purple);color:white;border:none;padding:8px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+    /* OPEN ACTIONS SUMMARY */
+    .open-actions-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden;}
+    .oac-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .oac-hdr h3{font-size:14px;font-weight:800;}
+    .oac-body{padding:4px 0;}
+    .oac-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #f4f4fb;}
+    .oac-item:last-child{border-bottom:none;}
+    .oac-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
+    .oac-dot.med{background:var(--orange);}.oac-dot.low{background:var(--green);}
+    .oac-text{flex:1;font-size:13px;font-weight:600;}
+    .oac-meta{display:flex;gap:6px;font-size:11px;color:var(--muted);flex-shrink:0;}
+    .oac-empty{padding:20px 18px;font-size:13px;color:var(--muted);text-align:center;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:26px;max-width:460px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:17px;font-weight:800;margin-bottom:16px;}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;margin-bottom:10px;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+  <a href="meetings.html" class="active">Meetings</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">🗒️</div>Loading Meetings...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Meeting <span style="color:var(--purple);">Notes</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat c-purple"><div class="stat-lbl">Total Meetings</div><div class="stat-val" id="st-total">0</div></div>
+    <div class="stat c-red"><div class="stat-lbl">Open Actions</div><div class="stat-val" id="st-open">0</div><div class="stat-sub">not yet pushed to tasks</div></div>
+    <div class="stat c-green"><div class="stat-lbl">Pushed to Tasks</div><div class="stat-val" id="st-pushed">0</div></div>
+    <div class="stat c-orange"><div class="stat-lbl">This Week</div><div class="stat-val" id="st-week">0</div><div class="stat-sub">meetings logged</div></div>
+  </div>
+
+  <!-- OPEN ACTIONS SUMMARY -->
+  <div class="open-actions-card" id="open-actions-card">
+    <div class="oac-hdr">
+      <h3>⚡ Open Action Items — All Meetings</h3>
+      <span style="font-size:12px;color:var(--muted);" id="open-actions-sub"></span>
+    </div>
+    <div class="oac-body" id="open-actions-body"></div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT: MEETING LIST -->
+    <div class="meeting-list-panel">
+      <div class="mlp-hdr">
+        <h3>All Meetings</h3>
+        <span style="font-size:11px;color:var(--muted);" id="meet-count">0</span>
+      </div>
+      <input class="mlp-search" placeholder="🔍 Search meetings..." oninput="searchQ=this.value;renderMeetingList();" />
+      <div class="mlp-filters">
+        <button class="mlp-filter active" onclick="setCatFilter('all',this)">All</button>
+        <button class="mlp-filter" onclick="setCatFilter('General',this)">General</button>
+        <button class="mlp-filter" onclick="setCatFilter('AV',this)">AV</button>
+        <button class="mlp-filter" onclick="setCatFilter('Venues',this)">Venues</button>
+        <button class="mlp-filter" onclick="setCatFilter('Sponsors',this)">Sponsors</button>
+        <button class="mlp-filter" onclick="setCatFilter('Budget',this)">Budget</button>
+      </div>
+      <div class="meeting-list" id="meeting-list"></div>
+      <button class="mlp-add" onclick="openNewMeetingModal()">+ New Meeting</button>
+    </div>
+
+    <!-- RIGHT: MEETING DETAIL -->
+    <div class="meeting-detail" id="meeting-detail">
+      <div class="md-empty">
+        <div class="ei">🗒️</div>
+        <h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Select a meeting</h3>
+        <p style="font-size:13px;">Pick one from the list or create a new one.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NEW MEETING MODAL -->
+<div class="modal-overlay" id="new-meeting-modal">
+  <div class="modal">
+    <h3>🗒️ New Meeting</h3>
+    <label class="fi-lbl">Meeting Title *</label>
+    <input class="fi" id="nm-title" placeholder="e.g. Venue Walkthrough Call" />
+    <div class="modal-row">
+      <div>
+        <label class="fi-lbl">Date</label>
+        <input class="fi" id="nm-date" type="date" style="margin:0;width:100%;" />
+      </div>
+      <div>
+        <label class="fi-lbl">Category</label>
+        <select class="fi" id="nm-cat" style="margin:0;width:100%;">
+          <option>General</option><option>AV</option><option>Venues</option>
+          <option>Sponsors</option><option>Budget</option><option>Content</option>
+          <option>Merch</option><option>Registration</option><option>Tasks</option><option>Timeline</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewMeetingModal()">Cancel</button>
+      <button class="btn-primary" onclick="createMeeting()">Create Meeting</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(),db=firebase.firestore();
+
+  let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
+  let meetings=[],tasks=[],activeMeetingIdx=null,activeTab='notes',catFilter='all',searchQ='',aiFilter='open',authDone=false;
+
+  const CAT_BADGE_CLASS={General:'b-general',AV:'b-av',Venues:'b-venues',Sponsors:'b-sponsor',Budget:'b-budget',Content:'b-content',Merch:'b-merch',Registration:'b-registration',Tasks:'b-tasks',Timeline:'b-timeline'};
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    activeEventId=localStorage.getItem('activeEventId');
+    if(!authDone){authDone=true;load();}
+  });
+
+  function load(){
+    if(!activeEventId){window.location.href='events.html';return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        meetings=d.meetings||[];
+        tasks=d.tasks||[];
+        renderAll();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+
+  function renderAll(){updateStats();renderOpenActions();renderMeetingList();}
+
+  // ── STATS ──
+  function updateStats(){
+    const now=new Date(),weekAgo=new Date(now-7*86400000);
+    let openActions=0,pushedActions=0,weekMeetings=0;
+    meetings.forEach(m=>{
+      (m.actions||[]).forEach(a=>{if(a.pushed)pushedActions++;else if(!a.done)openActions++;});
+      if(m.date&&new Date(m.date)>=weekAgo)weekMeetings++;
+    });
+    document.getElementById('st-total').textContent=meetings.length;
+    document.getElementById('st-open').textContent=openActions;
+    document.getElementById('st-pushed').textContent=pushedActions;
+    document.getElementById('st-week').textContent=weekMeetings;
+  }
+
+  // ── OPEN ACTIONS SUMMARY ──
+  function renderOpenActions(){
+    const body=document.getElementById('open-actions-body');
+    const today=new Date();today.setHours(0,0,0,0);
+    const open=[];
+    meetings.forEach((m,mi)=>{
+      (m.actions||[]).forEach((a,ai)=>{
+        if(!a.done&&!a.pushed) open.push({...a,meetingTitle:m.title,mi,ai});
+      });
+    });
+    document.getElementById('open-actions-sub').textContent=open.length+' open';
+    if(!open.length){body.innerHTML='<div class="oac-empty">✓ No open action items — all clear!</div>';return;}
+    body.innerHTML=open.slice(0,8).map(a=>{
+      const overdue=a.due&&new Date(a.due)<today;
+      return `<div class="oac-item">
+        <div class="oac-dot${overdue?' ':(a.priority==='high'?'':' low')}"></div>
+        <span class="oac-text">${esc(a.text)}</span>
+        <div class="oac-meta">
+          ${a.assignee?`<span>${esc(a.assignee)}</span>`:''}
+          ${a.due?`<span class="${overdue?'oac-due-overdue':''}" style="${overdue?'color:var(--red);font-weight:700;':''}">${new Date(a.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
+          <span style="color:var(--purple);cursor:pointer;font-weight:700;" onclick="openMeetingByIdx(${a.mi})">→ ${esc(a.meetingTitle)}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── MEETING LIST ──
+  function setCatFilter(f,btn){catFilter=f;document.querySelectorAll('.mlp-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderMeetingList();}
+
+  function getFilteredMeetings(){
+    let m=[...meetings];
+    if(catFilter!=='all') m=m.filter(x=>x.category===catFilter);
+    if(searchQ) m=m.filter(x=>(x.title||'').toLowerCase().includes(searchQ.toLowerCase()));
+    return m.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+  }
+
+  function renderMeetingList(){
+    const list=document.getElementById('meeting-list');
+    const filtered=getFilteredMeetings();
+    document.getElementById('meet-count').textContent=filtered.length;
+    if(!filtered.length){list.innerHTML='<div class="mlp-empty">No meetings yet.</div>';return;}
+    list.innerHTML=filtered.map(m=>{
+      const si=meetings.indexOf(m);
+      const openAI=(m.actions||[]).filter(a=>!a.done&&!a.pushed).length;
+      const allDone=(m.actions||[]).length>0&&(m.actions||[]).every(a=>a.done||a.pushed);
+      const dateStr=m.date?new Date(m.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'-';
+      return `<div class="meeting-item${si===activeMeetingIdx?' active':''}" onclick="selectMeeting(${si})">
+        <div class="mi-top">
+          <span class="mi-title">${esc(m.title||'Untitled')}</span>
+          <span class="mi-date">${dateStr}</span>
+        </div>
+        <div class="mi-meta">
+          <span class="badge ${CAT_BADGE_CLASS[m.category]||'b-general'}">${esc(m.category||'General')}</span>
+          ${openAI>0?`<span class="mi-action-count">${openAI} open</span>`:allDone&&(m.actions||[]).length>0?`<span class="mi-action-count done">✓ All done</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── SELECT MEETING ──
+  function selectMeeting(si){
+    activeMeetingIdx=si;
+    activeTab='notes';
+    renderMeetingList();
+    renderDetail();
+  }
+
+  function openMeetingByIdx(si){
+    selectMeeting(si);
+    document.getElementById('meeting-detail').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // ── MEETING DETAIL ──
+  function renderDetail(){
+    const detail=document.getElementById('meeting-detail');
+    if(activeMeetingIdx===null){
+      detail.innerHTML=`<div class="md-empty"><div class="ei">🗒️</div><h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Select a meeting</h3><p style="font-size:13px;">Pick one from the list or create a new one.</p></div>`;
+      return;
+    }
+    const m=meetings[activeMeetingIdx];
+    const openAI=(m.actions||[]).filter(a=>!a.done&&!a.pushed).length;
+    detail.innerHTML=`
+      <div class="md-hdr">
+        <div class="md-hdr-left">
+          <input class="md-title-inp" id="md-title" value="${esc(m.title||'')}" placeholder="Meeting title..." onchange="meetings[${activeMeetingIdx}].title=this.value;" />
+          <div class="md-meta-row">
+            <input class="md-meta-inp" type="date" id="md-date" value="${m.date||''}" onchange="meetings[${activeMeetingIdx}].date=this.value;" />
+            <select class="md-meta-inp" id="md-cat" onchange="meetings[${activeMeetingIdx}].category=this.value;renderMeetingList();">
+              ${['General','AV','Venues','Sponsors','Budget','Content','Merch','Registration','Tasks','Timeline'].map(c=>`<option${m.category===c?' selected':''}>${c}</option>`).join('')}
+            </select>
+            <input class="md-meta-inp" id="md-location" value="${esc(m.location||'')}" placeholder="Location / call link" onchange="meetings[${activeMeetingIdx}].location=this.value;" style="min-width:160px;" />
+          </div>
+        </div>
+        <div class="md-hdr-actions">
+          <span class="saved-flash" id="flash-detail">✓ Saved</span>
+          <button class="btn-del-meet" onclick="deleteMeeting(${activeMeetingIdx})">🗑</button>
+          <button class="btn-save" onclick="saveMeeting()">💾 Save</button>
+        </div>
+      </div>
+      <div class="md-tabs">
+        <div class="md-tab${activeTab==='notes'?' active':''}" onclick="switchTab('notes',this)">📝 Notes</div>
+        <div class="md-tab${activeTab==='attendees'?' active':''}" onclick="switchTab('attendees',this)">👥 Attendees</div>
+        <div class="md-tab${activeTab==='actions'?' active':''}" onclick="switchTab('actions',this)">⚡ Action Items ${openAI>0?`<span style="background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;">${openAI}</span>`:''}</div>
+      </div>
+      <div class="md-body" id="md-body">${renderTabContent()}</div>`;
+  }
+
+  function switchTab(tab,btn){
+    activeTab=tab;
+    document.querySelectorAll('.md-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('md-body').innerHTML=renderTabContent();
+  }
+
+  function renderTabContent(){
+    if(activeTab==='notes') return renderNotesTab();
+    if(activeTab==='attendees') return renderAttendeesTab();
+    if(activeTab==='actions') return renderActionsTab();
+    return '';
+  }
+
+  // NOTES TAB
+  function renderNotesTab(){
+    const m=meetings[activeMeetingIdx];
+    return `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Agenda</div>
+        <textarea class="notes-ta" id="md-agenda" placeholder="What's on the agenda for this meeting?" style="min-height:80px;" onchange="meetings[${activeMeetingIdx}].agenda=this.value;">${esc(m.agenda||'')}</textarea>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Notes</div>
+        <textarea class="notes-ta" id="md-notes" placeholder="Type your meeting notes here..." onchange="meetings[${activeMeetingIdx}].notes=this.value;">${esc(m.notes||'')}</textarea>
+        <div class="notes-tip">💡 Tip: Switch to the <strong>Action Items</strong> tab to log anything that needs a follow-up — it can be pushed directly to your Tasks page.</div>
+      </div>`;
+  }
+
+  // ATTENDEES TAB
+  function renderAttendeesTab(){
+    const m=meetings[activeMeetingIdx];
+    const attendees=m.attendees||[];
+    return `
+      <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Who was in the room (or on the call)?</div>
+      <div class="attendee-chips" id="attendee-chips">
+        ${attendees.map((a,i)=>`<div class="chip">${esc(a)}<button class="chip-rm" onclick="removeAttendee(${i})">✕</button></div>`).join('')}
+      </div>
+      <div class="attendee-add-row">
+        <input class="attendee-inp" id="attendee-inp" placeholder="Name or email..." onkeydown="if(event.key==='Enter')addAttendee()" />
+        <button class="btn-chip-add" onclick="addAttendee()">Add</button>
+      </div>`;
+  }
+
+  function addAttendee(){
+    const inp=document.getElementById('attendee-inp');
+    const val=inp.value.trim();if(!val)return;
+    if(!meetings[activeMeetingIdx].attendees) meetings[activeMeetingIdx].attendees=[];
+    meetings[activeMeetingIdx].attendees.push(val);
+    inp.value='';
+    persist(()=>{document.getElementById('md-body').innerHTML=renderTabContent();});
+  }
+
+  function removeAttendee(i){
+    meetings[activeMeetingIdx].attendees.splice(i,1);
+    persist(()=>{document.getElementById('md-body').innerHTML=renderTabContent();});
+  }
+
+  // ACTIONS TAB
+  function renderActionsTab(){
+    const m=meetings[activeMeetingIdx];
+    const actions=m.actions||[];
+    const today=new Date();today.setHours(0,0,0,0);
+    let filtered=actions;
+    if(aiFilter==='open') filtered=actions.filter(a=>!a.done&&!a.pushed);
+    else if(aiFilter==='pushed') filtered=actions.filter(a=>a.pushed);
+    else if(aiFilter==='done') filtered=actions.filter(a=>a.done);
+
+    return `
+      <div class="ai-toolbar">
+        <div class="ai-filter-row">
+          <button class="ai-filter${aiFilter==='all'?' active':''}" onclick="setAIFilter('all',this)">All (${actions.length})</button>
+          <button class="ai-filter${aiFilter==='open'?' active':''}" onclick="setAIFilter('open',this)">Open (${actions.filter(a=>!a.done&&!a.pushed).length})</button>
+          <button class="ai-filter${aiFilter==='pushed'?' active':''}" onclick="setAIFilter('pushed',this)">Pushed (${actions.filter(a=>a.pushed).length})</button>
+          <button class="ai-filter${aiFilter==='done'?' active':''}" onclick="setAIFilter('done',this)">Done (${actions.filter(a=>a.done).length})</button>
+        </div>
+      </div>
+      <div id="ai-list">
+        ${filtered.length===0?`<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px;">No action items here yet.</div>`:''}
+        ${filtered.map(a=>{
+          const si=actions.indexOf(a);
+          const overdue=!a.done&&!a.pushed&&a.due&&new Date(a.due)<today;
+          return `<div class="ai-item${a.pushed?' pushed':''}">
+            <div class="ai-check${a.done?' done':''}" onclick="toggleAction(${si})">${a.done?'✓':''}</div>
+            <div class="ai-info">
+              <div class="ai-text${a.done?' done':''}">${esc(a.text)}</div>
+              <div class="ai-meta">
+                ${a.assignee?`<span class="ai-assignee">👤 ${esc(a.assignee)}</span>`:''}
+                ${a.due?`<span class="ai-due${overdue?' overdue':''}">${overdue?'⚠️ ':' 📅 '}${new Date(a.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
+                ${a.priority?`<span class="badge" style="background:${a.priority==='high'?'#fff0f0':a.priority==='medium'?'#fff8e0':'#e8f5ee'};color:${a.priority==='high'?'var(--red)':a.priority==='medium'?'#9a7000':'var(--green)'};">${a.priority}</span>`:''}
+                ${a.pushed?`<span class="pushed-lbl">✓ Pushed to Tasks</span>`:''}
+              </div>
+            </div>
+            ${!a.pushed&&!a.done?`<button class="btn-push" onclick="pushToTasks(${si})" title="Create task from this action item">→ Push to Tasks</button>`:''}
+            ${a.pushed?`<button class="btn-push pushed" disabled>✓ In Tasks</button>`:''}
+            <button class="btn-ai-rm" onclick="removeAction(${si})">✕</button>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="ai-add-row">
+        <input class="ai-inp" id="ai-inp-text" placeholder="Action item..." onkeydown="if(event.key==='Enter')addAction()" />
+        <input class="ai-inp" id="ai-inp-assignee" placeholder="Owner" />
+        <input class="ai-inp" id="ai-inp-due" type="date" />
+        <select class="ai-inp" id="ai-inp-priority" style="width:auto;">
+          <option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option>
+        </select>
+        <button class="btn-ai-add" onclick="addAction()">+ Add</button>
+      </div>`;
+  }
+
+  function setAIFilter(f,btn){
+    aiFilter=f;
+    document.querySelectorAll('.ai-filter').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('md-body').innerHTML=renderTabContent();
+  }
+
+  function addAction(){
+    const text=document.getElementById('ai-inp-text').value.trim();
+    if(!text){showToast('Action item text required.','error');return;}
+    if(!meetings[activeMeetingIdx].actions) meetings[activeMeetingIdx].actions=[];
+    meetings[activeMeetingIdx].actions.push({
+      text,
+      assignee:document.getElementById('ai-inp-assignee').value.trim(),
+      due:document.getElementById('ai-inp-due').value,
+      priority:document.getElementById('ai-inp-priority').value,
+      done:false,pushed:false
+    });
+    ['ai-inp-text','ai-inp-assignee','ai-inp-due'].forEach(id=>document.getElementById(id).value='');
+    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+  }
+
+  function toggleAction(ai){
+    meetings[activeMeetingIdx].actions[ai].done=!meetings[activeMeetingIdx].actions[ai].done;
+    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+  }
+
+  function removeAction(ai){
+    meetings[activeMeetingIdx].actions.splice(ai,1);
+    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+  }
+
+  // ── PUSH TO TASKS ──
+  function pushToTasks(ai){
+    const action=meetings[activeMeetingIdx].actions[ai];
+    const m=meetings[activeMeetingIdx];
+    const newTask={
+      title:action.text,
+      desc:`From meeting: ${m.title} (${m.date||'no date'})`,
+      status:'todo',
+      priority:action.priority||'medium',
+      assignee:action.assignee||'',
+      due:action.due||'',
+      category:m.category||'',
+      comments:[],
+      createdAt:new Date().toISOString(),
+      fromMeeting:true
+    };
+    tasks.push(newTask);
+    meetings[activeMeetingIdx].actions[ai].pushed=true;
+    // Save both meetings and tasks
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({meetings,tasks})
+      .then(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();showToast('✓ Action item pushed to Tasks!','success');})
+      .catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── SAVE MEETING ──
+  function saveMeeting(){
+    const mi=activeMeetingIdx;
+    // pull current textarea values into state
+    const agendaEl=document.getElementById('md-agenda');
+    const notesEl=document.getElementById('md-notes');
+    if(agendaEl) meetings[mi].agenda=agendaEl.value;
+    if(notesEl) meetings[mi].notes=notesEl.value;
+    meetings[mi].title=document.getElementById('md-title').value.trim();
+    meetings[mi].date=document.getElementById('md-date').value;
+    meetings[mi].category=document.getElementById('md-cat').value;
+    meetings[mi].location=document.getElementById('md-location').value.trim();
+    persist(()=>{flash('flash-detail');renderMeetingList();renderOpenActions();updateStats();showToast('✓ Meeting saved!','success');});
+  }
+
+  function deleteMeeting(si){
+    if(!confirm(`Delete "${meetings[si].title}"?`))return;
+    meetings.splice(si,1);
+    activeMeetingIdx=null;
+    persist(()=>{renderAll();renderDetail();});
+  }
+
+  // ── NEW MEETING MODAL ──
+  function openNewMeetingModal(){
+    document.getElementById('nm-date').value=new Date().toISOString().split('T')[0];
+    document.getElementById('nm-title').value='';
+    document.getElementById('new-meeting-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('nm-title').focus(),100);
+  }
+  function closeNewMeetingModal(){document.getElementById('new-meeting-modal').classList.remove('open');}
+  function createMeeting(){
+    const title=document.getElementById('nm-title').value.trim();
+    if(!title){showToast('Title required.','error');return;}
+    const m={title,date:document.getElementById('nm-date').value,category:document.getElementById('nm-cat').value,location:'',agenda:'',notes:'',attendees:[],actions:[],createdAt:new Date().toISOString()};
+    meetings.push(m);
+    closeNewMeetingModal();
+    persist(()=>{renderAll();selectMeeting(meetings.length-1);showToast('✓ Meeting created!','success');});
+  }
+
+  // ── FIRESTORE ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({meetings}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
+</script>
+</body>
+</html>
