@@ -1,485 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Dashh | Event Timeline</title>
-
-  <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 0;
-      color: #1c1c3a;
-    }
-    .header {
-      background-color: #1c1c3a;
-      color: white;
-      text-align: center;
-      padding: 20px 0 10px;
-      font-size: 24px;
-      font-weight: bold;
-      position: relative;
-    }
-    .home-button {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .menu {
-      background-color: #ffe066;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-    }
-    .menu a {
-      background-color: #6c79db;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .container {
-      display: flex;
-      flex-direction: row;
-    }
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 20px;
-    }
-    .sidebar button {
-      padding: 10px;
-      border: none;
-      background-color: #6c79db;
-      color: white;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 20px;
-    }
-    .top-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .card {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      flex: 1;
-    }
-    .card textarea, .card input, .card select {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-family: 'Barlow', sans-serif;
-    }
-    .card button {
-      padding: 8px 12px;
-      background-color: #6c79db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-right: 8px;
-      margin-top: 5px;
-    }
-    .note-item {
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    .note-item textarea {
-      width: 100%;
-      height: 60px;
-    }
-    .status-label {
-      padding: 4px 10px;
-      border-radius: 12px;
-      color: white;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    .Complete { background-color: #77dd77; }
-    .InProgress { background-color: #ffb347; }
-    .Upcoming { background-color: #6ac5fe; }
-  
-  .event-info-card {
-  background-color: #fff7d6;
-  border: 1px solid #f2d98a;
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px 0;
-  font-family: 'Barlow', sans-serif;
-  width: fit-content;
-}
-
-.event-info-card label {
-  font-weight: 600;
-  margin-right: 10px;
-}
-
-#event-date {
-  padding: 6px 10px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-}
-
-    @media (max-width: 768px) {
-  .event-info-card {
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-  </style>
-</head>
-
-
-  
-<body>
-  
-  <div class="header">
-    Digital Dashh | Event Timeline<br>
-    <a href="index.html" class="home-button">🏠 Home</a>
-  </div>
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
-  </div>
-
-<div class="card" style="max-width: 500px; margin: 30px auto 10px;">
-  <h3>🗓️ Event Info</h3>
-  <label for="event-name">Event Name</label>
-  <input type="text" id="event-name" placeholder="e.g. Annual Gala 2025" />
-
-  <label for="event-location">Location</label>
-  <input type="text" id="event-location" placeholder="e.g. New York, NY" />
-
-  <label for="event-date">Date</label>
-  <input type="date" id="event-date" />
-  <p id="countdown" style="font-style: italic; color: #1c1c3a; opacity: 0.75;">Days Remaining: —</p>
-
-  <label for="event-capacity">Capacity</label>
-  <input type="number" id="event-capacity" placeholder="e.g. 150" />
-
-  <button onclick="saveEventInfo()">💾 Save Event Info</button>
-  <div id="saveConfirmation" class="save-message">✅ Saved!</div>
-</div>
-  <div class="container">
-    <div class="sidebar">
-      <button onclick="filterPhases('all')">Show All</button>
-      <button onclick="filterPhases('Complete')">Complete</button>
-      <button onclick="filterPhases('InProgress')">In Progress</button>
-      <button onclick="filterPhases('Upcoming')">Upcoming</button>
-    </div>
-    <div class="main">
-      <div class="top-row">
-        <div class="card">
-          <h3>Add New Phase</h3>
-          <input type="text" id="phaseTitle" placeholder="e.g. Kickoff Call">
-          <input type="date" id="phaseDate">
-          <select id="phaseStatus">
-            <option>Upcoming</option>
-            <option>InProgress</option>
-            <option>Complete</option>
-          </select>
-          <button onclick="addPhase()">Add Phase</button>
-        </div>
-        <div class="card">
-          <h3>Status Tracker</h3>
-          <ul id="statusList"></ul>
-        </div>
-        <div class="card">
-          <h3>Event Phases</h3>
-          <div id="phaseList"></div>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Notes</h3>
-        <textarea id="noteInput" placeholder="Write a new note..."></textarea>
-        <button onclick="addNote()">Add Note</button>
-        <div id="notesContainer"></div>
-      </div>
-    </div>
-  </div>
-  <script>
-    const phaseList = document.getElementById('phaseList');
-    const statusList = document.getElementById('statusList');
-    const notesContainer = document.getElementById('notesContainer');
-    let phases = [
-      { title: 'Kickoff Call', date: '2025-04-03', status: 'Complete' },
-      { title: 'Venue Walkthrough', date: '2025-04-18', status: 'InProgress' },
-      { title: 'Final Content Submission', date: '2025-04-24', status: 'Upcoming' }
-    ];
-    let notes = ['AV team to confirm stage layout measurements – Nick Santos to confirm'];
-
-    function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric', year: 'numeric' }).replace(',', '');
-    }
-
-    function renderPhases() {
-      phaseList.innerHTML = '';
-      phases.forEach((p, index) => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-          <strong>${p.title}</strong> – ${formatDate(p.date)} 
-          <span class="status-label ${p.status}">${p.status}</span>
-          <button onclick="cycleStatus(${index})">Change Status</button>
-          <button onclick="deletePhase(${index})">Delete</button>
-        `;
-        phaseList.appendChild(div);
-      });
-      renderStatusTracker();
-    }
-
-    function renderStatusTracker() {
-      statusList.innerHTML = '';
-      ['Complete', 'InProgress', 'Upcoming'].forEach(status => {
-        const items = phases.filter(p => p.status === status).map(p => p.title).join(', ');
-        if (items) {
-          const li = document.createElement('li');
-          li.innerHTML = `<strong>${status.replace('InProgress', 'In Progress')}:</strong> ${items}`;
-          statusList.appendChild(li);
-        }
-      });
-    }
-
-    function addPhase() {
-      const title = document.getElementById('phaseTitle').value;
-      const date = document.getElementById('phaseDate').value;
-      const status = document.getElementById('phaseStatus').value;
-      if (title && date && status) {
-        phases.push({ title, date, status });
-        renderPhases();
-        document.getElementById('phaseTitle').value = '';
-        document.getElementById('phaseDate').value = '';
-      }
-    }
-
-    function cycleStatus(index) {
-      const order = ['Upcoming', 'InProgress', 'Complete'];
-      const current = phases[index].status;
-      const next = order[(order.indexOf(current) + 1) % order.length];
-      phases[index].status = next;
-      renderPhases();
-    }
-
-    function deletePhase(index) {
-      phases.splice(index, 1);
-      renderPhases();
-    }
-
-    function addNote() {
-      const noteText = document.getElementById('noteInput').value;
-      if (noteText) {
-        notes.push(noteText);
-        renderNotes();
-        document.getElementById('noteInput').value = '';
-      }
-    }
-
-    function renderNotes() {
-      notesContainer.innerHTML = '';
-      notes.forEach((text, i) => {
-        const div = document.createElement('div');
-        div.className = 'note-item';
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.disabled = true;
-        const save = document.createElement('button');
-        const remove = document.createElement('button');
-        const edit = document.createElement('button');
-        save.textContent = 'Save';
-        remove.textContent = 'Remove';
-        edit.textContent = 'Edit';
-
-        save.onclick = () => {
-          notes[i] = textarea.value;
-          textarea.disabled = true;
-        };
-        remove.onclick = () => {
-          notes.splice(i, 1);
-          renderNotes();
-        };
-        edit.onclick = () => {
-          textarea.disabled = false;
-        };
-
-        div.appendChild(textarea);
-        div.appendChild(edit);
-        div.appendChild(save);
-        div.appendChild(remove);
-        notesContainer.appendChild(div);
-      });
-    }
-
-    function filterPhases(type) {
-      if (type === 'all') {
-        renderPhases();
-        return;
-      }
-      const filtered = phases.filter(p => p.status === type);
-      phaseList.innerHTML = '';
-      filtered.forEach((p, index) => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-          <strong>${p.title}</strong> – ${formatDate(p.date)} 
-          <span class="status-label ${p.status}">${p.status}</span>`;
-        phaseList.appendChild(div);
-      });
-    }
-
-    renderPhases();
-    renderNotes();
-  </script>
-
-    <!-- Firebase SDKs -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Timeline | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
-      authDomain: "quantum-beach-394503.firebaseapp.com",
-      projectId: "quantum-beach-394503",
-      storageBucket: "quantum-beach-394503.firebasestorage.app",
-      messagingSenderId: "1002514430184",
-      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
-    };
+    /* TABS (Pre-event / Day-of / Multi-day) */
+    .section-tabs{display:flex;gap:6px;margin-bottom:22px;background:var(--white);border-radius:12px;padding:6px;box-shadow:var(--shadow);width:fit-content;}
+    .section-tab{background:none;border:none;padding:8px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+    .section-tab.active{background:var(--navy);color:var(--yellow);}
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+    .toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .view-toggle{background:var(--white);border:1.5px solid var(--border);border-radius:9px;display:flex;overflow:hidden;}
+    .view-btn{background:none;border:none;padding:7px 14px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+    .view-btn.active{background:var(--navy);color:var(--yellow);}
+    .btn-add{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-add:hover{background:#2d2d5a;}
+    .filter-btn{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:var(--purple);color:var(--navy);}
+    .filter-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+
+    /* PROGRESS BANNER */
+    .progress-banner{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+    .prog-stat{text-align:center;}
+    .prog-stat .pv{font-size:20px;font-weight:900;}
+    .prog-stat .pl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;}
+    .prog-bar-wrap{flex:1;min-width:160px;}
+    .prog-bar-lbl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+    .prog-bar{background:#eef0f8;border-radius:20px;height:8px;overflow:hidden;}
+    .prog-bar-fill{height:100%;border-radius:20px;background:var(--purple);transition:width 0.5s;}
+
+    /* ─── VERTICAL TIMELINE ─── */
+    .vt-section{position:relative;padding-left:32px;}
+    .vt-section::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border);border-radius:2px;}
+    .vt-phase{margin-bottom:28px;}
+    .vt-phase-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:relative;}
+    .vt-phase-hdr::before{content:'';position:absolute;left:-26px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:var(--purple);border:3px solid var(--white);box-shadow:0 0 0 2px var(--purple);}
+    .vt-phase-name{font-size:15px;font-weight:800;}
+    .vt-phase-date{font-size:12px;color:var(--muted);font-weight:600;}
+    .vt-items{display:flex;flex-direction:column;gap:8px;}
+    .vt-item{background:var(--white);border-radius:11px;box-shadow:var(--shadow);padding:13px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:box-shadow 0.15s;border-left:3px solid transparent;position:relative;}
+    .vt-item:hover{box-shadow:0 6px 20px rgba(28,28,58,0.1);}
+    .vt-item.s-done{border-left-color:var(--green);opacity:0.75;}
+    .vt-item.s-progress{border-left-color:var(--orange);}
+    .vt-item.s-notstarted{border-left-color:#d0d4f0;}
+    .vt-item::before{content:'';position:absolute;left:-30px;top:18px;width:8px;height:8px;border-radius:50%;background:var(--border);}
+    .vt-item.s-done::before{background:var(--green);}
+    .vt-item.s-progress::before{background:var(--orange);}
+    .vt-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;transition:all 0.15s;margin-top:1px;}
+    .vt-check.done{background:var(--green);border-color:var(--green);color:white;}
+    .vt-info{flex:1;min-width:0;}
+    .vt-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+    .vt-title.done{text-decoration:line-through;color:var(--muted);}
+    .vt-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
+    .vt-rm{background:none;border:none;color:#ccc;font-size:13px;cursor:pointer;padding:3px 5px;border-radius:4px;flex-shrink:0;}
+    .vt-rm:hover{color:var(--red);}
+
+    /* BADGES */
+    .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;}
+    .b-notstarted{background:#f4f4fb;color:var(--muted);}
+    .b-progress{background:var(--purple-light);color:var(--purple);}
+    .b-done{background:#e8f5ee;color:var(--green);}
+    .b-owner{background:#fff8e0;color:#9a7000;}
+    .b-time{background:#f0f4ff;color:#4060cc;font-weight:600;}
+    .b-overdue{background:#fff0f0;color:var(--red);}
+
+    /* ─── TABLE VIEW ─── */
+    .tbl-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+    .tbl-card-hdr{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .tbl-card-hdr h3{font-size:14px;font-weight:800;}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#f8f8fc;padding:9px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody td{padding:8px 8px;border-bottom:1px solid #f4f4fb;vertical-align:middle;font-size:13px;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:#fafafe;}
+    .ti{border:1.5px solid transparent;border-radius:6px;padding:5px 8px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:transparent;width:100%;transition:border-color 0.2s;}
+    .ti:focus{outline:none;border-color:var(--purple);background:white;}
+    .ti.w{min-width:120px;}
+    .btn-rm{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:3px 5px;border-radius:4px;}
+    .btn-rm:hover{color:var(--red);}
+    .btn-add-row{background:var(--purple-light);color:var(--purple);border:none;padding:6px 13px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;}
+    .btn-add-row:hover{background:#dde3f8;}
+    .btn-save-tbl{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;}
+    .btn-save-tbl:hover{background:#2d2d5a;}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:26px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:17px;font-weight:800;margin-bottom:16px;}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .modal-actions{display:flex;gap:10px;justify-content:space-between;margin-top:16px;flex-wrap:wrap;}
+    .fi-lbl{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;margin-bottom:10px;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);resize:vertical;min-height:65px;background:#fafafa;margin-bottom:10px;}
+    .fi-ta:focus{outline:none;border-color:var(--purple);background:white;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+    .btn-delete{background:none;border:1.5px solid var(--border);color:var(--red);padding:10px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+    /* DAY TABS (multi-day) */
+    .day-tabs-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .day-tab{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .day-tab:hover{border-color:var(--purple);color:var(--navy);}
+    .day-tab.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-add-day{background:none;border:2px dashed var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-add-day:hover{border-color:var(--purple);color:var(--purple);}
+
+    .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+    .empty .ei{font-size:36px;margin-bottom:8px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html" class="active">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">📅</div>Loading Timeline...</div>
+
+<div class="page" id="page-content" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Event <span style="color:var(--purple);">Timeline</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+    </div>
+  </div>
+
+  <!-- SECTION TABS -->
+  <div class="section-tabs">
+    <button class="section-tab active" onclick="switchSection('pre',this)">📋 Pre-Event</button>
+    <button class="section-tab" onclick="switchSection('dayof',this)">🎬 Day-Of</button>
+    <button class="section-tab" onclick="switchSection('multiday',this)">📆 Multi-Day</button>
+  </div>
+
+  <!-- PROGRESS BANNER -->
+  <div class="progress-banner" id="progress-banner">
+    <div class="prog-stat"><div class="pv" id="pb-total">0</div><div class="pl">Total</div></div>
+    <div class="prog-stat"><div class="pv" id="pb-done" style="color:var(--green);">0</div><div class="pl">Done</div></div>
+    <div class="prog-stat"><div class="pv" id="pb-prog" style="color:var(--orange);">0</div><div class="pl">In Progress</div></div>
+    <div class="prog-stat"><div class="pv" id="pb-ns" style="color:var(--muted);">0</div><div class="pl">Not Started</div></div>
+    <div class="prog-bar-wrap">
+      <div class="prog-bar-lbl" id="pb-pct">0% complete</div>
+      <div class="prog-bar"><div class="prog-bar-fill" id="pb-fill" style="width:0%;"></div></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('notstarted',this)">Not Started</button>
+      <button class="filter-btn" onclick="setFilter('progress',this)">In Progress</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <div class="view-toggle">
+        <button class="view-btn active" id="vbtn-timeline" onclick="setView('timeline',this)">⏱ Timeline</button>
+        <button class="view-btn" id="vbtn-table" onclick="setView('table',this)">☰ Table</button>
+      </div>
+      <button class="btn-add" onclick="openModal()">+ Add Item</button>
+    </div>
+  </div>
+
+  <!-- DAY TABS (multi-day only) -->
+  <div class="day-tabs-row" id="day-tabs-row" style="display:none;"></div>
+
+  <!-- VIEWS -->
+  <div id="timeline-view"></div>
+  <div id="table-view" style="display:none;"></div>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal">
+    <h3 id="modal-title">📅 Add Item</h3>
+    <label class="fi-lbl">Title *</label>
+    <input class="fi" id="i-title" placeholder="What's happening?" />
+    <div class="modal-row">
+      <div>
+        <label class="fi-lbl">Date</label>
+        <input class="fi" id="i-date" type="date" style="margin:0;" />
+      </div>
+      <div>
+        <label class="fi-lbl">Time</label>
+        <input class="fi" id="i-time" type="time" style="margin:0;" />
+      </div>
+    </div>
+    <div class="modal-row" style="margin-top:10px;">
+      <div>
+        <label class="fi-lbl">End Time</label>
+        <input class="fi" id="i-endtime" type="time" style="margin:0;" />
+      </div>
+      <div>
+        <label class="fi-lbl" id="i-phase-lbl">Phase / Group</label>
+        <input class="fi" id="i-phase" placeholder="e.g. Week 1, Morning" style="margin:0;" />
+      </div>
+    </div>
+    <div class="modal-row" style="margin-top:10px;">
+      <div>
+        <label class="fi-lbl">Status</label>
+        <select class="fi" id="i-status" style="margin:0;">
+          <option value="notstarted">Not Started</option>
+          <option value="progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div>
+        <label class="fi-lbl">Owner</label>
+        <input class="fi" id="i-owner" placeholder="Who's responsible?" style="margin:0;" />
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="fi-lbl">Notes</label>
+      <textarea class="fi-ta" id="i-notes" placeholder="Any details, links, or instructions..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="modal-del-btn" style="display:none;" onclick="deleteItem()">🗑 Delete</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveItem()">💾 Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
+  const firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(),db=firebase.firestore();
+  let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
+  let tl={pre:[],dayof:[],multiday:[]};
+  let activeSection='pre',activeView='timeline',activeFilter='all',activeDayIdx=0,editingIdx=null,authDone=false;
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
   });
-</script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    function calculateDaysRemaining(dateString) {
-      const eventDate = new Date(dateString);
-      const today = new Date();
-      const timeDiff = eventDate - today;
-      return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        tl.pre=d.tlPre||[];
+        tl.dayof=d.tlDayof||[];
+        tl.multiday=d.tlMultiday||[];
+        renderAll();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+
+  function renderAll(){updateProgress();renderDayTabs();renderView();}
+
+  // ── SECTION SWITCH ──
+  function switchSection(s,btn){
+    activeSection=s;activeFilter='all';
+    document.querySelectorAll('.section-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('day-tabs-row').style.display=s==='multiday'?'flex':'none';
+    // reset filter btns
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn')[0].classList.add('active');
+    // update modal phase label
+    document.getElementById('i-phase-lbl').textContent=s==='pre'?'Phase / Group':s==='dayof'?'Room / Stage':'Day';
+    renderAll();
+  }
+
+  // ── FILTER ──
+  function setFilter(f,btn){
+    activeFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderView();
+  }
+
+  // ── VIEW ──
+  function setView(v,btn){
+    activeView=v;
+    document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('timeline-view').style.display=v==='timeline'?'block':'none';
+    document.getElementById('table-view').style.display=v==='table'?'block':'none';
+    renderView();
+  }
+
+  function renderView(){
+    if(activeView==='timeline') renderTimeline();
+    else renderTable();
+  }
+
+  // ── PROGRESS ──
+  function updateProgress(){
+    const items=getItems();
+    const total=items.length,done=items.filter(i=>i.status==='done').length,prog=items.filter(i=>i.status==='progress').length,ns=items.filter(i=>i.status==='notstarted'||!i.status).length;
+    const pct=total>0?Math.round(done/total*100):0;
+    document.getElementById('pb-total').textContent=total;
+    document.getElementById('pb-done').textContent=done;
+    document.getElementById('pb-prog').textContent=prog;
+    document.getElementById('pb-ns').textContent=ns;
+    document.getElementById('pb-pct').textContent=pct+'% complete';
+    document.getElementById('pb-fill').style.width=pct+'%';
+  }
+
+  function getItems(){
+    if(activeSection==='multiday'){
+      const days=getDays();
+      return days.length&&days[activeDayIdx]?days[activeDayIdx].items||[]:[];
     }
+    return tl[activeSection]||[];
+  }
 
-    function updateCountdownUI(date) {
-      const countdownEl = document.getElementById("countdown");
-      if (!date) {
-        countdownEl.textContent = "Days Remaining: —";
-        return;
-      }
-      const daysRemaining = calculateDaysRemaining(date);
-      countdownEl.textContent = `Days Remaining: ${daysRemaining}`;
-    }
+  function getFiltered(){
+    let items=getItems();
+    if(activeFilter==='notstarted') items=items.filter(i=>!i.status||i.status==='notstarted');
+    else if(activeFilter==='progress') items=items.filter(i=>i.status==='progress');
+    else if(activeFilter==='done') items=items.filter(i=>i.status==='done');
+    // sort by date then time
+    return [...items].sort((a,b)=>{
+      if(a.date!==b.date) return (a.date||'').localeCompare(b.date||'');
+      return (a.time||'').localeCompare(b.time||'');
+    });
+  }
 
-    function saveEventInfo() {
-      const name = document.getElementById("event-name").value.trim();
-      const location = document.getElementById("event-location").value.trim();
-      const date = document.getElementById("event-date").value;
-      const capacity = parseInt(document.getElementById("event-capacity").value) || 0;
+  // ── MULTI-DAY TABS ──
+  function getDays(){return tl.multiday||[];}
+  function renderDayTabs(){
+    if(activeSection!=='multiday')return;
+    const row=document.getElementById('day-tabs-row');
+    const days=getDays();
+    row.innerHTML=days.map((d,i)=>`<button class="day-tab${i===activeDayIdx?' active':''}" onclick="switchDay(${i})">${esc(d.label||'Day '+(i+1))}</button>`).join('')+
+      `<button class="btn-add-day" onclick="addDay()">+ Add Day</button>`+
+      (days.length?`<button class="btn-add-day" style="color:var(--red);border-color:var(--red);" onclick="removeDay(${activeDayIdx})">✕ Remove Day</button>`:'');
+  }
+  function switchDay(i){activeDayIdx=i;renderDayTabs();renderAll();}
+  function addDay(){
+    const label=prompt('Day label (e.g. Day 1 - Monday, Setup Day):','Day '+(getDays().length+1));
+    if(!label)return;
+    tl.multiday.push({label:label.trim(),items:[]});
+    activeDayIdx=tl.multiday.length-1;
+    persist(()=>renderAll());
+  }
+  function removeDay(i){
+    if(!confirm(`Remove "${getDays()[i]?.label}"?`))return;
+    tl.multiday.splice(i,1);
+    activeDayIdx=Math.max(0,activeDayIdx-1);
+    persist(()=>renderAll());
+  }
 
-      const user = firebase.auth().currentUser;
-      const eventId = localStorage.getItem("activeEventId");
+  // ── VERTICAL TIMELINE ──
+  function renderTimeline(){
+    const el=document.getElementById('timeline-view');
+    const items=getFiltered();
+    if(!items.length){el.innerHTML=`<div class="empty"><div class="ei">📅</div>No items yet. Click <strong>+ Add Item</strong> to get started.</div>`;return;}
 
-      if (!user || !eventId) {
-        alert("User not logged in or event ID missing.");
-        return;
-      }
-
-      db.collection("users").doc(user.uid).collection("events").doc(eventId).set({
-        eventName: name,
-        eventLocation: location,
-        eventDate: date,
-        eventCapacity: capacity
-      }, { merge: true })
-      .then(() => {
-        localStorage.setItem("eventName", name);
-        localStorage.setItem("eventLocation", location);
-        localStorage.setItem("eventDate", date);
-        localStorage.setItem("eventCapacity", capacity);
-        updateCountdownUI(date);
-        document.getElementById("saveConfirmation").classList.add("show");
-        setTimeout(() => {
-          document.getElementById("saveConfirmation").classList.remove("show");
-        }, 2500);
-      })
-      .catch((err) => {
-        console.error("🔥 Error saving event info:", err);
-        alert("Failed to save event info.");
-      });
-    }
-
-    // Load event info
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user) return;
-      const eventId = localStorage.getItem("activeEventId");
-      if (!eventId) return;
-
-      db.collection("users").doc(user.uid).collection("events").doc(eventId).get()
-        .then((doc) => {
-          if (doc.exists) {
-            const data = doc.data();
-            document.getElementById("event-name").value = data.eventName || "";
-            document.getElementById("event-location").value = data.eventLocation || "";
-            document.getElementById("event-date").value = data.eventDate || "";
-            document.getElementById("event-capacity").value = data.eventCapacity || "";
-            updateCountdownUI(data.eventDate);
-          }
-        });
+    // Group by phase
+    const groups={};
+    items.forEach(item=>{
+      const key=item.phase||'General';
+      if(!groups[key]) groups[key]=[];
+      groups[key].push(item);
     });
 
-    // Live update countdown on date change
-    document.getElementById("event-date").addEventListener("change", (e) => {
-      updateCountdownUI(e.target.value);
+    el.innerHTML=`<div class="vt-section">`+
+      Object.entries(groups).map(([phase,its])=>`
+        <div class="vt-phase">
+          <div class="vt-phase-hdr">
+            <span class="vt-phase-name">${esc(phase)}</span>
+          </div>
+          <div class="vt-items">
+            ${its.map(item=>{
+              const realIdx=getItems().indexOf(item);
+              const s=item.status||'notstarted';
+              const timeStr=item.time?(item.endtime?`${item.time} – ${item.endtime}`:item.time):'';
+              const today=new Date();today.setHours(0,0,0,0);
+              const overdue=s!=='done'&&item.date&&new Date(item.date)<today;
+              return `<div class="vt-item s-${s}" onclick="openModal(null,${realIdx})">
+                <div class="vt-check${s==='done'?' done':''}" onclick="event.stopPropagation();quickToggle(${realIdx})">${s==='done'?'✓':''}</div>
+                <div class="vt-info">
+                  <div class="vt-title${s==='done'?' done':''}">${esc(item.title)}</div>
+                  ${item.notes?`<div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;">${esc(item.notes)}</div>`:''}
+                  <div class="vt-meta">
+                    <span class="badge b-${s}">${{'notstarted':'Not Started','progress':'In Progress','done':'Done'}[s]||'Not Started'}</span>
+                    ${timeStr?`<span class="badge b-time">⏱ ${esc(timeStr)}</span>`:''}
+                    ${item.date?`<span class="badge b-time">📅 ${new Date(item.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
+                    ${item.owner?`<span class="badge b-owner">👤 ${esc(item.owner)}</span>`:''}
+                    ${overdue?`<span class="badge b-overdue">⚠️ Overdue</span>`:''}
+                  </div>
+                </div>
+                <button class="vt-rm" onclick="event.stopPropagation();removeItem(${realIdx})">✕</button>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  // ── TABLE VIEW ──
+  function renderTable(){
+    const el=document.getElementById('table-view');
+    const items=getFiltered();
+    const allItems=getItems();
+    const STATUSES=['notstarted','progress','done'];
+
+    el.innerHTML=`<div class="tbl-card">
+      <div class="tbl-card-hdr"><h3>📋 ${activeSection==='pre'?'Pre-Event':activeSection==='dayof'?'Day-Of':'Multi-Day'} Schedule</h3><span class="saved-flash" id="flash-tbl">✓ Saved</span></div>
+      <div style="padding:14px 18px;">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>${activeSection==='pre'?'Date':'Time'}</th>${activeSection!=='pre'?'<th>End</th>':''}<th>${activeSection==='pre'?'Phase':'Room / Stage'}</th><th>Status</th><th>Owner</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="tbl-tbody"></tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addTableRow()">+ Add Row</button>
+        <button class="btn-save-tbl" onclick="saveTable()">💾 Save</button>
+      </div>
+    </div>`;
+
+    const tbody=document.getElementById('tbl-tbody');
+    items.forEach(item=>{
+      const realIdx=allItems.indexOf(item);
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td><input class="ti w" value="${esc(item.title||'')}" placeholder="Title" /></td>
+        <td>${activeSection==='pre'?`<input class="ti" type="date" value="${item.date||''}" />`:`<input class="ti" type="time" value="${item.time||''}" />`}</td>
+        ${activeSection!=='pre'?`<td><input class="ti" type="time" value="${item.endtime||''}" /></td>`:''}
+        <td><input class="ti w" value="${esc(item.phase||'')}" placeholder="${activeSection==='pre'?'Phase':'Room'}" /></td>
+        <td><select class="ti">${STATUSES.map(s=>`<option value="${s}"${item.status===s?' selected':''}>${{'notstarted':'Not Started','progress':'In Progress','done':'Done'}[s]}</option>`).join('')}</select></td>
+        <td><input class="ti w" value="${esc(item.owner||'')}" placeholder="Owner" /></td>
+        <td><input class="ti w" value="${esc(item.notes||'')}" placeholder="Notes..." /></td>
+        <td><button class="btn-rm" onclick="removeItem(${realIdx});renderTable();">✕</button></td>`;
+      tbody.appendChild(tr);
     });
-  });
+  }
+
+  function addTableRow(){
+    pushItem({title:'',status:'notstarted'});
+    renderTable();
+  }
+
+  function saveTable(){
+    const allItems=getItems();
+    const rows=document.querySelectorAll('#tbl-tbody tr');
+    const filtered=getFiltered();
+    rows.forEach((tr,i)=>{
+      const item=filtered[i];if(!item)return;
+      const realIdx=allItems.indexOf(item);if(realIdx<0)return;
+      const c=tr.querySelectorAll('input,select');
+      if(activeSection==='pre'){
+        allItems[realIdx]={...allItems[realIdx],title:c[0].value,date:c[1].value,phase:c[2].value,status:c[3].value,owner:c[4].value,notes:c[5].value};
+      } else {
+        allItems[realIdx]={...allItems[realIdx],title:c[0].value,time:c[1].value,endtime:c[2].value,phase:c[3].value,status:c[4].value,owner:c[5].value,notes:c[6].value};
+      }
+    });
+    persist(()=>{flash('flash-tbl');updateProgress();renderTimeline();showToast('✓ Saved!','success');});
+  }
+
+  // ── MODAL ──
+  function openModal(defaultStatus=null,si=null){
+    editingIdx=si;
+    const item=si!==null?getItems()[si]:{};
+    document.getElementById('modal-title').textContent=si!==null?'✏️ Edit Item':'📅 Add Item';
+    document.getElementById('i-title').value=item.title||'';
+    document.getElementById('i-date').value=item.date||'';
+    document.getElementById('i-time').value=item.time||'';
+    document.getElementById('i-endtime').value=item.endtime||'';
+    document.getElementById('i-phase').value=item.phase||'';
+    document.getElementById('i-status').value=item.status||defaultStatus||'notstarted';
+    document.getElementById('i-owner').value=item.owner||'';
+    document.getElementById('i-notes').value=item.notes||'';
+    document.getElementById('modal-del-btn').style.display=si!==null?'block':'none';
+    document.getElementById('item-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('i-title').focus(),100);
+  }
+  function closeModal(){document.getElementById('item-modal').classList.remove('open');editingIdx=null;}
+
+  function saveItem(){
+    const title=document.getElementById('i-title').value.trim();
+    if(!title){showToast('Title required.','error');return;}
+    const item={title,date:document.getElementById('i-date').value,time:document.getElementById('i-time').value,endtime:document.getElementById('i-endtime').value,phase:document.getElementById('i-phase').value.trim(),status:document.getElementById('i-status').value,owner:document.getElementById('i-owner').value.trim(),notes:document.getElementById('i-notes').value.trim()};
+    if(editingIdx!==null) getItems()[editingIdx]={...getItems()[editingIdx],...item};
+    else pushItem(item);
+    closeModal();
+    persist(()=>{renderAll();showToast('✓ Saved!','success');});
+  }
+
+  function deleteItem(){
+    if(editingIdx===null)return;
+    removeItem(editingIdx);
+    closeModal();
+    persist(()=>{renderAll();showToast('🗑 Removed.','success');});
+  }
+
+  function removeItem(si){
+    getItems().splice(si,1);
+    persist(()=>renderAll());
+  }
+
+  function pushItem(item){
+    if(activeSection==='multiday'){
+      const days=getDays();
+      if(!days.length){tl.multiday.push({label:'Day 1',items:[]});activeDayIdx=0;}
+      tl.multiday[activeDayIdx].items.push(item);
+    } else {
+      tl[activeSection].push(item);
+    }
+  }
+
+  function quickToggle(si){
+    const item=getItems()[si];
+    item.status=item.status==='done'?'notstarted':'done';
+    persist(()=>renderAll());
+  }
+
+  // ── FIRESTORE ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({tlPre:tl.pre,tlDayof:tl.dayof,tlMultiday:tl.multiday})
+      .then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
 </script>
-  
 </body>
 </html>
