@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Events | Digital Dashh</title>
+  <title>Digital Dashh | Home</title>
   <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="640" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Digital Dashh EventBoard" />
-  <meta property="og:description" content="A branded command center for event producers." />
+  <meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700;900&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
-  <!-- Firebase SDKs - loaded early so they are available when scripts run -->
+  <!-- Firebase SDKs in head so they're always available -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -23,452 +25,330 @@
       --purple-light: #8da5e2;
       --bg: #f0f4f8;
       --white: #ffffff;
-      --danger: #e55a5a;
-      --success: #4caf82;
       --text-muted: #7a7a9a;
-      --card-shadow: 0 4px 20px rgba(28,28,58,0.08);
+      --card-shadow: 0 4px 12px rgba(28,28,58,0.07);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Barlow', sans-serif;
       background-color: var(--bg);
       color: var(--navy);
-      min-height: 100vh;
     }
 
     /* ── HEADER ── */
     .header {
       background-color: var(--navy);
       color: white;
-      padding: 18px 32px;
+      padding: 18px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
-    .header-brand {
+    .header-left h1 {
       font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      font-weight: 900;
+      letter-spacing: -0.01em;
     }
-    .header-brand span {
-      color: var(--yellow);
+    .header-left p {
+      font-size: 13px;
+      opacity: 0.65;
+      margin-top: 2px;
     }
     .header-right {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-size: 14px;
-      opacity: 0.85;
+      gap: 12px;
+      flex-wrap: wrap;
     }
+
+    /* Event dropdown */
+    .event-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 6px 12px;
+    }
+    .event-selector-wrap label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+    #event-select {
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      max-width: 220px;
+    }
+    #event-select option { color: var(--navy); background: white; }
+
+    .btn-manage-events {
+      background: var(--yellow);
+      color: var(--navy);
+      border: none;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-manage-events:hover { background: #ffd633; }
+
     .btn-logout {
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.2);
       color: white;
-      padding: 6px 14px;
-      border-radius: 6px;
+      padding: 7px 14px;
+      border-radius: 7px;
       font-family: 'Barlow', sans-serif;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-logout:hover { background: rgba(255,255,255,0.2); }
+    .btn-logout:hover { background: rgba(255,255,255,0.22); }
 
-    /* ── PAGE LAYOUT ── */
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 48px 32px 80px;
-    }
-
-    .page-intro {
-      margin-bottom: 40px;
-    }
-    .page-intro h1 {
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-    .page-intro h1 span {
-      color: var(--purple);
-    }
-    .page-intro p {
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 15px;
-      font-weight: 400;
-    }
-
-    /* ── TWO COLUMN LAYOUT ── */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 32px;
-      align-items: start;
-    }
-
-    @media (max-width: 820px) {
-      .two-col { grid-template-columns: 1fr; }
-    }
-
-    /* ── SECTION HEADERS ── */
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    /* ── EVENT CARDS LIST ── */
-    .events-list {
+    /* ── MENU BAR ── */
+    .menu-bar {
+      background-color: var(--yellow);
+      padding: 10px 20px;
       display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .event-card {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 22px 24px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      border: 2px solid transparent;
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .event-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-      background: var(--purple);
-      border-radius: 4px 0 0 4px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .event-card:hover {
-      border-color: var(--purple-light);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(108,121,219,0.14);
-    }
-    .event-card:hover::before { opacity: 1; }
-    .event-card.active-event {
-      border-color: var(--purple);
-      background: #f5f6ff;
-    }
-    .event-card.active-event::before { opacity: 1; }
-
-    .event-card-info { flex: 1; min-width: 0; }
-    .event-card-name {
-      font-size: 17px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .event-card-meta {
-      display: flex;
-      gap: 16px;
-      margin-top: 5px;
       flex-wrap: wrap;
-    }
-    .event-card-meta span {
-      font-size: 13px;
-      color: var(--text-muted);
-      display: flex;
+      gap: 8px;
       align-items: center;
-      gap: 4px;
     }
-
-    .event-card-badges {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    .badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .badge-active { background: #e8f5ee; color: #2e7d54; }
-    .badge-upcoming { background: #eef1fb; color: var(--purple); }
-    .badge-past { background: #f0f0f0; color: #999; }
-
-    .btn-select {
-      background: var(--purple);
-      color: white;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-family: 'Barlow', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-select:hover { background: #5a67d8; transform: scale(1.03); }
-    .btn-select.selected {
-      background: var(--success);
-    }
-
-    .btn-delete-event {
-      background: none;
-      border: none;
-      color: #ccc;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 4px 6px;
+    .menu-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .menu-buttons button {
+      background-color: var(--white);
+      color: var(--navy);
+      border: 1px solid #ccc;
+      padding: 7px 16px;
       border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-      line-height: 1;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
     }
-    .btn-delete-event:hover { color: var(--danger); background: #fff0f0; }
+    .menu-buttons button.active,
+    .menu-buttons button:hover {
+      background-color: var(--purple);
+      color: white;
+      border-color: var(--purple);
+    }
 
-    /* Empty state */
-    .empty-state {
+    /* ── WELCOME BANNER ── */
+    .welcome-banner {
       background: var(--white);
+      color: var(--navy);
+      padding: 14px 30px;
+      font-size: 15px;
+      font-weight: 600;
+      border-bottom: 1px solid #e4e4f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .welcome-banner .event-name {
+      color: var(--purple);
+      font-weight: 800;
+    }
+    .welcome-banner .event-meta {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* ── SUMMARY CARDS ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 30px 30px 10px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .summary-link { text-decoration: none; color: inherit; }
+    .summary-card {
+      background-color: var(--white);
       border-radius: 14px;
-      padding: 52px 32px;
+      padding: 24px 20px;
       text-align: center;
       box-shadow: var(--card-shadow);
-      border: 2px dashed #dde;
+      transition: transform 0.2s ease, box-shadow 0.2s;
+      border-top: 4px solid transparent;
     }
-    .empty-state .empty-icon { font-size: 44px; margin-bottom: 12px; }
-    .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-    .empty-state p { color: var(--text-muted); font-size: 14px; }
+    .summary-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(28,28,58,0.1);
+    }
+    .summary-card.budget-card { border-top-color: #4caf82; }
+    .summary-card.countdown-card { border-top-color: var(--purple); }
+    .summary-card.reg-card { border-top-color: #f5a623; }
+    .summary-card.tasks-card { border-top-color: #e55a5a; }
 
-    /* Loading skeleton */
-    .skeleton-card {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 22px 24px;
-      box-shadow: var(--card-shadow);
+    .summary-card h3 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
     }
-    .skeleton-line {
+    .summary-card .highlight {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+    .summary-card .sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: #eef0f8;
+      border-radius: 20px;
+      height: 6px;
+      margin: 10px 0 6px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      border-radius: 20px;
+      background: var(--purple);
+      transition: width 0.6s ease;
+    }
+
+    /* Loading shimmer */
+    .shimmer {
       background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
       background-size: 200% 100%;
       animation: shimmer 1.4s infinite;
       border-radius: 6px;
-      height: 14px;
-      margin-bottom: 10px;
+      display: inline-block;
     }
-    .skeleton-line.wide { width: 60%; }
-    .skeleton-line.narrow { width: 35%; height: 11px; }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
 
-    /* ── CREATE EVENT FORM ── */
-    .create-panel {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 28px;
+    /* ── DASHBOARD GRID ── */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .nav-card {
+      background-color: var(--white);
+      border-radius: 14px;
+      padding: 24px 20px;
+      text-align: center;
       box-shadow: var(--card-shadow);
-      position: sticky;
-      top: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
     }
-    .create-panel h2 {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .nav-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(108,121,219,0.15);
+      border-bottom-color: var(--purple);
     }
+    .nav-card .icon { font-size: 28px; margin-bottom: 10px; }
+    .nav-card h2 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .nav-card p { font-size: 13px; color: var(--text-muted); }
 
-    .form-group {
-      margin-bottom: 16px;
+    /* ── BOTTOM GRID ── */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 10px 30px 40px;
+      max-width: 1200px;
+      margin: auto;
     }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+    .info-card {
+      background-color: var(--white);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+    }
+    .info-card h3 {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 14px;
     }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px 13px;
-      border: 1.5px solid #e0e0ee;
-      border-radius: 8px;
-      font-family: 'Barlow', sans-serif;
+    .info-card ul { list-style: none; }
+    .info-card li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f8;
       font-size: 14px;
-      color: var(--navy);
-      background: #fafafa;
-      transition: border-color 0.2s, background 0.2s;
-      outline: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--purple);
-      background: white;
-    }
-    .form-group textarea { resize: vertical; min-height: 72px; }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .info-card li:last-child { border-bottom: none; }
+    .tag {
+      background: #eef1fb;
+      color: var(--purple);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
     }
 
-    .btn-create {
-      width: 100%;
-      background: var(--navy);
-      color: var(--yellow);
-      border: none;
-      padding: 13px;
-      border-radius: 10px;
-      font-family: 'Barlow', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: background 0.2s, transform 0.15s;
-      margin-top: 6px;
-    }
-    .btn-create:hover { background: #2d2d5a; transform: translateY(-1px); }
-    .btn-create:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    /* ── ACTIVE EVENT BANNER ── */
-    .active-banner {
-      background: linear-gradient(135deg, var(--navy) 0%, #2d2d5a 100%);
-      color: white;
-      border-radius: 14px;
+    /* No event state */
+    .no-event-banner {
+      background: #fff8e6;
+      border: 1px solid #ffe066;
+      border-radius: 12px;
       padding: 20px 24px;
-      margin-bottom: 28px;
+      margin: 20px 30px;
+      max-width: 1140px;
+      margin-left: auto;
+      margin-right: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      box-shadow: 0 6px 24px rgba(28,28,58,0.18);
+      flex-wrap: wrap;
     }
-    .active-banner-info { flex: 1; }
-    .active-banner-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--yellow);
-      margin-bottom: 4px;
-    }
-    .active-banner-name {
-      font-size: 20px;
-      font-weight: 800;
-    }
-    .active-banner-meta {
-      font-size: 13px;
-      opacity: 0.7;
-      margin-top: 3px;
-    }
-    .btn-go-dashboard {
-      background: var(--yellow);
-      color: var(--navy);
-      border: none;
-      padding: 11px 22px;
-      border-radius: 9px;
-      font-family: 'Barlow', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s, transform 0.15s;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .btn-go-dashboard:hover { background: #ffd633; transform: scale(1.03); }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
+    .no-event-banner p { font-size: 15px; font-weight: 600; color: #7a5800; }
+    .no-event-banner a {
       background: var(--navy);
-      color: white;
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-      transform: translateY(80px);
-      opacity: 0;
-      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { border-left: 4px solid var(--success); }
-    .toast.error { border-left: 4px solid var(--danger); }
-
-    /* ── CONFIRM MODAL ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 380px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      transform: scale(0.92);
-      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
-    }
-    .modal-overlay.open .modal { transform: scale(1); }
-    .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
-    .modal p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .btn-cancel {
-      background: #f0f0f0;
-      border: none;
+      color: var(--yellow);
       padding: 9px 18px;
       border-radius: 8px;
-      font-family: 'Barlow', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-confirm-delete {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-family: 'Barlow', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -476,120 +356,160 @@
 
   <!-- HEADER -->
   <div class="header">
-    <div class="header-brand">Digital <span>Dashh</span></div>
+    <div class="header-left">
+      <h1>Digital Dashh | Event Command Center</h1>
+      <p>👋 Where Production Meets Precision</p>
+    </div>
     <div class="header-right">
-      <span id="user-email"></span>
+      <div class="event-selector-wrap">
+        <label>Event</label>
+        <select id="event-select" onchange="switchEvent(this.value)">
+          <option value="">Loading events...</option>
+        </select>
+      </div>
+      <a href="events.html" class="btn-manage-events">+ Manage Events</a>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <!-- PAGE LOADER -->
-  <div id="page-loader" style="display:flex;justify-content:center;align-items:center;height:60vh;">
-    <div style="text-align:center;color:#7a7a9a;font-family:'Barlow',sans-serif;">
-      <div style="font-size:32px;margin-bottom:12px;">⚡</div>
-      <div style="font-size:15px;font-weight:600;">Loading your workspace...</div>
+  <!-- MENU BAR -->
+  <div class="menu-bar">
+    <div class="menu-buttons">
+      <button onclick="filterView('all')" id="btn-all" class="active">All Views</button>
+      <button onclick="filterView('production')" id="btn-production">Production</button>
+      <button onclick="filterView('client')" id="btn-client">Client</button>
+      <button onclick="filterView('partner')" id="btn-partner">Partner</button>
     </div>
   </div>
 
-  <!-- PAGE -->
-  <div class="page" id="page-content" style="display:none;">
-    <div class="page-intro">
-      <h1>Your <span>Events</span></h1>
-      <p>Select an event to open its dashboard, or create a new one below.</p>
+  <!-- WELCOME BANNER -->
+  <div class="welcome-banner" id="welcome-banner">
+    <span>Loading your event...</span>
+  </div>
+
+  <!-- NO EVENT STATE -->
+  <div class="no-event-banner" id="no-event-banner" style="display:none;">
+    <p>⚠️ No event selected. Choose one from the dropdown or create a new one.</p>
+    <a href="events.html">Go to Events →</a>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+    <a href="budget.html" class="summary-link">
+      <div class="summary-card budget-card">
+        <h3>💰 Budget</h3>
+        <div class="highlight" id="budget-total">—</div>
+        <div class="sub" id="budget-sub">Loading...</div>
+      </div>
+    </a>
+
+    <a href="timeline.html" class="summary-link">
+      <div class="summary-card countdown-card">
+        <h3>📆 Event Countdown</h3>
+        <div class="highlight" id="days-remaining">—</div>
+        <div class="sub" id="event-date-display">Loading...</div>
+      </div>
+    </a>
+
+    <a href="registration.html" class="summary-link">
+      <div class="summary-card reg-card">
+        <h3>🎟️ Registration</h3>
+        <div class="highlight" id="reg-count">—</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="reg-progress" style="width:0%"></div>
+        </div>
+        <div class="sub" id="reg-percent">Loading...</div>
+      </div>
+    </a>
+
+    <a href="tasks.html" class="summary-link">
+      <div class="summary-card tasks-card">
+        <h3>✅ Tasks</h3>
+        <div class="highlight" id="tasks-count">—</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="tasks-progress" style="width:0%;background:#e55a5a;"></div>
+        </div>
+        <div class="sub" id="tasks-percent">Loading...</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- NAV CARDS -->
+  <div class="dashboard-grid">
+    <div class="nav-card" data-view="production" onclick="location.href='overview.html'">
+      <div class="icon">📋</div>
+      <h2>Overview</h2>
+      <p>Project Summary</p>
     </div>
-
-    <!-- Active event banner (shown when one is selected) -->
-    <div class="active-banner" id="active-banner" style="display:none;">
-      <div class="active-banner-info">
-        <div class="active-banner-label">⚡ Currently Active</div>
-        <div class="active-banner-name" id="active-banner-name">—</div>
-        <div class="active-banner-meta" id="active-banner-meta">—</div>
-      </div>
-      <a href="index.html" class="btn-go-dashboard">Open Dashboard →</a>
+    <div class="nav-card" data-view="production client partner" onclick="location.href='files.html'">
+      <div class="icon">📁</div>
+      <h2>Files</h2>
+      <p>View and manage all uploads</p>
     </div>
-
-    <div class="two-col">
-      <!-- LEFT: Events list -->
-      <div>
-        <div class="section-label">All Events</div>
-        <div class="events-list" id="events-list">
-          <!-- Skeleton loading state -->
-          <div class="skeleton-card" id="skeleton">
-            <div class="skeleton-line wide"></div>
-            <div class="skeleton-line narrow"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Create event form -->
-      <div class="create-panel">
-        <h2>✨ Create New Event</h2>
-
-        <div class="form-group">
-          <label>Event Name *</label>
-          <input type="text" id="new-name" placeholder="e.g. Annual Gala 2026" />
-        </div>
-
-        <div class="form-group">
-          <label>Location</label>
-          <input type="text" id="new-location" placeholder="e.g. Austin, TX" />
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Start Date</label>
-            <input type="date" id="new-date" />
-          </div>
-          <div class="form-group">
-            <label>Capacity</label>
-            <input type="number" id="new-capacity" placeholder="e.g. 300" min="1" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Event Type</label>
-          <select id="new-type">
-            <option value="">Select type...</option>
-            <option value="Conference">Conference</option>
-            <option value="Gala">Gala / Awards</option>
-            <option value="Corporate">Corporate Meeting</option>
-            <option value="Summit">Summit</option>
-            <option value="Festival">Festival</option>
-            <option value="Trade Show">Trade Show</option>
-            <option value="Fundraiser">Fundraiser</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="new-notes" placeholder="Any early details, client name, or context..."></textarea>
-        </div>
-
-        <div id="form-error" style="color:#e55a5a;font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
-        <button class="btn-create" id="btn-create" onclick="createNewEvent()">
-          + Create Event
-        </button>
-      </div>
+    <div class="nav-card" data-view="partner" onclick="location.href='venues.html'">
+      <div class="icon">🏨</div>
+      <h2>Venues</h2>
+      <p>Room Blocks, F&B, Contacts</p>
+    </div>
+    <div class="nav-card" data-view="production" onclick="location.href='av.html'">
+      <div class="icon">🎛️</div>
+      <h2>AV Production</h2>
+      <p>Tech Orders and Logistics</p>
+    </div>
+    <div class="nav-card" data-view="client" onclick="location.href='content.html'">
+      <div class="icon">🎨</div>
+      <h2>Creative Content</h2>
+      <p>Designs, Decks, and Videos</p>
+    </div>
+    <div class="nav-card" data-view="production client" onclick="location.href='tasks.html'">
+      <div class="icon">✅</div>
+      <h2>Tasks</h2>
+      <p>Assign and track to-dos</p>
+    </div>
+    <div class="nav-card" data-view="production client" onclick="location.href='timeline.html'">
+      <div class="icon">🗓️</div>
+      <h2>Timeline</h2>
+      <p>Phases and milestones</p>
+    </div>
+    <div class="nav-card" data-view="partner" onclick="location.href='sponsor-tracker.html'">
+      <div class="icon">🤝</div>
+      <h2>Sponsors</h2>
+      <p>Tiers, deliverables, contacts</p>
+    </div>
+    <div class="nav-card" data-view="production partner" onclick="location.href='merch-inventory.html'">
+      <div class="icon">📦</div>
+      <h2>Merch Inventory</h2>
+      <p>Stock, giveaways, assets</p>
+    </div>
+    <div class="nav-card" data-view="production client" onclick="location.href='budget.html'">
+      <div class="icon">💰</div>
+      <h2>Budget</h2>
+      <p>Spend tracking and breakdown</p>
     </div>
   </div>
 
-  <!-- DELETE CONFIRM MODAL -->
-  <div class="modal-overlay" id="delete-modal">
-    <div class="modal">
-      <h3>Delete Event?</h3>
-      <p id="modal-msg">This will permanently delete this event and all associated data. This cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <button class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
-      </div>
+  <!-- BOTTOM INFO -->
+  <div class="dual-grid">
+    <div class="info-card">
+      <h3>Event Details</h3>
+      <ul id="event-details-list">
+        <li><span>Event</span><span id="detail-name" class="tag">—</span></li>
+        <li><span>Location</span><span id="detail-location" class="tag">—</span></li>
+        <li><span>Date</span><span id="detail-date" class="tag">—</span></li>
+        <li><span>Type</span><span id="detail-type" class="tag">—</span></li>
+        <li><span>Capacity</span><span id="detail-capacity" class="tag">—</span></li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>Upcoming Deadlines</h3>
+      <ul>
+        <li>🛠️ Final AV Order <span class="tag">Tomorrow</span></li>
+        <li>🪑 Furniture Layout <span class="tag">3 days</span></li>
+        <li>👥 Attendee Count <span class="tag">7 days</span></li>
+      </ul>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <!-- Firebase -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
@@ -605,276 +525,202 @@
     const db = firebase.firestore();
 
     let currentUser = null;
-    let userEvents = [];
-    let pendingDeleteId = null;
+    let allEvents = [];
     let activeEventId = localStorage.getItem('activeEventId');
 
-    // ── AUTH GUARD ──
-    // Use a flag so loadEvents only ever runs once, even if
-    // onAuthStateChanged fires multiple times (which it can)
-    let eventsLoaded = false;
+    // ── AUTH ──
+    let dashboardLoaded = false;
     auth.onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = 'login.html';
-        return;
-      }
+      if (!user) { window.location.href = 'login.html'; return; }
       currentUser = user;
-      document.getElementById('user-email').textContent = user.email;
-      document.getElementById('page-loader').style.display = 'none';
-      document.getElementById('page-content').style.display = 'block';
-
-      if (!eventsLoaded) {
-        eventsLoaded = true;
-        loadEvents();
+      if (!dashboardLoaded) {
+        dashboardLoaded = true;
+        loadAllEvents();
       }
     });
 
-    // ── LOAD EVENTS ──
-    function loadEvents() {
+    // ── LOAD ALL EVENTS FOR DROPDOWN ──
+    function loadAllEvents() {
       db.collection('users').doc(currentUser.uid).collection('events')
         .get()
         .then(snapshot => {
-          document.getElementById('skeleton').remove();
-          userEvents = [];
-          snapshot.forEach(doc => {
-            userEvents.push({ id: doc.id, ...doc.data() });
-          });
-          renderEvents();
-          updateActiveBanner();
+          allEvents = [];
+          snapshot.forEach(doc => allEvents.push({ id: doc.id, ...doc.data() }));
+          populateDropdown();
+          if (activeEventId) {
+            loadEventData(activeEventId);
+          } else if (allEvents.length > 0) {
+            // Auto-select first event if none active
+            activeEventId = allEvents[0].id;
+            localStorage.setItem('activeEventId', activeEventId);
+            loadEventData(activeEventId);
+          } else {
+            showNoEventState();
+          }
         })
         .catch(err => {
-          console.error(err);
-          document.getElementById('skeleton').remove();
-          renderEvents(); // render empty state
+          console.error('Error loading events:', err);
+          showNoEventState();
         });
     }
 
-    // ── RENDER EVENTS ──
-    function renderEvents() {
-      const list = document.getElementById('events-list');
-      list.innerHTML = '';
+    // ── POPULATE DROPDOWN ──
+    function populateDropdown() {
+      const select = document.getElementById('event-select');
+      select.innerHTML = '';
 
-      if (userEvents.length === 0) {
-        list.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">📋</div>
-            <h3>No events yet</h3>
-            <p>Create your first event using the form →</p>
-          </div>`;
+      if (allEvents.length === 0) {
+        select.innerHTML = '<option value="">No events yet</option>';
         return;
       }
 
-      userEvents.forEach(event => {
-        const isActive = event.id === activeEventId;
-        const badge = getStatusBadge(event.eventDate);
-        const dateStr = event.eventDate
-          ? new Date(event.eventDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-          : 'Date TBD';
-
-        const card = document.createElement('div');
-        card.className = `event-card${isActive ? ' active-event' : ''}`;
-        card.innerHTML = `
-          <div class="event-card-info">
-            <div class="event-card-name">${escHtml(event.eventName || 'Untitled Event')}</div>
-            <div class="event-card-meta">
-              ${event.eventLocation ? `<span>📍 ${escHtml(event.eventLocation)}</span>` : ''}
-              <span>📅 ${dateStr}</span>
-              ${event.eventType ? `<span>🏷️ ${escHtml(event.eventType)}</span>` : ''}
-              ${event.eventCapacity ? `<span>👥 ${event.eventCapacity} cap.</span>` : ''}
-            </div>
-          </div>
-          <div class="event-card-badges">
-            <span class="badge ${badge.cls}">${badge.label}</span>
-            <button
-              class="btn-select${isActive ? ' selected' : ''}"
-              onclick="selectEvent('${event.id}')"
-            >${isActive ? '✓ Active' : 'Open'}</button>
-            <button
-              class="btn-delete-event"
-              title="Delete event"
-              onclick="openDeleteModal('${event.id}', '${escHtml(event.eventName || 'this event')}')"
-            >✕</button>
-          </div>`;
-        list.appendChild(card);
+      allEvents.forEach(event => {
+        const opt = document.createElement('option');
+        opt.value = event.id;
+        opt.textContent = event.eventName || 'Untitled Event';
+        if (event.id === activeEventId) opt.selected = true;
+        select.appendChild(opt);
       });
     }
 
-    // ── SELECT EVENT ──
-    function selectEvent(eventId) {
+    // ── SWITCH EVENT FROM DROPDOWN ──
+    function switchEvent(eventId) {
+      if (!eventId) return;
       activeEventId = eventId;
       localStorage.setItem('activeEventId', eventId);
-
-      // Update UI
-      renderEvents();
-      updateActiveBanner();
-      showToast('✅ Event activated! Opening dashboard...', 'success');
-
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 1200);
+      loadEventData(eventId);
     }
 
-    // ── ACTIVE BANNER ──
-    function updateActiveBanner() {
-      const banner = document.getElementById('active-banner');
-      if (!activeEventId) { banner.style.display = 'none'; return; }
+    // ── LOAD EVENT DATA INTO CARDS ──
+    function loadEventData(eventId) {
+      document.getElementById('no-event-banner').style.display = 'none';
 
-      const event = userEvents.find(e => e.id === activeEventId);
-      if (!event) { banner.style.display = 'none'; return; }
-
-      banner.style.display = 'flex';
-      document.getElementById('active-banner-name').textContent = event.eventName || 'Untitled Event';
-
-      const parts = [];
-      if (event.eventLocation) parts.push(event.eventLocation);
-      if (event.eventDate) {
-        const d = new Date(event.eventDate + 'T00:00:00');
-        const diff = Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24));
-        parts.push(diff > 0 ? `${diff} days away` : diff === 0 ? 'Today!' : `${Math.abs(diff)} days ago`);
-      }
-      document.getElementById('active-banner-meta').textContent = parts.join(' · ') || 'No additional details';
-    }
-
-    // ── CREATE EVENT ──
-    function createNewEvent() {
-      const name = document.getElementById('new-name').value.trim();
-      const formError = document.getElementById('form-error');
-      formError.textContent = '';
-
-      if (!name) {
-        formError.textContent = 'Event name is required.';
-        document.getElementById('new-name').focus();
-        return;
-      }
-
-      if (!currentUser) {
-        formError.textContent = 'Not logged in. Please refresh and try again.';
-        return;
-      }
-
-      const btn = document.getElementById('btn-create');
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
-
-      const eventData = {
-        eventName: name,
-        eventLocation: document.getElementById('new-location').value.trim(),
-        eventDate: document.getElementById('new-date').value || null,
-        eventCapacity: parseInt(document.getElementById('new-capacity').value) || null,
-        eventType: document.getElementById('new-type').value,
-        notes: document.getElementById('new-notes').value.trim(),
-        createdAt: new Date().toISOString(),
-        attendees: [],
-        budget: { total: 0, spent: 0 }
-      };
-
-      db.collection('users').doc(currentUser.uid).collection('events')
-        .add(eventData)
-        .then(docRef => {
-          activeEventId = docRef.id;
-          localStorage.setItem('activeEventId', docRef.id);
-
-          ['new-name','new-location','new-date','new-capacity','new-notes'].forEach(id => {
-            document.getElementById(id).value = '';
-          });
-          document.getElementById('new-type').value = '';
-
-          userEvents.unshift({ id: docRef.id, ...eventData });
-          renderEvents();
-          updateActiveBanner();
-          showToast('Event created! Heading to dashboard...', 'success');
-
-          btn.disabled = false;
-          btn.textContent = '+ Create Event';
-
-          setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+      db.collection('users').doc(currentUser.uid).collection('events').doc(eventId)
+        .get()
+        .then(doc => {
+          if (!doc.exists) { showNoEventState(); return; }
+          const data = doc.data();
+          updateWelcomeBanner(data);
+          updateCountdownCard(data);
+          updateRegistrationCard(data);
+          updateTasksCard(data);
+          updateBudgetCard(data);
+          updateEventDetails(data);
         })
         .catch(err => {
-          console.error('Firestore error:', err);
-          formError.textContent = 'Save failed: ' + err.message;
-          btn.disabled = false;
-          btn.textContent = '+ Create Event';
+          console.error('Error loading event data:', err);
         });
     }
 
-    // ── DELETE EVENT ──
-    function openDeleteModal(eventId, eventName) {
-      pendingDeleteId = eventId;
-      document.getElementById('modal-msg').textContent =
-        `Permanently delete "${eventName}"? All event data will be lost. This cannot be undone.`;
-      document.getElementById('delete-modal').classList.add('open');
+    // ── WELCOME BANNER ──
+    function updateWelcomeBanner(data) {
+      const banner = document.getElementById('welcome-banner');
+      const name = data.eventName || 'Untitled Event';
+      const location = data.eventLocation ? ` · ${data.eventLocation}` : '';
+      const type = data.eventType ? ` · ${data.eventType}` : '';
+      banner.innerHTML = `
+        <span>Managing: <span class="event-name">${name}</span></span>
+        <span class="event-meta">${location}${type}</span>`;
     }
 
-    function closeDeleteModal() {
-      document.getElementById('delete-modal').classList.remove('open');
-      pendingDeleteId = null;
+    // ── COUNTDOWN CARD ──
+    function updateCountdownCard(data) {
+      const daysEl = document.getElementById('days-remaining');
+      const dateEl = document.getElementById('event-date-display');
+
+      if (!data.eventDate) {
+        daysEl.textContent = '—';
+        dateEl.textContent = 'No date set yet';
+        return;
+      }
+
+      const eventDate = new Date(data.eventDate + 'T00:00:00');
+      const diff = Math.ceil((eventDate - new Date()) / (1000 * 60 * 60 * 24));
+
+      daysEl.textContent = diff > 0 ? `${diff} days` : diff === 0 ? 'Today! 🎉' : `${Math.abs(diff)}d ago`;
+      dateEl.textContent = eventDate.toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+      });
     }
 
-    function confirmDelete() {
-      if (!pendingDeleteId) return;
-      const id = pendingDeleteId;
-      closeDeleteModal();
+    // ── REGISTRATION CARD ──
+    function updateRegistrationCard(data) {
+      const registered = (data.attendees || []).length;
+      const capacity = parseInt(data.eventCapacity) || 0;
+      const percent = capacity > 0 ? Math.round((registered / capacity) * 100) : 0;
 
-      db.collection('users').doc(currentUser.uid).collection('events').doc(id)
-        .delete()
-        .then(() => {
-          userEvents = userEvents.filter(e => e.id !== id);
-          if (activeEventId === id) {
-            activeEventId = null;
-            localStorage.removeItem('activeEventId');
-          }
-          renderEvents();
-          updateActiveBanner();
-          showToast('🗑️ Event deleted.', 'success');
-        })
-        .catch(err => {
-          console.error(err);
-          showToast('❌ Failed to delete event.', 'error');
-        });
+      document.getElementById('reg-count').textContent = capacity > 0 ? `${registered} / ${capacity}` : `${registered} registered`;
+      document.getElementById('reg-percent').textContent = capacity > 0 ? `${percent}% of capacity` : 'No capacity set';
+      document.getElementById('reg-progress').style.width = `${percent}%`;
     }
 
-    // ── STATUS BADGE ──
-    function getStatusBadge(dateStr) {
-      if (!dateStr) return { cls: 'badge-upcoming', label: 'No Date' };
-      const d = new Date(dateStr + 'T00:00:00');
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
-      if (diff < 0) return { cls: 'badge-past', label: 'Past' };
-      if (diff <= 7) return { cls: 'badge-active', label: 'This Week' };
-      return { cls: 'badge-upcoming', label: 'Upcoming' };
+    // ── TASKS CARD ──
+    function updateTasksCard(data) {
+      const tasks = data.tasks || [];
+      const total = tasks.length;
+      const done = tasks.filter(t => t.status === 'done').length;
+      const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('tasks-count').textContent = total > 0 ? `${done} / ${total}` : '—';
+      document.getElementById('tasks-percent').textContent = total > 0 ? `${percent}% complete` : 'No tasks yet';
+      document.getElementById('tasks-progress').style.width = `${percent}%`;
     }
 
-    // ── TOAST ──
-    let toastTimer;
-    function showToast(msg, type = 'success') {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className = `toast ${type} show`;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3000);
+    // ── BUDGET CARD ──
+    function updateBudgetCard(data) {
+      const budget = data.budget || {};
+      const total = budget.total || 0;
+      const spent = budget.spent || 0;
+      const remaining = total - spent;
+
+      const fmt = n => n >= 1000 ? `$${(n/1000).toFixed(0)}k` : `$${n}`;
+
+      document.getElementById('budget-total').textContent = total > 0 ? fmt(total) : '—';
+      document.getElementById('budget-sub').textContent = total > 0
+        ? `Spent: ${fmt(spent)} · Left: ${fmt(remaining)}`
+        : 'No budget set yet';
+    }
+
+    // ── EVENT DETAILS ──
+    function updateEventDetails(data) {
+      document.getElementById('detail-name').textContent = data.eventName || '—';
+      document.getElementById('detail-location').textContent = data.eventLocation || '—';
+      document.getElementById('detail-type').textContent = data.eventType || '—';
+      document.getElementById('detail-capacity').textContent = data.eventCapacity ? `${data.eventCapacity} people` : '—';
+      document.getElementById('detail-date').textContent = data.eventDate
+        ? new Date(data.eventDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : '—';
+    }
+
+    // ── NO EVENT STATE ──
+    function showNoEventState() {
+      document.getElementById('no-event-banner').style.display = 'flex';
+      document.getElementById('welcome-banner').innerHTML = '<span>No event selected</span>';
+      ['budget-total','days-remaining','reg-count','tasks-count'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      ['budget-sub','event-date-display','reg-percent','tasks-percent'].forEach(id => {
+        document.getElementById(id).textContent = 'No event selected';
+      });
+    }
+
+    // ── VIEW FILTER ──
+    function filterView(view) {
+      const cards = document.querySelectorAll('.nav-card');
+      const buttons = document.querySelectorAll('.menu-buttons button');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btn-' + view)?.classList.add('active');
+
+      cards.forEach(card => {
+        const cardView = card.getAttribute('data-view') || '';
+        card.style.display = (view === 'all' || cardView.includes(view)) ? 'block' : 'none';
+      });
     }
 
     // ── LOGOUT ──
     function logout() {
       auth.signOut().then(() => { window.location.href = 'login.html'; });
     }
-
-    // ── UTILS ──
-    function escHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    // Allow Enter key to create event (only when focused in the form, not textarea)
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter'
-          && document.activeElement.closest('.create-panel')
-          && document.activeElement.tagName !== 'TEXTAREA'
-          && document.activeElement.tagName !== 'BUTTON') {
-        e.preventDefault();
-        createNewEvent();
-      }
-    });
   </script>
 </body>
 </html>
