@@ -4,23 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Digital Dashh</title>
+
   <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-  <meta property="og:image:width" content="1280" />
-  <meta property="og:image:height" content="640" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Digital Dashh EventBoard" />
-  <meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Digital Dashh EventBoard" />
+<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Barlow', sans-serif;
-      background-color: #dcdcff;
+      background-color: #dcdcff; /* soft periwinkle */
       margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
+
     .login-container {
       background-color: #fff;
       padding: 40px;
@@ -30,17 +32,20 @@
       max-width: 420px;
       text-align: center;
     }
+
     h1 {
       font-size: 1.75rem;
       color: #1c1c3a;
       margin-bottom: 0.5rem;
     }
+
     p.subtitle {
       font-weight: 300;
       color: #555;
       margin-bottom: 1.5rem;
       font-size: 1rem;
     }
+
     input {
       width: 100%;
       padding: 12px;
@@ -49,8 +54,8 @@
       border: 1px solid #ccc;
       font-family: 'Barlow', sans-serif;
       font-size: 16px;
-      box-sizing: border-box;
     }
+
     button {
       background-color: #4b4bff;
       color: white;
@@ -63,12 +68,17 @@
       margin-top: 12px;
       width: 100%;
     }
-    button:hover { background-color: #3a3ad8; }
+
+    button:hover {
+      background-color: #3a3ad8;
+    }
+
     .error {
       color: red;
       font-size: 14px;
       margin-top: 10px;
     }
+
     .small-link, .public-link {
       margin-top: 20px;
       font-size: 14px;
@@ -76,6 +86,7 @@
       color: #4b4bff;
       text-decoration: none;
     }
+
     .footer-note {
       margin-top: 2rem;
       font-size: 0.9rem;
@@ -84,8 +95,8 @@
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1>Welcome to Digital Dashh's EventBoard</h1>
+  <div class="login-container" id="login-container" style="opacity:0;transition:opacity 0.2s;">
+    <h1>Welcome to Digital Dashh’s EventBoard</h1>
     <p class="subtitle">Your personalized command center for smarter event planning.</p>
 
     <input type="email" id="email" placeholder="Email" />
@@ -97,23 +108,23 @@
     <a class="public-link" href="/projects.html">Not a member? Explore the project →</a>
 
     <p class="footer-note">
-      Need help accessing your workspace?<br>
-      Contact us at <a href="mailto:dashh@digitaldashh.com">dashh@digitaldashh.com</a>
+      Need help accessing your workspace? <br>
+      Contact us at <a href="/cdn-cgi/l/email-protection#c2a6a3b1aaaa82a6aba5abb6a3aea6a3b1aaaaeca1adaf"><span class="__cf_email__" data-cfemail="127673617a7a52767b757b66737e7673617a7a3c717d7f">[email&#160;protected]</span></a>
     </p>
   </div>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
-      authDomain: "digital-dashh.firebaseapp.com",
-      projectId: "digital-dashh",
-      storageBucket: "digital-dashh.appspot.com",
-      messagingSenderId: "535613848097",
-      appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
+      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+      authDomain: "quantum-beach-394503.firebaseapp.com",
+      projectId: "quantum-beach-394503",
+      storageBucket: "quantum-beach-394503.firebasestorage.app",
+      messagingSenderId: "1002514430184",
+      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -123,28 +134,7 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const errorDiv = document.getElementById("error");
-      errorDiv.textContent = "";
 
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-          window.location.href = "events.html";
-        })
-        .catch(error => {
-          errorDiv.textContent = error.message;
-        });
-    }
-
-    // If already logged in, skip login page
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "events.html";
-      }
-    });
-
-    // Allow Enter key to submit
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") login();
-    });
-  </script>
-</body>
-</html>
+          window.location.href = "index.html";
