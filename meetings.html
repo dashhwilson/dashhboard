@@ -345,16 +345,19 @@
 
   function load(){
     if(!activeEventId){window.location.href='events.html';return;}
+    show(); // show page immediately — don't wait on Firestore
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
       .then(doc=>{
-        show();
         if(!doc.exists){showToast('Event not found.','error');return;}
         const d=doc.data();
         document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
         meetings=d.meetings||[];
         tasks=d.tasks||[];
         renderAll();
-      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+      }).catch(err=>{
+        console.error('Firestore load error:',err);
+        showToast('Error loading: '+err.message,'error');
+      });
   }
 
   function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
@@ -649,7 +652,7 @@
     meetings[activeMeetingIdx].actions[ai].pushed=true;
     // Save both meetings and tasks
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .update({meetings,tasks})
+      .set({meetings,tasks},{merge:true})
       .then(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();showToast('✓ Action item pushed to Tasks!','success');})
       .catch(err=>showToast('Save failed: '+err.message,'error'));
   }
@@ -697,7 +700,7 @@
   function persist(cb){
     if(!currentUser||!activeEventId)return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .update({meetings}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({meetings},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
   }
 
   // ── UTILS ──
