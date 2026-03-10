@@ -567,7 +567,7 @@
         </div>
 
         <div id="form-error" style="color:#e55a5a;font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
-        <button class="btn-create" id="btn-create" onclick="createEvent()">
+        <button class="btn-create" id="btn-create" onclick="createNewEvent()">
           + Create Event
         </button>
       </div>
@@ -593,7 +593,7 @@
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
-      authDomain: "quantum-beach-394503.firebaseapp.com",
+      authDomain: "digitaldashh.com",
       projectId: "quantum-beach-394503",
       storageBucket: "quantum-beach-394503.firebasestorage.app",
       messagingSenderId: "1002514430184",
@@ -736,7 +736,7 @@
     }
 
     // ── CREATE EVENT ──
-    function createEvent() {
+    function createNewEvent() {
       const name = document.getElementById('new-name').value.trim();
       const formError = document.getElementById('form-error');
       formError.textContent = '';
@@ -872,7 +872,7 @@
           && document.activeElement.tagName !== 'TEXTAREA'
           && document.activeElement.tagName !== 'BUTTON') {
         e.preventDefault();
-        createEvent();
+        createNewEvent();
       }
     });
   </script>
