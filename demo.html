@@ -1,138 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo | Digital Dashh</title>
-<meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Dashh — The Operating System for Live Events</title>
+  <meta name="description" content="Digital Dashh is the all-in-one command center for event producers. Budget, timeline, AV, venues, sponsors, merch, registration — one place." />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f6fa;
-      color: #222;
+    :root {
+      --ink: #0e0e14;
+      --ink2: #3a3a4a;
+      --muted: #8a8a9e;
+      --border: #e8e8f0;
+      --bg: #f9f9fc;
+      --white: #ffffff;
+      --yellow: #ffe14d;
+      --yellow-dim: #fff5b8;
+      --purple: #5b6af0;
+      --purple-light: #eef0fe;
+      --green: #22c97a;
+      --shadow-sm: 0 2px 8px rgba(14,14,20,0.06);
+      --shadow-md: 0 8px 32px rgba(14,14,20,0.10);
+      --shadow-lg: 0 24px 64px rgba(14,14,20,0.14);
     }
-    nav {
-      background-color: #ffffff;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--ink); overflow-x: hidden; }
+
+    /* ── NAVBAR ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+      background: rgba(14,14,20,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      transition: background 0.3s;
     }
-    nav .logo {
-      font-weight: 700;
-      font-size: 1.25rem;
-      color: #4b4bff;
-      text-decoration: none;
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--white); letter-spacing: -0.02em; }
+    .nav-logo span { color: var(--yellow); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta { display: flex; gap: 10px; align-items: center; }
+    .btn-nav-login { background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 7px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+    .btn-nav-login:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .btn-nav-demo { background: var(--yellow); color: var(--ink); padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; }
+    .btn-nav-demo:hover { background: #ffd700; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; background: var(--ink);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+      position: relative; overflow: hidden;
     }
-    nav .nav-links a {
-      margin-left: 1rem;
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
+    .hero-grain {
+      position: absolute; inset: 0; opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px;
     }
-    header {
-      background-color: #4b4bff;
-      color: white;
-      padding: 2rem;
-      text-align: center;
+    .hero-glow {
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(91,106,240,0.18) 0%, transparent 70%);
+      pointer-events: none;
     }
-    h1 {
-      margin: 0;
-      font-size: 2.5rem;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 20px; margin-bottom: 32px;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
     }
-    p.subtitle {
-      margin-top: 0.5rem;
-      font-weight: 300;
-      font-size: 1.25rem;
+    .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(42px, 7vw, 88px);
+      color: var(--white); line-height: 1.0; letter-spacing: -0.03em;
+      margin-bottom: 24px; max-width: 900px;
+      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
     }
-    .content {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
+    .hero-title em { color: var(--yellow); font-style: italic; }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px); color: rgba(255,255,255,0.5);
+      line-height: 1.6; max-width: 540px; font-weight: 300;
+      margin-bottom: 44px;
+      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
     }
-    .section {
-      margin-bottom: 2.5rem;
+    .hero-actions {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
     }
-    .section h2 {
-      font-size: 1.75rem;
-      margin-bottom: 1rem;
+    .btn-hero-primary {
+      background: var(--yellow); color: var(--ink); border: none;
+      padding: 14px 32px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
     }
-    .feature-card {
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 1rem 1.25rem;
-      margin-bottom: 1rem;
+    .btn-hero-primary:hover { background: #ffd700; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,225,77,0.3); }
+    .btn-hero-secondary {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 14px 32px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none;
+      transition: all 0.2s;
     }
-    a.cta {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.75rem 1.5rem;
-      background-color: #ffcf33;
-      color: #000;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
+    .btn-hero-secondary:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.25); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      opacity: 0; animation: fadeUp 0.8s 1s forwards;
     }
-    @media (max-width: 600px) {
-      nav {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      nav .nav-links {
-        margin-top: 0.5rem;
-      }
+    .scroll-line { width: 1px; height: 36px; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); animation: scrollPulse 2s infinite; }
+    @keyframes scrollPulse { 0%{transform:scaleY(1);opacity:1;} 100%{transform:scaleY(0.3);opacity:0;} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+
+    /* ── DASHBOARD PREVIEW ── */
+    .preview-section {
+      background: var(--bg); padding: 100px 48px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--purple); margin-bottom: 14px; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 48px); color: var(--ink); letter-spacing: -0.03em; text-align: center; line-height: 1.1; margin-bottom: 14px; }
+    .section-sub { font-size: 17px; color: var(--muted); text-align: center; max-width: 480px; line-height: 1.6; font-weight: 300; margin-bottom: 56px; }
+
+    /* FAKE DASHBOARD UI */
+    .dashboard-shell {
+      width: 100%; max-width: 1000px;
+      background: var(--white); border-radius: 20px; box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border); overflow: hidden;
+      opacity: 0; transform: translateY(32px); transition: opacity 0.7s, transform 0.7s;
+    }
+    .dashboard-shell.visible { opacity: 1; transform: translateY(0); }
+    .ds-topbar { background: var(--ink); padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+    .ds-dots { display: flex; gap: 6px; }
+    .ds-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .ds-dot-r{background:#ff5f57;}.ds-dot-y{background:#ffbd2e;}.ds-dot-g{background:#28c840;}
+    .ds-title { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; flex: 1; text-align: center; }
+    .ds-body { display: grid; grid-template-columns: 180px 1fr; min-height: 420px; }
+    .ds-sidebar { background: #f4f4f9; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .ds-nav-item { padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+    .ds-nav-item:hover,.ds-nav-item.active { background: var(--purple-light); color: var(--purple); font-weight: 700; }
+    .ds-main { padding: 24px; overflow: hidden; }
+    .ds-page { display: none; }
+    .ds-page.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from{opacity:0;transform:translateX(8px);} to{opacity:1;transform:translateX(0);} }
+    /* mini cards */
+    .ds-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+    .ds-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .ds-card-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .ds-card-val { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+    .ds-card-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    /* mini bar */
+    .ds-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .ds-bar-lbl { font-size: 11px; width: 90px; flex-shrink: 0; color: var(--ink2); font-weight: 500; }
+    .ds-bar-wrap { flex: 1; background: #f0f0f8; border-radius: 20px; height: 7px; overflow: hidden; }
+    .ds-bar-fill { height: 100%; border-radius: 20px; transition: width 1s ease; }
+    .ds-bar-amt { font-size: 11px; width: 60px; text-align: right; font-weight: 600; color: var(--ink2); }
+    /* mini table */
+    .ds-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .ds-table th { background: #f8f8fc; padding: 6px 8px; text-align: left; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .ds-table td { padding: 7px 8px; border-bottom: 1px solid #f4f4fb; color: var(--ink2); }
+    .ds-table tr:last-child td { border: none; }
+    .pill { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 8px; display: inline-block; }
+    .pill-green{background:#e8f5ee;color:#2d8a60;} .pill-yellow{background:#fff8e0;color:#9a7000;} .pill-purple{background:#eef0fe;color:var(--purple);} .pill-red{background:#fff0f0;color:#cc3333;} .pill-blue{background:#e8f0ff;color:#3355cc;}
+    .ds-section-title { font-size: 13px; font-weight: 800; margin-bottom: 12px; color: var(--ink); }
+    .ds-prog-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+    .ds-prog-pct { font-size: 22px; font-weight: 900; color: var(--purple); }
+
+    /* ── FEATURES ── */
+    .features-section { background: var(--white); padding: 100px 48px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2px; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+    .feature-card { padding: 32px 28px; background: var(--white); transition: background 0.2s; cursor: default; }
+    .feature-card:hover { background: var(--bg); }
+    .feature-icon { font-size: 28px; margin-bottom: 14px; }
+    .feature-name { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+    /* borders between grid cells */
+    .features-grid .feature-card { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid .feature-card:nth-child(3n) { border-right: none; }
+    .features-grid .feature-card:nth-last-child(-n+3) { border-bottom: none; }
+
+    /* ── HOW IT WORKS ── */
+    .how-section { background: var(--bg); padding: 100px 48px; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; max-width: 860px; margin: 0 auto; }
+    .step { text-align: center; }
+    .step-num { width: 44px; height: 44px; border-radius: 12px; background: var(--ink); color: var(--yellow); font-family: 'DM Serif Display', serif; font-size: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .step-desc { font-size: 14px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+
+    /* ── TESTIMONIAL / QUOTE ── */
+    .quote-section { background: var(--ink); padding: 100px 48px; text-align: center; }
+    .quote-text { font-family: 'DM Serif Display', serif; font-size: clamp(24px, 3.5vw, 44px); color: var(--white); line-height: 1.2; letter-spacing: -0.03em; max-width: 760px; margin: 0 auto 24px; }
+    .quote-text em { color: var(--yellow); font-style: italic; }
+    .quote-attr { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 500; }
+
+    /* ── CTA ── */
+    .cta-section { background: var(--white); padding: 120px 48px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .cta-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 5vw, 60px); color: var(--ink); letter-spacing: -0.03em; margin-bottom: 16px; line-height: 1.1; }
+    .cta-sub { font-size: 18px; color: var(--muted); font-weight: 300; margin-bottom: 40px; }
+    .cta-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 440px; }
+    .cta-input { flex: 1; min-width: 220px; border: 1.5px solid var(--border); border-radius: 10px; padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); background: var(--bg); transition: border-color 0.2s; }
+    .cta-input:focus { outline: none; border-color: var(--purple); background: var(--white); }
+    .btn-cta { background: var(--ink); color: var(--yellow); border: none; padding: 13px 28px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .btn-cta:hover { background: var(--purple); transform: translateY(-1px); }
+    .cta-fine { font-size: 12px; color: var(--muted); margin-top: 14px; }
+    .cta-confirm { font-size: 14px; color: var(--green); font-weight: 600; margin-top: 12px; display: none; }
+
+    /* ── FOOTER ── */
+    .footer { background: var(--ink); padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--white); }
+    .footer-logo span { color: var(--yellow); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s, transform 0.7s; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    @media(max-width:768px){
+      .nav{padding:0 20px;} .nav-links{display:none;}
+      .preview-section,.features-section,.how-section,.cta-section{padding:70px 24px;}
+      .ds-body{grid-template-columns:1fr;} .ds-sidebar{display:none;}
+      .steps{grid-template-columns:1fr;gap:32px;}
+      .features-grid .feature-card{border-right:none;}
+      .footer{padding:32px 24px;flex-direction:column;text-align:center;}
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a class="logo" href="/">Digital Dashh</a>
-    <div class="nav-links">
-      <a href="/index.html">Home</a>
-      <a href="/budget.html">Budget</a>
-      <a href="/venues.html">Venues</a>
-      <a href="/tasks.html">Tasks</a>
-      <a href="/projects.html">Projects</a>
-      <a href="/demo.html">Demo</a>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Digital <span>Dashh</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#demo-section">Demo</a>
+  </div>
+  <div class="nav-cta">
+    <a href="login.html" class="btn-nav-login">Log in</a>
+    <a href="#get-access" class="btn-nav-demo">Get Access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grain"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>Now in early access</div>
+  <h1 class="hero-title">The <em>operating system</em><br>for live events.</h1>
+  <p class="hero-sub">Budget, timeline, AV, venues, sponsors, merch, registration — every piece of your event in one command center.</p>
+  <div class="hero-actions">
+    <a href="#demo-section" class="btn-hero-primary">Explore the Demo →</a>
+    <a href="#get-access" class="btn-hero-secondary">Request Access</a>
+  </div>
+  <div class="hero-scroll"><div class="scroll-line"></div>Scroll</div>
+</section>
+
+<!-- DASHBOARD DEMO -->
+<section class="preview-section" id="demo-section">
+  <div class="section-label">Interactive Preview</div>
+  <h2 class="section-title reveal">Everything in one place.</h2>
+  <p class="section-sub reveal reveal-delay-1">Click through the pages below to see how Digital Dashh keeps your entire event organized.</p>
+
+  <div class="dashboard-shell" id="dash-shell">
+    <div class="ds-topbar">
+      <div class="ds-dots"><div class="ds-dot ds-dot-r"></div><div class="ds-dot ds-dot-y"></div><div class="ds-dot ds-dot-g"></div></div>
+      <div class="ds-title">digitaldashh.com — Rokt F1 Series: Miami</div>
     </div>
-  </nav>
-
-  <header>
-    <h1>See Digital Dashh in Action</h1>
-    <p class="subtitle">Take a peek inside the planning tool built for event producers</p>
-  </header>
-
-  <div class="content">
-    <div class="section">
-      <h2>What You’ll See</h2>
-      <div class="feature-card">
-        <p>💻 A guided walkthrough of Digital Dashh’s event dashboard — including toggle views, budget tracking, and asset uploads.</p>
+    <div class="ds-body">
+      <div class="ds-sidebar">
+        <div class="ds-nav-item active" onclick="showPage('overview',this)">📊 Overview</div>
+        <div class="ds-nav-item" onclick="showPage('budget',this)">💰 Budget</div>
+        <div class="ds-nav-item" onclick="showPage('timeline',this)">📅 Timeline</div>
+        <div class="ds-nav-item" onclick="showPage('tasks',this)">✅ Tasks</div>
+        <div class="ds-nav-item" onclick="showPage('venues',this)">📍 Venues</div>
+        <div class="ds-nav-item" onclick="showPage('av',this)">🎬 AV Production</div>
+        <div class="ds-nav-item" onclick="showPage('sponsors',this)">🤝 Sponsors</div>
+        <div class="ds-nav-item" onclick="showPage('merch',this)">👕 Merch</div>
+        <div class="ds-nav-item" onclick="showPage('registration',this)">🎟️ Registration</div>
+        <div class="ds-nav-item" onclick="showPage('content',this)">🎨 Content</div>
       </div>
-      <div class="feature-card">
-        <p>📊 A look at real-time dashboards with dynamic charts, custom filters, and stakeholder-specific views.</p>
-      </div>
-      <div class="feature-card">
-        <p>🧩 A behind-the-scenes peek at how the tool was built with flexibility in mind — for both agencies and internal teams.</p>
-      </div>
-    </div>
+      <div class="ds-main">
 
-    <div class="section">
-      <h2>Want Full Access?</h2>
-      <p>To explore a full working version or request a private demo session, get in touch below.</p>
-      <a class="cta" href="mailto:dashh@digitaldashh.com">Request a Live Demo</a>
+        <!-- OVERVIEW -->
+        <div class="ds-page active" id="pg-overview">
+          <div class="ds-section-title">Rokt F1 Series: Miami — May 1, 2026</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Budget</div><div class="ds-card-val" style="color:#5b6af0;">$84,200</div><div class="ds-card-sub">of $110,000</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Countdown</div><div class="ds-card-val">52</div><div class="ds-card-sub">days to go</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Registered</div><div class="ds-card-val">24</div><div class="ds-card-sub">of 30 cap</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Tasks Done</div><div class="ds-card-val">18/27</div><div class="ds-card-sub">67% complete</div></div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="ds-bar-row"><span class="ds-bar-lbl">Budget</span><div class="ds-bar-wrap"><div class="ds-bar-fill" style="width:77%;background:#5b6af0;"></div></div><span class="ds-bar-amt">77%</span></div>
+            <div class="ds-bar-row"><span class="ds-bar-lbl">Registration</span><div class="ds-bar-wrap"><div class="ds-bar-fill" style="width:80%;background:#22c97a;"></div></div><span class="ds-bar-amt">80%</span></div>
+            <div class="ds-bar-row"><span class="ds-bar-lbl">Milestones</span><div class="ds-bar-wrap"><div class="ds-bar-fill" style="width:60%;background:#f5a623;"></div></div><span class="ds-bar-amt">60%</span></div>
+          </div>
+        </div>
+
+        <!-- BUDGET -->
+        <div class="ds-page" id="pg-budget">
+          <div class="ds-section-title">Budget — Dollars Mode</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Total Budget</div><div class="ds-card-val">$110k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Spent</div><div class="ds-card-val" style="color:#e55a5a;">$84.2k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Remaining</div><div class="ds-card-val" style="color:#22c97a;">$25.8k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Line Items</div><div class="ds-card-val">12</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Item</th><th>Category</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Venue Rental</td><td>Venues</td><td>$22,000</td><td><span class="pill pill-green">Paid</span></td></tr>
+              <tr><td>AV Package</td><td>AV</td><td>$18,500</td><td><span class="pill pill-yellow">Pending</span></td></tr>
+              <tr><td>Catering</td><td>F&B</td><td>$14,200</td><td><span class="pill pill-green">Paid</span></td></tr>
+              <tr><td>Merch Production</td><td>Merch</td><td>$8,400</td><td><span class="pill pill-purple">In Review</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="ds-page" id="pg-timeline">
+          <div class="ds-section-title">Timeline — Pre-Event</div>
+          <div class="ds-prog-header"><span style="font-size:12px;color:var(--muted);">Overall progress</span><span class="ds-prog-pct">67%</span></div>
+          <div style="background:#f0f0f8;border-radius:20px;height:6px;margin-bottom:16px;overflow:hidden;"><div style="width:67%;height:100%;background:var(--purple);border-radius:20px;"></div></div>
+          <table class="ds-table">
+            <thead><tr><th>Milestone</th><th>Phase</th><th>Owner</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Venue contracts signed</td><td>Logistics</td><td>Sarah K.</td><td><span class="pill pill-green">Done</span></td></tr>
+              <tr><td>AV walkthrough</td><td>Production</td><td>Mike T.</td><td><span class="pill pill-yellow">In Progress</span></td></tr>
+              <tr><td>Sponsor assets due</td><td>Sponsors</td><td>Dana R.</td><td><span class="pill pill-red">Not Started</span></td></tr>
+              <tr><td>Final guest list</td><td>Registration</td><td>Jamie L.</td><td><span class="pill pill-green">Done</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TASKS -->
+        <div class="ds-page" id="pg-tasks">
+          <div class="ds-section-title">Task Manager</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Total</div><div class="ds-card-val">27</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Done</div><div class="ds-card-val" style="color:#22c97a;">18</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">In Progress</div><div class="ds-card-val" style="color:#f5a623;">6</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Overdue</div><div class="ds-card-val" style="color:#e55a5a;">2</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Task</th><th>Assignee</th><th>Due</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td>Confirm stage plot</td><td>Mike T.</td><td>Apr 14</td><td><span class="pill pill-red">High</span></td></tr>
+              <tr><td>Send sponsor recap</td><td>Dana R.</td><td>Apr 18</td><td><span class="pill pill-yellow">Medium</span></td></tr>
+              <tr><td>Print badge passes</td><td>Jamie L.</td><td>Apr 25</td><td><span class="pill pill-yellow">Medium</span></td></tr>
+              <tr><td>Order merch boxes</td><td>Sarah K.</td><td>Apr 10</td><td><span class="pill pill-red">High</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- VENUES -->
+        <div class="ds-page" id="pg-venues">
+          <div class="ds-section-title">Venues — Hard Rock Stadium Club</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Venues</div><div class="ds-card-val">2</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Room Blocks</div><div class="ds-card-val">4</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Venue Budget</div><div class="ds-card-val">$22k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Contract</div><div class="ds-card-val" style="color:#22c97a;">Signed</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Room Block</th><th>Cap</th><th>Meal</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Main Stage Area</td><td>30</td><td>Dinner</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>VIP Hospitality</td><td>12</td><td>Cocktails</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Press Box</td><td>8</td><td>—</td><td><span class="pill pill-yellow">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AV -->
+        <div class="ds-page" id="pg-av">
+          <div class="ds-section-title">AV Production — Main Stage</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Rooms</div><div class="ds-card-val">3</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Equipment</div><div class="ds-card-val">14</div><div class="ds-card-sub">items ordered</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Tech Staff</div><div class="ds-card-val">6</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Load-In</div><div class="ds-card-val" style="font-size:13px;">Apr 30</div><div class="ds-card-sub">7:00 AM</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Equipment</th><th>Qty</th><th>Vendor</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>LED Wall 20x12ft</td><td>1</td><td>ProAV Co.</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Line Array L/R</td><td>2</td><td>SoundWorks</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Wireless Mics</td><td>6</td><td>ProAV Co.</td><td><span class="pill pill-yellow">Pending</span></td></tr>
+              <tr><td>Confidence Monitor</td><td>2</td><td>SoundWorks</td><td><span class="pill pill-purple">In Review</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- SPONSORS -->
+        <div class="ds-page" id="pg-sponsors">
+          <div class="ds-section-title">Sponsor Tracker</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Total Revenue</div><div class="ds-card-val" style="color:#22c97a;">$85k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Confirmed</div><div class="ds-card-val">3</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">In Progress</div><div class="ds-card-val">2</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Deliverables</div><div class="ds-card-val">7/10</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Sponsor</th><th>Tier</th><th>Value</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Rokt</td><td>Title</td><td>$50,000</td><td><span class="pill pill-green">Signed</span></td></tr>
+              <tr><td>AWS</td><td>Gold</td><td>$20,000</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Salesforce</td><td>Silver</td><td>$15,000</td><td><span class="pill pill-green">Signed</span></td></tr>
+              <tr><td>Stripe</td><td>Bronze</td><td>$8,000</td><td><span class="pill pill-yellow">Negotiating</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- MERCH -->
+        <div class="ds-page" id="pg-merch">
+          <div class="ds-section-title">Merch Inventory</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">SKUs</div><div class="ds-card-val">8</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Total Units</div><div class="ds-card-val">420</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Total Value</div><div class="ds-card-val">$12.4k</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Low Stock</div><div class="ds-card-val" style="color:#e55a5a;">2</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Item</th><th>Category</th><th>Ordered</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Hoodie — Navy L</td><td>Apparel</td><td>60</td><td><span class="pill pill-green">OK</span></td></tr>
+              <tr><td>Water Bottle — Yellow</td><td>Drinkware</td><td>100</td><td><span class="pill pill-green">OK</span></td></tr>
+              <tr><td>Hat — Black OS</td><td>Apparel</td><td>40</td><td><span class="pill pill-yellow">Low</span></td></tr>
+              <tr><td>Tote Bag</td><td>Accessories</td><td>80</td><td><span class="pill pill-green">OK</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- REGISTRATION -->
+        <div class="ds-page" id="pg-registration">
+          <div class="ds-section-title">Registration & Guests</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Registered</div><div class="ds-card-val">24</div><div class="ds-card-sub">of 30 cap</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Confirmed</div><div class="ds-card-val" style="color:#22c97a;">19</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Checked In</div><div class="ds-card-val">0</div><div class="ds-card-sub">event day</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">VIP</div><div class="ds-card-val">6</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Name</th><th>Company</th><th>Ticket</th><th>RSVP</th></tr></thead>
+            <tbody>
+              <tr><td>Alex Chen</td><td>Rokt</td><td><span class="pill pill-yellow">VIP</span></td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Jordan Smith</td><td>AWS</td><td><span class="pill pill-blue">General</span></td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td>Taylor Brooks</td><td>Salesforce</td><td><span class="pill pill-yellow">VIP</span></td><td><span class="pill pill-yellow">Pending</span></td></tr>
+              <tr><td>Morgan Lee</td><td>Stripe</td><td><span class="pill pill-purple">Speaker</span></td><td><span class="pill pill-green">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="ds-page" id="pg-content">
+          <div class="ds-section-title">Creative Content — Opening Session</div>
+          <div class="ds-cards">
+            <div class="ds-card"><div class="ds-card-lbl">Sessions</div><div class="ds-card-val">4</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Decks</div><div class="ds-card-val">6</div><div class="ds-card-sub">2 final</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Graphics</div><div class="ds-card-val">12</div><div class="ds-card-sub">8 final</div></div>
+            <div class="ds-card"><div class="ds-card-lbl">Speakers</div><div class="ds-card-val">5</div></div>
+          </div>
+          <table class="ds-table" style="margin-top:8px;">
+            <thead><tr><th>Asset</th><th>Speaker</th><th>Type</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Keynote Deck v3</td><td>Alex Chen</td><td>Deck</td><td><span class="pill pill-green">Final</span></td></tr>
+              <tr><td>Opening Sizzle</td><td>—</td><td>Video</td><td><span class="pill pill-purple">In Review</span></td></tr>
+              <tr><td>Stage Backdrop</td><td>—</td><td>Graphic</td><td><span class="pill pill-green">Final</span></td></tr>
+              <tr><td>Panel Deck</td><td>Morgan Lee</td><td>Deck</td><td><span class="pill pill-yellow">In Progress</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
     </div>
   </div>
+</section>
 
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div style="text-align:center;margin-bottom:56px;">
+    <div class="section-label reveal">What's inside</div>
+    <h2 class="section-title reveal">Built for every part<br>of your event.</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal"><div class="feature-icon">📊</div><div class="feature-name">Overview</div><div class="feature-desc">Live status dashboard with countdown, budget summary, milestone progress, and team contacts at a glance.</div></div>
+    <div class="feature-card reveal reveal-delay-1"><div class="feature-icon">💰</div><div class="feature-name">Budget</div><div class="feature-desc">Track dollars and hours in one place. Line-item tables, bar charts, overage alerts, and CSV export.</div></div>
+    <div class="feature-card reveal reveal-delay-2"><div class="feature-icon">📅</div><div class="feature-name">Timeline</div><div class="feature-desc">Pre-event milestones, day-of schedule, and multi-day itineraries. Toggle between visual timeline and table view.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon">✅</div><div class="feature-name">Tasks</div><div class="feature-desc">Assign tasks with due dates, priorities, and categories. Switch between list view and a full Kanban board.</div></div>
+    <div class="feature-card reveal reveal-delay-1"><div class="feature-icon">📍</div><div class="feature-name">Venues</div><div class="feature-desc">Multi-venue tabs with room blocks, BEO & F&B, contacts, budget breakdown, and contract notes.</div></div>
+    <div class="feature-card reveal reveal-delay-2"><div class="feature-icon">🎬</div><div class="feature-name">AV Production</div><div class="feature-desc">Equipment orders, tech staff assignments, load-in schedules, and a full run-of-show per room.</div></div>
+    <div class="feature-card reveal"><div class="feature-icon">🤝</div><div class="feature-name">Sponsors</div><div class="feature-desc">Track tiers, contracts, deliverable checklists, revenue totals, and communication history per sponsor.</div></div>
+    <div class="feature-card reveal reveal-delay-1"><div class="feature-icon">👕</div><div class="feature-name">Merch</div><div class="feature-desc">Inventory with low-stock alerts, giveaway tracker for general and pre-assigned distribution, vendor info.</div></div>
+    <div class="feature-card reveal reveal-delay-2"><div class="feature-icon">🎟️</div><div class="feature-name">Registration</div><div class="feature-desc">Attendee list with RSVP, check-in, dietary tracking, capacity bar, bulk CSV import and export.</div></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div style="text-align:center;margin-bottom:56px;">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal">Up and running<br>in minutes.</h2>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Create your event</div>
+      <div class="step-desc">Add the basics — name, date, location, capacity. Your command center is ready instantly.</div>
+    </div>
+    <div class="step reveal reveal-delay-1">
+      <div class="step-num">2</div>
+      <div class="step-title">Build out your pages</div>
+      <div class="step-desc">Fill in budget, venues, AV, tasks, sponsors — everything saves to the cloud in real time.</div>
+    </div>
+    <div class="step reveal reveal-delay-2">
+      <div class="step-num">3</div>
+      <div class="step-title">Run your event</div>
+      <div class="step-desc">Check in guests, track tasks, monitor budget — your whole team stays in sync on show day.</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <p class="quote-text reveal">"We went from <em>six spreadsheets</em> and a group chat to one dashboard. It changed how we produce."</p>
+  <div class="quote-attr reveal reveal-delay-1">Event Producer — F1 Hospitality Series</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="get-access">
+  <div class="section-label reveal">Early Access</div>
+  <h2 class="cta-title reveal">Ready to run<br>a tighter event?</h2>
+  <p class="cta-sub reveal">Join the waitlist and we'll be in touch.</p>
+  <div class="cta-form reveal">
+    <input class="cta-input" id="cta-email" type="email" placeholder="your@email.com" />
+    <button class="btn-cta" onclick="submitCTA()">Get Access</button>
+  </div>
+  <div class="cta-confirm" id="cta-confirm">✓ You're on the list — we'll be in touch soon.</div>
+  <p class="cta-fine reveal">No spam. No credit card. Just access.</p>
+  <div style="margin-top:32px;" class="reveal">
+    <a href="login.html" style="font-size:14px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;">Already have an account? Log in →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">Digital <span>Dashh</span></div>
+  <div class="footer-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="login.html">Log in</a>
+    <a href="#get-access">Get Access</a>
+  </div>
+  <div class="footer-copy">© 2026 Digital Dashh. All rights reserved.</div>
+</footer>
+
+<script>
+  // ── DASHBOARD NAV ──
+  function showPage(name, btn) {
+    document.querySelectorAll('.ds-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ds-nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('pg-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── CTA ──
+  function submitCTA() {
+    const email = document.getElementById('cta-email').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('cta-email').style.borderColor = '#e55a5a';
+      return;
+    }
+    document.getElementById('cta-email').style.borderColor = '';
+    document.querySelector('.cta-form').style.display = 'none';
+    document.getElementById('cta-confirm').style.display = 'block';
+    // Fire to Google Sheet if desired — using same endpoint pattern
+    fetch('https://script.google.com/macros/s/AKfycbzB-5AScjwiCc4mktzFb48KsGyDpGdSOCR6CayndOVG0_EnObTkWmJiYfV7EszEZ00/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ email, source: 'demo-cta', date: new Date().toLocaleString() })
+    }).catch(() => {}); // silent fail
+  }
+  document.getElementById('cta-email').addEventListener('keydown', e => { if (e.key === 'Enter') submitCTA(); });
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Dashboard shell reveal
+  const shellObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  shellObserver.observe(document.getElementById('dash-shell'));
+</script>
 </body>
 </html>
