@@ -4,303 +4,540 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sponsor Tracker | Digital Dashh</title>
-  <meta property="og:image" content="http://www.digitaldashh.com/assets/DDBLogo.jpeg" />
-<meta property="og:image:width" content="1280" />
-<meta property="og:image:height" content="640" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Digital Dashh EventBoard" />
-<meta property="og:description" content="A branded command center for event producers. See how Digital Dashh can streamline your entire event workflow." />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: 'Barlow', sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #1c1c3a;
-    }
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
 
-    body.production-theme { background-color: #eef1fb; --accent-color: #8da5e2; }
-    body.client-theme { background-color: #e9edf3; --accent-color: #2c3e50; }
-    body.partner-theme { background-color: #fdf1f5; --accent-color: #f8a9c4; }
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:26px;}
+    .stat{background:var(--white);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .stat.c-green{border-top-color:var(--green);}.stat.c-purple{border-top-color:var(--purple);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-yellow{border-top-color:var(--yellow);}
+    .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .stat-val{font-size:22px;font-weight:900;letter-spacing:-0.02em;}
+    .stat-sub{font-size:12px;color:var(--muted);margin-top:2px;}
 
-    .header {
-      background-color: #1c1c3a;
-      color: #fff;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+    .toolbar-left{display:flex;gap:8px;flex-wrap:wrap;}
+    .filter-btn{background:var(--white);border:2px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .filter-btn:hover{border-color:var(--purple);color:var(--navy);}
+    .filter-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-add-sponsor{background:var(--navy);color:var(--yellow);border:none;padding:9px 18px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-add-sponsor:hover{background:#2d2d5a;}
 
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+    /* TIERS CARD */
+    .tiers-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:22px;}
+    .tiers-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .tiers-card-hdr h3{font-size:14px;font-weight:800;}
+    .tiers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+    .tier-pill{display:flex;align-items:center;gap:10px;background:#fafafe;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;}
+    .tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .tier-info{flex:1;min-width:0;}
+    .tier-name{font-size:13px;font-weight:800;}
+    .tier-val{font-size:12px;color:var(--muted);}
+    .tier-rm{background:none;border:none;color:#ccc;font-size:13px;cursor:pointer;padding:2px 4px;border-radius:3px;}
+    .tier-rm:hover{color:var(--red);}
+    .btn-add-tier{background:none;border:2px dashed var(--border);color:var(--muted);border-radius:10px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;}
+    .btn-add-tier:hover{border-color:var(--purple);color:var(--purple);}
+    .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;}
+    .saved-flash.show{opacity:1;}
 
-    .header .right {
-      text-align: right;
-    }
+    /* SPONSOR CARDS GRID */
+    .sponsors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;}
 
-    .header a {
-      background-color: #ffe066;
-      color: #1c1c3a;
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
+    /* SPONSOR CARD */
+    .sponsor-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;transition:box-shadow 0.2s;}
+    .sponsor-card:hover{box-shadow:0 8px 28px rgba(28,28,58,0.12);}
+    .sc-header{padding:16px 18px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;user-select:none;}
+    .sc-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;color:white;}
+    .sc-info{flex:1;min-width:0;}
+    .sc-name{font-size:15px;font-weight:800;margin-bottom:3px;}
+    .sc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .tier-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.04em;}
+    .status-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.04em;}
+    .sb-prospect{background:#f4f4fb;color:var(--muted);}
+    .sb-outreach{background:#fff8e0;color:#9a7000;}
+    .sb-negotiating{background:var(--purple-light);color:var(--purple);}
+    .sb-confirmed{background:#e8f5ee;color:var(--green);}
+    .sb-signed{background:#d4f0e4;color:#2d8a60;}
+    .sb-declined{background:#fff0f0;color:var(--red);}
+    .sc-value{font-size:13px;font-weight:800;color:var(--navy);margin-left:auto;flex-shrink:0;}
+    .sc-chevron{font-size:12px;color:var(--muted);margin-left:6px;transition:transform 0.2s;flex-shrink:0;}
+    .sc-chevron.open{transform:rotate(180deg);}
 
-    .menu {
-      background-color: #ffffff;
-      padding: 10px 30px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      border-bottom: 1px solid #ddd;
-    }
+    /* EXPANDABLE BODY */
+    .sc-body{display:none;border-top:1px solid var(--border);padding:16px 18px;}
+    .sc-body.open{display:block;}
 
-    .menu a {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    .sc-section{margin-bottom:16px;}
+    .sc-section:last-child{margin-bottom:0;}
+    .sc-section-title{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 
-    .view-toggle-bar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px;
-      background-color: #e9e9f2;
-      border-bottom: 1px solid #ccc;
-    }
+    /* INLINE EDIT FIELDS */
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+    .field-item{display:flex;flex-direction:column;gap:3px;}
+    .field-lbl{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);}
+    .fi{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;transition:border-color 0.2s;}
+    .fi:focus{outline:none;border-color:var(--purple);background:white;}
+    .fi-ta{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;resize:vertical;min-height:65px;transition:border-color 0.2s;}
+    .fi-ta:focus{outline:none;border-color:var(--purple);background:white;}
 
-    .view-toggle-bar button {
-      font-family: 'Barlow', sans-serif;
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      background-color: var(--accent-color);
-      color: white;
-    }
+    /* DELIVERABLES */
+    .deliv-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f4f4fb;}
+    .deliv-item:last-child{border-bottom:none;}
+    .deliv-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+    .deliv-check.done{background:var(--green);border-color:var(--green);color:white;font-size:10px;}
+    .deliv-text{flex:1;font-size:13px;}
+    .deliv-text.done{text-decoration:line-through;color:var(--muted);}
+    .deliv-rm{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:2px 4px;}
+    .deliv-rm:hover{color:var(--red);}
+    .deliv-add-row{display:flex;gap:6px;margin-top:8px;}
+    .deliv-input{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;}
+    .deliv-input:focus{outline:none;border-color:var(--purple);background:white;}
+    .btn-deliv-add{background:var(--purple);color:white;border:none;padding:6px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
 
-    .view-toggle-bar button.active {
-      border: 2px solid white;
-      box-shadow: 0 0 0 2px var(--accent-color);
-    }
+    /* SC ACTIONS */
+    .sc-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+    .btn-save-sc{background:var(--navy);color:var(--yellow);border:none;padding:8px 16px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+    .btn-save-sc:hover{background:#2d2d5a;}
+    .btn-del-sc{background:none;border:1.5px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-del-sc:hover{border-color:var(--red);color:var(--red);}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-    }
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:white;border-radius:16px;padding:26px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
+    .modal-overlay.open .modal{transform:scale(1);}
+    .modal h3{font-size:17px;font-weight:800;margin-bottom:16px;}
+    .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+    .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+    .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+    .fi-lbl-m{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
 
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+    /* EMPTY */
+    .empty-sponsors{background:var(--white);border-radius:14px;padding:52px 32px;text-align:center;box-shadow:var(--shadow);border:2px dashed #dde;grid-column:1/-1;}
+    .empty-sponsors .ei{font-size:44px;margin-bottom:12px;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
 
-    .card h3, .card h2 {
-      font-size: 18px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      color: #1c1c3a;
-    }
-
-    .card p, .card label, .card input, .card textarea {
-      font-size: 14px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-family: 'Barlow', sans-serif;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
-    }
-
-    table th {
-      background-color: #f4f4f4;
-    }
-
-    button {
-      background-color: var(--accent-color, #6c79db);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .low {
-      color: red;
-    }
-
-    [data-view] { display: none; }
-    body.production-theme [data-view="production"],
-    body.client-theme [data-view="client"],
-    body.partner-theme [data-view="partner"] {
-      display: block;
-    }
+    /* TIER COLOR DOTS */
+    .dot-gold{background:#f5a623;}.dot-silver{background:#a0aec0;}.dot-bronze{background:#c97d4e;}.dot-inkind{background:#6c79db;}.dot-custom{background:#4caf82;}
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Digital Dashh | Event Dashboard</h1>
-    <div class="right">
-      <a href="index.html">🏠 Home</a>
-      <span id="current-date"></span> |
-      <span id="countdown"></span>
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">← Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html" class="active">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">🤝</div>Loading Sponsors...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Sponsor <span style="color:var(--purple);">Tracker</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
     </div>
   </div>
 
-  <div class="menu">
-    <a href="overview.html">Overview</a>
-    <a href="budget.html">Budget</a>
-    <a href="venues.html">Venues</a>
-    <a href="av.html">AV Production</a>
-    <a href="content.html">Creative Content</a>
-    <a href="sponsor-tracker.html">Sponsor Tracker</a>
-    <a href="merch-inventory.html">Merch Inventory</a>
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat c-green"><div class="stat-lbl">Total Revenue</div><div class="stat-val" id="stat-rev">$0</div><div class="stat-sub" id="stat-rev-sub">across all sponsors</div></div>
+    <div class="stat c-purple"><div class="stat-lbl">Confirmed</div><div class="stat-val" id="stat-confirmed">0</div><div class="stat-sub">signed or confirmed</div></div>
+    <div class="stat c-orange"><div class="stat-lbl">In Progress</div><div class="stat-val" id="stat-inprog">0</div><div class="stat-sub">outreach or negotiating</div></div>
+    <div class="stat c-yellow"><div class="stat-lbl">Deliverables</div><div class="stat-val" id="stat-deliv">0/0</div><div class="stat-sub">completed</div></div>
   </div>
 
-  <div class="view-toggle-bar">
-    <button onclick="setView('production')" id="btn-production">Production View</button>
-    <button onclick="setView('client')" id="btn-client">Client View</button>
-    <button onclick="setView('partner')" id="btn-partner">Partner View</button>
+  <!-- TIERS -->
+  <div class="tiers-card">
+    <div class="tiers-card-hdr">
+      <h3>🏷️ Sponsorship Tiers</h3>
+      <span class="saved-flash" id="flash-tiers">✓ Saved</span>
+    </div>
+    <div class="tiers-grid" id="tiers-grid"></div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h3>💼 Sponsorship Tiers</h3>
-      <ul>
-        <li>🥇 Gold: Full branding + panel shoutouts</li>
-        <li>🥈 Silver: Logo placement + social media</li>
-        <li>🥉 Bronze: Logo placement only</li>
-        <li>🤝 In-Kind: Barter-based participation</li>
-      </ul>
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('Confirmed',this)">Confirmed</button>
+      <button class="filter-btn" onclick="setFilter('Signed',this)">Signed</button>
+      <button class="filter-btn" onclick="setFilter('Negotiating',this)">Negotiating</button>
+      <button class="filter-btn" onclick="setFilter('Prospect',this)">Prospect</button>
     </div>
-
-    <div class="card">
-      <h3>✅ Confirmed Sponsors</h3>
-      <table>
-        <thead><tr><th>Name</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody>
-          <tr><td>Visa</td><td>Signed</td><td><button>View Agreement</button></td></tr>
-          <tr><td>Motorola</td><td>Pending</td><td><button>Upload Logo</button></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <h3>📋 Deliverables Tracker</h3>
-      <ul>
-        <li>Visa - Social Post 1 of 2 complete</li>
-        <li>Motorola - Booth Confirmed, Swag Box Pending</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>📎 Sponsor Uploads</h3>
-      <button>Open Google Drive Folder</button>
-    </div>
-
-    <div class="card">
-      <h3>🗒️ Notes & History</h3>
-      <p>Visa contacted April 10 — approved all collateral.</p>
-    </div>
+    <button class="btn-add-sponsor" onclick="openAddModal()">+ Add Sponsor</button>
   </div>
 
-  <script>
-    const today = new Date();
-    const dateString = today.toLocaleDateString(undefined, {
-      weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
-    });
-    document.getElementById('current-date').textContent = dateString;
+  <!-- SPONSOR CARDS -->
+  <div class="sponsors-grid" id="sponsors-grid"></div>
+</div>
 
-    const eventDate = new Date('2025-06-30T00:00:00');
-    const diff = eventDate - today;
-    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    document.getElementById('countdown').textContent = `${daysLeft} days until event`;
+<!-- ADD SPONSOR MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>🤝 Add Sponsor</h3>
+    <label class="fi-lbl-m">Company Name *</label>
+    <input class="fi" id="as-name" placeholder="e.g. Visa, Motorola" style="margin-bottom:12px;width:100%;" />
+    <div class="modal-row" style="margin-bottom:12px;">
+      <div>
+        <label class="fi-lbl-m">Tier</label>
+        <select class="fi" id="as-tier" style="margin:0;width:100%;"></select>
+      </div>
+      <div>
+        <label class="fi-lbl-m">Status</label>
+        <select class="fi" id="as-status" style="margin:0;width:100%;">
+          <option>Prospect</option><option>Outreach</option><option>Negotiating</option>
+          <option>Confirmed</option><option>Signed</option><option>Declined</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-row" style="margin-bottom:12px;">
+      <div>
+        <label class="fi-lbl-m">Sponsorship Value ($)</label>
+        <input class="fi" id="as-value" type="number" min="0" placeholder="0" style="margin:0;width:100%;" />
+      </div>
+      <div>
+        <label class="fi-lbl-m">Primary Contact</label>
+        <input class="fi" id="as-contact" placeholder="Name" style="margin:0;width:100%;" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-primary" onclick="addSponsor()">Add Sponsor</button>
+    </div>
+  </div>
+</div>
 
-    function setView(view) {
-      const body = document.body;
-      const views = ['production', 'client', 'partner'];
-      views.forEach(v => body.classList.remove(`${v}-theme`));
-      body.classList.add(`${view}-theme`);
-      localStorage.setItem('dashhboardView', view);
-      views.forEach(v => {
-        const btn = document.getElementById(`btn-${v}`);
-        if (btn) btn.classList.remove('active');
-      });
-      const activeBtn = document.getElementById(`btn-${view}`);
-      if (activeBtn) activeBtn.classList.add('active');
-    }
+<div class="toast" id="toast"></div>
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const savedView = localStorage.getItem('dashhboardView') || 'production';
-      setView(savedView);
-    });
-  </script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
-      authDomain: "quantum-beach-394503.firebaseapp.com",
-      projectId: "quantum-beach-394503",
-      storageBucket: "quantum-beach-394503.firebasestorage.app",
-      messagingSenderId: "1002514430184",
-      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
 <script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
+  const firebaseConfig = {
+    apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+    authDomain:"digitaldashh.com",
+    projectId:"quantum-beach-394503",
+    storageBucket:"quantum-beach-394503.firebasestorage.app",
+    messagingSenderId:"1002514430184",
+    appId:"1:1002514430184:web:07ffbe7190df810494b15d"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth(), db=firebase.firestore();
+
+  let currentUser=null, activeEventId=localStorage.getItem('activeEventId');
+  let sponsors=[], tiers=[], activeFilter='all', authDone=false;
+
+  const DEFAULT_TIERS=[
+    {name:'Title',value:'50000',color:'#f5a623'},
+    {name:'Gold',value:'25000',color:'#f5a623'},
+    {name:'Silver',value:'10000',color:'#a0aec0'},
+    {name:'Bronze',value:'5000',color:'#c97d4e'},
+    {name:'In-Kind',value:'0',color:'#6c79db'},
+  ];
+
+  const STATUS_CLASSES={Prospect:'sb-prospect',Outreach:'sb-outreach',Negotiating:'sb-negotiating',Confirmed:'sb-confirmed',Signed:'sb-signed',Declined:'sb-declined'};
+  const TIER_COLORS=['#f5a623','#a0aec0','#c97d4e','#6c79db','#4caf82','#e55a5a','#60a5fa','#1c1c3a'];
+
+  auth.onAuthStateChanged(user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    if(!authDone){authDone=true;load();}
   });
+
+  function load(){
+    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(doc=>{
+        show();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        const d=doc.data();
+        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
+        sponsors=d.sponsors||[];
+        tiers=d.sponsorTiers||DEFAULT_TIERS;
+        renderAll();
+      }).catch(err=>{show();showToast('Error: '+err.message,'error');});
+  }
+
+  function show(){
+    document.getElementById('page-loader').style.display='none';
+    document.getElementById('page-content').style.display='block';
+  }
+
+  function renderAll(){updateStats();renderTiers();renderSponsors();}
+
+  // ── STATS ──
+  function updateStats(){
+    const confirmed=sponsors.filter(s=>s.status==='Confirmed'||s.status==='Signed');
+    const inprog=sponsors.filter(s=>s.status==='Outreach'||s.status==='Negotiating');
+    const rev=confirmed.reduce((a,s)=>a+(parseFloat(s.value)||0),0);
+    let totalDeliv=0,doneDeliv=0;
+    sponsors.forEach(s=>{(s.deliverables||[]).forEach(d=>{totalDeliv++;if(d.done)doneDeliv++;});});
+    document.getElementById('stat-rev').textContent='$'+rev.toLocaleString();
+    document.getElementById('stat-rev-sub').textContent=confirmed.length+' confirmed sponsor'+(confirmed.length!==1?'s':'');
+    document.getElementById('stat-confirmed').textContent=confirmed.length;
+    document.getElementById('stat-inprog').textContent=inprog.length;
+    document.getElementById('stat-deliv').textContent=doneDeliv+'/'+totalDeliv;
+  }
+
+  // ── TIERS ──
+  function renderTiers(){
+    const grid=document.getElementById('tiers-grid');
+    grid.innerHTML=tiers.map((t,i)=>`
+      <div class="tier-pill">
+        <div class="tier-dot" style="background:${t.color};"></div>
+        <div class="tier-info">
+          <div class="tier-name">${esc(t.name)}</div>
+          <div class="tier-val">${t.value?'$'+parseFloat(t.value).toLocaleString():'In-Kind'}</div>
+        </div>
+        <button class="tier-rm" onclick="removeTier(${i})">✕</button>
+      </div>`).join('')+
+      `<button class="btn-add-tier" onclick="addTier()">+ Add Tier</button>`;
+    // Refresh tier selects
+    const opts=tiers.map(t=>`<option>${esc(t.name)}</option>`).join('');
+    document.getElementById('as-tier').innerHTML=opts||'<option>General</option>';
+  }
+
+  function addTier(){
+    const name=prompt('Tier name (e.g. Platinum):');
+    if(!name)return;
+    const value=prompt('Sponsorship value in $ (leave blank for In-Kind):','');
+    const color=TIER_COLORS[tiers.length%TIER_COLORS.length];
+    tiers.push({name:name.trim(),value:value||'0',color});
+    persistTiers(()=>{renderTiers();flash('flash-tiers');});
+  }
+  function removeTier(i){
+    if(!confirm(`Remove tier "${tiers[i].name}"?`))return;
+    tiers.splice(i,1);
+    persistTiers(()=>{renderTiers();flash('flash-tiers');});
+  }
+  function persistTiers(cb){
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({sponsorTiers:tiers}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── FILTER ──
+  function setFilter(f,btn){
+    activeFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSponsors();
+  }
+
+  // ── SPONSORS ──
+  function renderSponsors(){
+    const grid=document.getElementById('sponsors-grid');
+    const filtered=activeFilter==='all'?sponsors:sponsors.filter(s=>s.status===activeFilter);
+    if(!filtered.length){
+      grid.innerHTML=`<div class="empty-sponsors"><div class="ei">🤝</div><h3>${activeFilter==='all'?'No sponsors yet':'No sponsors match this filter'}</h3><p>${activeFilter==='all'?'Click <strong>+ Add Sponsor</strong> to get started.':'Try a different filter.'}</p></div>`;
+      return;
+    }
+    grid.innerHTML=filtered.map(s=>{
+      const si=sponsors.indexOf(s);
+      const tier=tiers.find(t=>t.name===s.tier)||{color:'#6c79db'};
+      const doneD=(s.deliverables||[]).filter(d=>d.done).length;
+      const totalD=(s.deliverables||[]).length;
+      return `
+      <div class="sponsor-card" id="sc-${si}">
+        <div class="sc-header" onclick="toggleCard(${si})">
+          <div class="sc-avatar" style="background:${tier.color};">${esc(initials(s.name))}</div>
+          <div class="sc-info">
+            <div class="sc-name">${esc(s.name)}</div>
+            <div class="sc-meta">
+              ${s.tier?`<span class="tier-badge" style="background:${tier.color}22;color:${tier.color};">${esc(s.tier)}</span>`:''}
+              <span class="status-badge ${STATUS_CLASSES[s.status]||'sb-prospect'}">${esc(s.status||'Prospect')}</span>
+              ${totalD>0?`<span style="font-size:11px;color:var(--muted);">✓ ${doneD}/${totalD}</span>`:''}
+            </div>
+          </div>
+          ${s.value?`<div class="sc-value">$${parseFloat(s.value).toLocaleString()}</div>`:''}
+          <div class="sc-chevron" id="chev-${si}">▼</div>
+        </div>
+        <div class="sc-body" id="scb-${si}">
+          <!-- DETAILS -->
+          <div class="sc-section">
+            <div class="sc-section-title">Contact & Details</div>
+            <div class="field-row">
+              <div class="field-item"><span class="field-lbl">Company</span><input class="fi" id="sc-name-${si}" value="${esc(s.name||'')}" /></div>
+              <div class="field-item"><span class="field-lbl">Tier</span>
+                <select class="fi" id="sc-tier-${si}">${tiers.map(t=>`<option${s.tier===t.name?' selected':''}>${esc(t.name)}</option>`).join('')}</select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-item"><span class="field-lbl">Status</span>
+                <select class="fi" id="sc-status-${si}">
+                  ${['Prospect','Outreach','Negotiating','Confirmed','Signed','Declined'].map(st=>`<option${s.status===st?' selected':''}>${st}</option>`).join('')}
+                </select>
+              </div>
+              <div class="field-item"><span class="field-lbl">Value ($)</span><input class="fi" id="sc-value-${si}" type="number" min="0" value="${s.value||''}" placeholder="0" /></div>
+            </div>
+            <div class="field-row">
+              <div class="field-item"><span class="field-lbl">Primary Contact</span><input class="fi" id="sc-contact-${si}" value="${esc(s.contact||'')}" placeholder="Name" /></div>
+              <div class="field-item"><span class="field-lbl">Email</span><input class="fi" id="sc-email-${si}" value="${esc(s.email||'')}" placeholder="email@company.com" /></div>
+            </div>
+            <div class="field-row">
+              <div class="field-item"><span class="field-lbl">Phone</span><input class="fi" id="sc-phone-${si}" value="${esc(s.phone||'')}" placeholder="Phone" /></div>
+              <div class="field-item"><span class="field-lbl">Contract Date</span><input class="fi" type="date" id="sc-date-${si}" value="${s.contractDate||''}" /></div>
+            </div>
+          </div>
+
+          <!-- DELIVERABLES -->
+          <div class="sc-section">
+            <div class="sc-section-title">Deliverables</div>
+            <div id="deliv-list-${si}">${renderDeliverables(si)}</div>
+            <div class="deliv-add-row">
+              <input class="deliv-input" id="deliv-inp-${si}" placeholder="Add deliverable..." onkeydown="if(event.key==='Enter')addDeliverable(${si})" />
+              <button class="btn-deliv-add" onclick="addDeliverable(${si})">Add</button>
+            </div>
+          </div>
+
+          <!-- NOTES -->
+          <div class="sc-section">
+            <div class="sc-section-title">Notes & Communication History</div>
+            <textarea class="fi-ta" id="sc-notes-${si}" placeholder="Log calls, emails, key decisions, follow-up dates...">${esc(s.notes||'')}</textarea>
+          </div>
+
+          <div class="sc-actions">
+            <button class="btn-del-sc" onclick="deleteSponsor(${si})">🗑 Delete</button>
+            <button class="btn-save-sc" onclick="saveSponsor(${si})">💾 Save</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderDeliverables(si){
+    const delivs=sponsors[si].deliverables||[];
+    if(!delivs.length)return '<div style="font-size:12px;color:var(--muted);padding:4px 0;">No deliverables yet.</div>';
+    return delivs.map((d,di)=>`
+      <div class="deliv-item">
+        <div class="deliv-check${d.done?' done':''}" onclick="toggleDeliv(${si},${di})">${d.done?'✓':''}</div>
+        <span class="deliv-text${d.done?' done':''}">${esc(d.text)}</span>
+        <button class="deliv-rm" onclick="removeDeliv(${si},${di})">✕</button>
+      </div>`).join('');
+  }
+
+  function toggleCard(si){
+    const body=document.getElementById(`scb-${si}`);
+    const chev=document.getElementById(`chev-${si}`);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+  }
+
+  function addDeliverable(si){
+    const inp=document.getElementById(`deliv-inp-${si}`);
+    const text=inp.value.trim();
+    if(!text)return;
+    sponsors[si].deliverables=[...(sponsors[si].deliverables||[]),{text,done:false}];
+    inp.value='';
+    document.getElementById(`deliv-list-${si}`).innerHTML=renderDeliverables(si);
+    persistSponsors(()=>{updateStats();});
+  }
+
+  function toggleDeliv(si,di){
+    sponsors[si].deliverables[di].done=!sponsors[si].deliverables[di].done;
+    document.getElementById(`deliv-list-${si}`).innerHTML=renderDeliverables(si);
+    persistSponsors(()=>{updateStats();});
+  }
+
+  function removeDeliv(si,di){
+    sponsors[si].deliverables.splice(di,1);
+    document.getElementById(`deliv-list-${si}`).innerHTML=renderDeliverables(si);
+    persistSponsors(()=>{updateStats();});
+  }
+
+  function saveSponsor(si){
+    sponsors[si]={
+      ...sponsors[si],
+      name:document.getElementById(`sc-name-${si}`).value.trim(),
+      tier:document.getElementById(`sc-tier-${si}`).value,
+      status:document.getElementById(`sc-status-${si}`).value,
+      value:document.getElementById(`sc-value-${si}`).value,
+      contact:document.getElementById(`sc-contact-${si}`).value.trim(),
+      email:document.getElementById(`sc-email-${si}`).value.trim(),
+      phone:document.getElementById(`sc-phone-${si}`).value.trim(),
+      contractDate:document.getElementById(`sc-date-${si}`).value,
+      notes:document.getElementById(`sc-notes-${si}`).value.trim(),
+    };
+    persistSponsors(()=>{updateStats();renderSponsors();showToast('✓ Saved!','success');});
+  }
+
+  function deleteSponsor(si){
+    if(!confirm(`Delete "${sponsors[si].name}"?`))return;
+    sponsors.splice(si,1);
+    persistSponsors(()=>{renderAll();showToast('🗑 Sponsor removed.','success');});
+  }
+
+  // ── ADD SPONSOR MODAL ──
+  function openAddModal(){document.getElementById('add-modal').classList.add('open');}
+  function closeAddModal(){
+    document.getElementById('add-modal').classList.remove('open');
+    ['as-name','as-value','as-contact'].forEach(id=>document.getElementById(id).value='');
+  }
+  function addSponsor(){
+    const name=document.getElementById('as-name').value.trim();
+    if(!name){showToast('Company name required.','error');return;}
+    sponsors.push({
+      name,
+      tier:document.getElementById('as-tier').value,
+      status:document.getElementById('as-status').value,
+      value:document.getElementById('as-value').value,
+      contact:document.getElementById('as-contact').value.trim(),
+      email:'',phone:'',contractDate:'',notes:'',deliverables:[]
+    });
+    closeAddModal();
+    persistSponsors(()=>{renderAll();showToast('✓ Sponsor added!','success');});
+  }
+
+  // ── FIRESTORE ──
+  function persistSponsors(cb){
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .update({sponsors}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  // ── UTILS ──
+  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
+  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
 </script>
-  
 </body>
 </html>
