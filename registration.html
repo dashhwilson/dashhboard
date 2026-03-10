@@ -328,11 +328,13 @@ Jane,Doe,jane@co.com,Beta,CTO,General,Pending,,Needs parking"></textarea>
     if(!user){window.location.href='login.html';return;}
     currentUser=user;
     document.getElementById('user-email').textContent=user.email;
+    // Re-read activeEventId after auth resolves in case it was set after page load
+    activeEventId=localStorage.getItem('activeEventId');
     if(!authDone){authDone=true;load();}
   });
 
   function load(){
-    if(!activeEventId){show();showToast('No active event selected.','error');return;}
+    if(!activeEventId){window.location.href='events.html';return;}
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
       .then(doc=>{
         show();
