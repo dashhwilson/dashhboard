@@ -109,12 +109,12 @@
 
     <p class="footer-note">
       Need help accessing your workspace? <br>
-      Contact us at <a href="mailto:dashh@digitaldashh.com">dashh@digitaldashh.com</a>
+      Contact us at <a href="/cdn-cgi/l/email-protection#294d485a4141694d404e405d48454d485a4141074a4644"><span class="__cf_email__" data-cfemail="7c181d0f14143c18151b15081d10181d0f1414521f1311">[email&#160;protected]</span></a>
     </p>
   </div>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <script>
@@ -137,18 +137,4 @@
 
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-          window.location.href = "index.html";
-        })
-        .catch(error => {
-          errorDiv.textContent = error.message;
-        });
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "index.html";
-      }
-    });
-  </script>
-</body>
-</html>
+          window.location.href = "events.html";
