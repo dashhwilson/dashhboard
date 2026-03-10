@@ -242,7 +242,7 @@
       <table>
         <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Phone</th></tr></thead>
         <tbody>
-          <tr><td>Jordan Williams</td><td>Banquet Manager</td><td>jordan@example.com</td><td>(123) 456-7890</td></tr>
+          <tr><td>Jordan Williams</td><td>Banquet Manager</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b3134293f3a351b3e233a362b373e75383436">[email&#160;protected]</a></td><td>(123) 456-7890</td></tr>
         </tbody>
       </table>
     </div>
@@ -253,7 +253,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const today = new Date();
     const dateString = today.toLocaleDateString(undefined, {
       weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
@@ -315,26 +315,14 @@
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyCfgmw0XlHj3BY9A-CS1-u_n4TDUuTNqmM",
-      authDomain: "digital-dashh.firebaseapp.com",
-      projectId: "digital-dashh",
-      storageBucket: "digital-dashh.appspot.com",
-      messagingSenderId: "535613848097",
-      appId: "1:535613848097:web:bcd4a58bf1bd9497e48160"
+      apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+      authDomain: "quantum-beach-394503.firebaseapp.com",
+      projectId: "quantum-beach-394503",
+      storageBucket: "quantum-beach-394503.firebasestorage.app",
+      messagingSenderId: "1002514430184",
+      appId: "1:1002514430184:web:07ffbe7190df810494b15d"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-  </script>
-<script>
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      // User not logged in, redirect to login page
-      window.location.href = "login.html";
-    }
-  });
-</script>
-  
-</body>
-</html>
