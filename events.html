@@ -632,7 +632,6 @@
     // ── LOAD EVENTS ──
     function loadEvents() {
       db.collection('users').doc(currentUser.uid).collection('events')
-        .orderBy('createdAt', 'desc')
         .get()
         .then(snapshot => {
           document.getElementById('skeleton').remove();
@@ -764,7 +763,7 @@
         eventCapacity: parseInt(document.getElementById('new-capacity').value) || null,
         eventType: document.getElementById('new-type').value,
         notes: document.getElementById('new-notes').value.trim(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date().toISOString(),
         attendees: [],
         budget: { total: 0, spent: 0 }
       };
