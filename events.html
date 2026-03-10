@@ -554,6 +554,7 @@
           <textarea id="new-notes" placeholder="Any early details, client name, or context..."></textarea>
         </div>
 
+        <div id="form-error" style="color:#e55a5a;font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
         <button class="btn-create" id="btn-create" onclick="createEvent()">
           + Create Event
         </button>
@@ -721,9 +722,17 @@
     // ── CREATE EVENT ──
     function createEvent() {
       const name = document.getElementById('new-name').value.trim();
+      const formError = document.getElementById('form-error');
+      formError.textContent = '';
+
       if (!name) {
-        showToast('⚠️ Please enter an event name.', 'error');
+        formError.textContent = 'Event name is required.';
         document.getElementById('new-name').focus();
+        return;
+      }
+
+      if (!currentUser) {
+        formError.textContent = 'Not logged in. Please refresh and try again.';
         return;
       }
 
@@ -746,11 +755,9 @@
       db.collection('users').doc(currentUser.uid).collection('events')
         .add(eventData)
         .then(docRef => {
-          // Auto-select the new event
           activeEventId = docRef.id;
           localStorage.setItem('activeEventId', docRef.id);
 
-          // Clear form
           ['new-name','new-location','new-date','new-capacity','new-notes'].forEach(id => {
             document.getElementById(id).value = '';
           });
@@ -759,14 +766,16 @@
           userEvents.unshift({ id: docRef.id, ...eventData });
           renderEvents();
           updateActiveBanner();
-          showToast('🎉 Event created and activated!', 'success');
+          showToast('Event created! Heading to dashboard...', 'success');
 
           btn.disabled = false;
           btn.textContent = '+ Create Event';
+
+          setTimeout(() => { window.location.href = 'index.html'; }, 1400);
         })
         .catch(err => {
-          console.error(err);
-          showToast('❌ Failed to create event. Try again.', 'error');
+          console.error('Firestore error:', err);
+          formError.textContent = 'Save failed: ' + err.message;
           btn.disabled = false;
           btn.textContent = '+ Create Event';
         });
@@ -840,9 +849,13 @@
       return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // Allow Enter key to create event
+    // Allow Enter key to create event (only when focused in the form, not textarea)
     document.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && document.activeElement.closest('.create-panel')) {
+      if (e.key === 'Enter'
+          && document.activeElement.closest('.create-panel')
+          && document.activeElement.tagName !== 'TEXTAREA'
+          && document.activeElement.tagName !== 'BUTTON') {
+        e.preventDefault();
         createEvent();
       }
     });
