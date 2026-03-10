@@ -204,6 +204,7 @@
     .summary-card.countdown-card { border-top-color: var(--purple); }
     .summary-card.reg-card { border-top-color: #f5a623; }
     .summary-card.tasks-card { border-top-color: #e55a5a; }
+    .summary-card.meetings-card { border-top-color: #6c79db; }
 
     .summary-card h3 {
       font-size: 12px;
@@ -432,6 +433,16 @@
         <div class="sub" id="tasks-percent">Loading...</div>
       </div>
     </a>
+    <a href="meetings.html" class="summary-link">
+      <div class="summary-card meetings-card">
+        <h3>🗒️ Meetings</h3>
+        <div class="highlight" id="meetings-count">—</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="meetings-progress" style="width:0%;background:#6c79db;"></div>
+        </div>
+        <div class="sub" id="meetings-sub">Loading...</div>
+      </div>
+    </a>
   </div>
 
   <!-- NAV CARDS -->
@@ -485,6 +496,11 @@
       <div class="icon">💰</div>
       <h2>Budget</h2>
       <p>Spend tracking and breakdown</p>
+    </div>
+    <div class="nav-card" data-view="production client partner" onclick="location.href='meetings.html'">
+      <div class="icon">🗒️</div>
+      <h2>Meetings</h2>
+      <p>Notes, action items &amp; follow-ups</p>
     </div>
   </div>
 
@@ -604,6 +620,7 @@
           updateCountdownCard(data);
           updateRegistrationCard(data);
           updateTasksCard(data);
+        updateMeetingsCard(data);
           updateBudgetCard(data);
           updateEventDetails(data);
         })
@@ -666,6 +683,23 @@
       document.getElementById('tasks-progress').style.width = `${percent}%`;
     }
 
+    function updateMeetingsCard(data) {
+      const meetings = data.meetings || [];
+      let openActions = 0, totalActions = 0;
+      meetings.forEach(m => {
+        (m.actions || []).forEach(a => {
+          totalActions++;
+          if (!a.done && !a.pushed) openActions++;
+        });
+      });
+      document.getElementById('meetings-count').textContent = meetings.length > 0 ? meetings.length : '—';
+      document.getElementById('meetings-sub').textContent = openActions > 0
+        ? `${openActions} open action item${openActions !== 1 ? 's' : ''}`
+        : meetings.length > 0 ? 'All actions clear ✓' : 'No meetings yet';
+      const pct = totalActions > 0 ? Math.round((totalActions - openActions) / totalActions * 100) : 0;
+      document.getElementById('meetings-progress').style.width = `${pct}%`;
+    }
+
     // ── BUDGET CARD ──
     function updateBudgetCard(data) {
       const budget = data.budget || {};
@@ -696,7 +730,7 @@
     function showNoEventState() {
       document.getElementById('no-event-banner').style.display = 'flex';
       document.getElementById('welcome-banner').innerHTML = '<span>No event selected</span>';
-      ['budget-total','days-remaining','reg-count','tasks-count'].forEach(id => {
+      ['budget-total','days-remaining','reg-count','tasks-count','meetings-count'].forEach(id => {
         document.getElementById(id).textContent = '—';
       });
       ['budget-sub','event-date-display','reg-percent','tasks-percent'].forEach(id => {
