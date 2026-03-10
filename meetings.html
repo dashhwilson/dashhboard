@@ -22,20 +22,14 @@
     .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
     .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
     .page{max-width:1200px;margin:0 auto;padding:28px 28px 60px;}
-
-    /* STATS */
     .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-bottom:24px;}
     .stat{background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
     .stat.c-purple{border-top-color:var(--purple);}.stat.c-green{border-top-color:var(--green);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-red{border-top-color:var(--red);}
     .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
     .stat-val{font-size:20px;font-weight:900;}
     .stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-
-    /* LAYOUT */
     .layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start;}
     @media(max-width:800px){.layout{grid-template-columns:1fr;}}
-
-    /* LEFT PANEL — meeting list */
     .meeting-list-panel{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;position:sticky;top:20px;}
     .mlp-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
     .mlp-hdr h3{font-size:13px;font-weight:800;}
@@ -64,8 +58,6 @@
     .mlp-add{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:12px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--purple);cursor:pointer;transition:background 0.15s;}
     .mlp-add:hover{background:var(--purple-light);}
     .mlp-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px;}
-
-    /* RIGHT PANEL — meeting detail */
     .meeting-detail{background:var(--white);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
     .md-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px;text-align:center;color:var(--muted);}
     .md-empty .ei{font-size:40px;margin-bottom:12px;}
@@ -83,20 +75,14 @@
     .btn-del-meet:hover{border-color:var(--red);color:var(--red);}
     .saved-flash{font-size:12px;color:var(--green);font-weight:700;opacity:0;transition:opacity 0.3s;align-self:center;}
     .saved-flash.show{opacity:1;}
-
-    /* TABS inside detail */
     .md-tabs{display:flex;border-bottom:1px solid var(--border);}
     .md-tab{padding:11px 20px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
     .md-tab:hover{color:var(--navy);}
     .md-tab.active{color:var(--navy);border-bottom-color:var(--purple);}
     .md-body{padding:22px 24px;}
-
-    /* NOTES TAB */
     .notes-ta{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--navy);resize:vertical;min-height:260px;line-height:1.7;background:#fafafe;transition:border-color 0.2s;}
     .notes-ta:focus{outline:none;border-color:var(--purple);background:white;}
-    .notes-tip{font-size:12px;color:var(--muted);margin-top:8px;}
-
-    /* ATTENDEES */
+    .notes-tip{font-size:12px;color:var(--muted);}
     .attendee-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
     .chip{background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;}
     .chip-rm{background:none;border:none;color:var(--purple);cursor:pointer;font-size:11px;padding:0;line-height:1;}
@@ -105,8 +91,6 @@
     .attendee-inp{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;}
     .attendee-inp:focus{outline:none;border-color:var(--purple);}
     .btn-chip-add{background:var(--purple);color:white;border:none;padding:7px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
-
-    /* ACTION ITEMS TAB */
     .ai-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
     .ai-filter-row{display:flex;gap:6px;}
     .ai-filter{background:var(--white);border:1.5px solid var(--border);color:var(--muted);padding:4px 11px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;}
@@ -135,8 +119,6 @@
     .ai-inp{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;width:100%;}
     .ai-inp:focus{outline:none;border-color:var(--purple);}
     .btn-ai-add{background:var(--purple);color:white;border:none;padding:8px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
-
-    /* OPEN ACTIONS SUMMARY */
     .open-actions-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden;}
     .oac-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
     .oac-hdr h3{font-size:14px;font-weight:800;}
@@ -144,12 +126,11 @@
     .oac-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #f4f4fb;}
     .oac-item:last-child{border-bottom:none;}
     .oac-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
-    .oac-dot.med{background:var(--orange);}.oac-dot.low{background:var(--green);}
+    .oac-dot.low{background:var(--green);}
     .oac-text{flex:1;font-size:13px;font-weight:600;}
     .oac-meta{display:flex;gap:6px;font-size:11px;color:var(--muted);flex-shrink:0;}
     .oac-empty{padding:20px 18px;font-size:13px;color:var(--muted);text-align:center;}
-
-    /* MODAL */
+    /* Modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
     .modal{background:white;border-radius:16px;padding:26px;max-width:460px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(0.92);transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);}
@@ -162,25 +143,20 @@
     .fi:focus{outline:none;border-color:var(--purple);background:white;}
     .btn-primary{background:var(--navy);color:var(--yellow);border:none;padding:10px 20px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
     .btn-cancel{background:#f0f0f0;color:var(--navy);border:none;padding:10px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
-
-    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
-    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:999;}
-    .toast.show{transform:translateY(0);opacity:1;}
-    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
-
     /* AI Generate */
-    .btn-generate{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#6c79db,#9b59b6);color:white;border:none;padding:8px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:10px;}
+    .btn-generate{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#6c79db,#9b59b6);color:white;border:none;padding:8px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
     .btn-generate:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,121,219,0.4);}
     .btn-generate:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-    .btn-generate .spin{display:inline-block;animation:spin 0.8s linear infinite;}
+    .spin{display:inline-block;animation:spin 0.8s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .ai-review-modal .modal{max-width:560px;}
+    /* AI Review Modal */
+    .ai-review-modal .modal{max-width:560px;max-height:80vh;overflow-y:auto;}
     .ai-review-item{background:#fafafe;border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;margin-bottom:8px;transition:border-color 0.2s;}
     .ai-review-item.selected{border-color:var(--purple);background:var(--purple-light);}
     .ai-review-item.deselected{opacity:0.45;}
     .ai-review-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
-    .ai-review-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;margin-top:1px;}
-    .ai-review-check.on{background:var(--purple);border-color:var(--purple);color:white;font-size:11px;}
+    .ai-review-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;margin-top:1px;font-size:11px;}
+    .ai-review-check.on{background:var(--purple);border-color:var(--purple);color:white;}
     .ai-review-text-inp{flex:1;border:none;background:transparent;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;color:var(--navy);width:100%;padding:0;}
     .ai-review-text-inp:focus{outline:none;}
     .ai-review-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
@@ -189,6 +165,10 @@
     .ai-empty-review{text-align:center;padding:28px;color:var(--muted);font-size:13px;}
     .ai-modal-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px;}
     .ai-select-all{font-size:12px;font-weight:700;color:var(--purple);cursor:pointer;background:none;border:none;font-family:'Barlow',sans-serif;}
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:9999;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
   </style>
 </head>
 <body>
@@ -196,7 +176,7 @@
 <div class="header">
   <div class="header-left">
     <div class="brand">Digital <span>Dashh</span></div>
-    <a href="index.html" class="btn-ghost">← Dashboard</a>
+    <a href="index.html" class="btn-ghost">&#8592; Dashboard</a>
   </div>
   <div class="header-right">
     <span id="user-email" style="opacity:0.65;"></span>
@@ -218,18 +198,17 @@
   <a href="meetings.html" class="active">Meetings</a>
 </nav>
 
-<div id="page-loader"><div style="font-size:36px;">🗒️</div>Loading Meetings...</div>
+<div id="page-loader"><div style="font-size:36px;">&#128221;</div>Loading Meetings...</div>
 
 <div class="page" id="page-content" style="display:none;">
 
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
     <div>
       <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Meeting <span style="color:var(--purple);">Notes</span></h1>
-      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">Loading...</div>
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats-row">
     <div class="stat c-purple"><div class="stat-lbl">Total Meetings</div><div class="stat-val" id="st-total">0</div></div>
     <div class="stat c-red"><div class="stat-lbl">Open Actions</div><div class="stat-val" id="st-open">0</div><div class="stat-sub">not yet pushed to tasks</div></div>
@@ -237,54 +216,48 @@
     <div class="stat c-orange"><div class="stat-lbl">This Week</div><div class="stat-val" id="st-week">0</div><div class="stat-sub">meetings logged</div></div>
   </div>
 
-  <!-- OPEN ACTIONS SUMMARY -->
-  <div class="open-actions-card" id="open-actions-card">
+  <div class="open-actions-card">
     <div class="oac-hdr">
-      <h3>⚡ Open Action Items — All Meetings</h3>
+      <h3>&#9889; Open Action Items &mdash; All Meetings</h3>
       <span style="font-size:12px;color:var(--muted);" id="open-actions-sub"></span>
     </div>
-    <div class="oac-body" id="open-actions-body"></div>
+    <div class="oac-body" id="open-actions-body"><div class="oac-empty">No open actions.</div></div>
   </div>
 
-  <!-- MAIN LAYOUT -->
   <div class="layout">
-
-    <!-- LEFT: MEETING LIST -->
     <div class="meeting-list-panel">
       <div class="mlp-hdr">
         <h3>All Meetings</h3>
         <span style="font-size:11px;color:var(--muted);" id="meet-count">0</span>
       </div>
-      <input class="mlp-search" placeholder="🔍 Search meetings..." oninput="searchQ=this.value;renderMeetingList();" />
-      <div class="mlp-filters">
-        <button class="mlp-filter active" onclick="setCatFilter('all',this)">All</button>
-        <button class="mlp-filter" onclick="setCatFilter('General',this)">General</button>
-        <button class="mlp-filter" onclick="setCatFilter('AV',this)">AV</button>
-        <button class="mlp-filter" onclick="setCatFilter('Venues',this)">Venues</button>
-        <button class="mlp-filter" onclick="setCatFilter('Sponsors',this)">Sponsors</button>
-        <button class="mlp-filter" onclick="setCatFilter('Budget',this)">Budget</button>
+      <input class="mlp-search" placeholder="Search meetings..." id="mlp-search-inp" />
+      <div class="mlp-filters" id="mlp-filters">
+        <button class="mlp-filter active" data-cat="all">All</button>
+        <button class="mlp-filter" data-cat="General">General</button>
+        <button class="mlp-filter" data-cat="AV">AV</button>
+        <button class="mlp-filter" data-cat="Venues">Venues</button>
+        <button class="mlp-filter" data-cat="Sponsors">Sponsors</button>
+        <button class="mlp-filter" data-cat="Budget">Budget</button>
       </div>
-      <div class="meeting-list" id="meeting-list"></div>
-      <button class="mlp-add" onclick="openNewMeetingModal()">+ New Meeting</button>
+      <div class="meeting-list" id="meeting-list"><div class="mlp-empty">No meetings yet.</div></div>
+      <button class="mlp-add" id="btn-new-meeting">+ New Meeting</button>
     </div>
 
-    <!-- RIGHT: MEETING DETAIL -->
     <div class="meeting-detail" id="meeting-detail">
       <div class="md-empty">
-        <div class="ei">🗒️</div>
+        <div class="ei">&#128221;</div>
         <h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Select a meeting</h3>
         <p style="font-size:13px;">Pick one from the list or create a new one.</p>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- NEW MEETING MODAL -->
 <div class="modal-overlay" id="new-meeting-modal">
   <div class="modal">
-    <h3>🗒️ New Meeting</h3>
-    <label class="fi-lbl">Meeting Title *</label>
+    <h3>&#128221; New Meeting</h3>
+    <label class="fi-lbl">Meeting Title</label>
     <input class="fi" id="nm-title" placeholder="e.g. Venue Walkthrough Call" />
     <div class="modal-row">
       <div>
@@ -301,541 +274,638 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeNewMeetingModal()">Cancel</button>
-      <button class="btn-primary" onclick="createMeeting()">Create Meeting</button>
+      <button class="btn-cancel" id="btn-modal-cancel">Cancel</button>
+      <button class="btn-primary" id="btn-modal-create">Create Meeting</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI REVIEW MODAL -->
+<div class="modal-overlay ai-review-modal" id="ai-review-modal">
+  <div class="modal">
+    <h3>&#10024; Generated Action Items</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Review and edit before adding. Uncheck any you don't want.</p>
+    <div id="ai-review-list"></div>
+    <div class="ai-modal-footer">
+      <button class="ai-select-all" id="btn-toggle-all">Deselect All</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-cancel" id="btn-review-cancel">Cancel</button>
+        <button class="btn-primary" id="btn-review-confirm">Add Selected to Actions</button>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- AI REVIEW MODAL -->
-<div class="modal-overlay ai-review-modal" id="ai-review-modal">
-  <div class="modal">
-    <h3>✨ Generated Action Items</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Review and edit before adding. Uncheck any you don't want.</p>
-    <div id="ai-review-list"></div>
-    <div class="ai-modal-footer">
-      <button class="ai-select-all" onclick="toggleAllReview()">Deselect All</button>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-cancel" onclick="closeReviewModal()">Cancel</button>
-        <button class="btn-primary" onclick="confirmReviewItems()">Add Selected to Actions</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-  const firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
+(function() {
+  'use strict';
+
+  // ── FIREBASE ──
+  var firebaseConfig = {
+    apiKey: "AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",
+    authDomain: "digitaldashh.com",
+    projectId: "quantum-beach-394503",
+    storageBucket: "quantum-beach-394503.firebasestorage.app",
+    messagingSenderId: "1002514430184",
+    appId: "1:1002514430184:web:07ffbe7190df810494b15d"
+  };
   firebase.initializeApp(firebaseConfig);
-  const auth=firebase.auth(),db=firebase.firestore();
+  var auth = firebase.auth();
+  var db = firebase.firestore();
 
-  let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
-  let meetings=[],tasks=[],activeMeetingIdx=null,activeTab='notes',catFilter='all',searchQ='',aiFilter='open',authDone=false;
+  // ── STATE ──
+  var currentUser = null;
+  var activeEventId = localStorage.getItem('activeEventId');
+  var meetings = [];
+  var tasks = [];
+  var activeMeetingIdx = null;
+  var activeTab = 'notes';
+  var catFilter = 'all';
+  var searchQ = '';
+  var aiFilter = 'open';
+  var reviewItems = [];
+  var allReviewSelected = true;
 
-  const CAT_BADGE_CLASS={General:'b-general',AV:'b-av',Venues:'b-venues',Sponsors:'b-sponsor',Budget:'b-budget',Content:'b-content',Merch:'b-merch',Registration:'b-registration',Tasks:'b-tasks',Timeline:'b-timeline'};
+  var CAT_BADGE = {General:'b-general',AV:'b-av',Venues:'b-venues',Sponsors:'b-sponsor',Budget:'b-budget',Content:'b-content',Merch:'b-merch',Registration:'b-registration',Tasks:'b-tasks',Timeline:'b-timeline'};
 
-  auth.onAuthStateChanged(user=>{
-    if(!user){window.location.href='login.html';return;}
-    currentUser=user;
-    document.getElementById('user-email').textContent=user.email;
-    activeEventId=localStorage.getItem('activeEventId');
-    if(!authDone){authDone=true;load();}
+  // ── AUTH ──
+  auth.onAuthStateChanged(function(user) {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    document.getElementById('user-email').textContent = user.email;
+    loadData();
   });
 
-  function load(){
-    if(!activeEventId){window.location.href='events.html';return;}
-    show(); // show page immediately — don't wait on Firestore
+  function loadData() {
+    activeEventId = localStorage.getItem('activeEventId');
+    if (!activeEventId) { showPage(); showToast('No active event. Please select one.', 'error'); return; }
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
-      .then(doc=>{
-        if(!doc.exists){showToast('Event not found.','error');return;}
-        const d=doc.data();
-        document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
-        meetings=d.meetings||[];
-        tasks=d.tasks||[];
+      .then(function(doc) {
+        showPage();
+        if (!doc.exists) { showToast('Event not found.', 'error'); return; }
+        var d = doc.data();
+        document.getElementById('event-sub').textContent = d.eventName || 'Untitled Event';
+        meetings = d.meetings || [];
+        tasks = d.tasks || [];
         renderAll();
-      }).catch(err=>{
-        console.error('Firestore load error:',err);
-        showToast('Error loading: '+err.message,'error');
+      })
+      .catch(function(err) {
+        showPage();
+        showToast('Load error: ' + err.message, 'error');
+        console.error(err);
       });
   }
 
-  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
-
-  function renderAll(){updateStats();renderOpenActions();renderMeetingList();}
-
-  // ── STATS ──
-  function updateStats(){
-    const now=new Date(),weekAgo=new Date(now-7*86400000);
-    let openActions=0,pushedActions=0,weekMeetings=0;
-    meetings.forEach(m=>{
-      (m.actions||[]).forEach(a=>{if(a.pushed)pushedActions++;else if(!a.done)openActions++;});
-      if(m.date&&new Date(m.date)>=weekAgo)weekMeetings++;
-    });
-    document.getElementById('st-total').textContent=meetings.length;
-    document.getElementById('st-open').textContent=openActions;
-    document.getElementById('st-pushed').textContent=pushedActions;
-    document.getElementById('st-week').textContent=weekMeetings;
+  function showPage() {
+    document.getElementById('page-loader').style.display = 'none';
+    document.getElementById('page-content').style.display = 'block';
   }
 
-  // ── OPEN ACTIONS SUMMARY ──
-  function renderOpenActions(){
-    const body=document.getElementById('open-actions-body');
-    const today=new Date();today.setHours(0,0,0,0);
-    const open=[];
-    meetings.forEach((m,mi)=>{
-      (m.actions||[]).forEach((a,ai)=>{
-        if(!a.done&&!a.pushed) open.push({...a,meetingTitle:m.title,mi,ai});
+  // ── RENDER ──
+  function renderAll() {
+    updateStats();
+    renderOpenActions();
+    renderMeetingList();
+  }
+
+  function updateStats() {
+    var now = new Date();
+    var weekAgo = new Date(now - 7 * 86400000);
+    var openActions = 0, pushedActions = 0, weekMeetings = 0;
+    meetings.forEach(function(m) {
+      (m.actions || []).forEach(function(a) {
+        if (a.pushed) pushedActions++;
+        else if (!a.done) openActions++;
+      });
+      if (m.date && new Date(m.date) >= weekAgo) weekMeetings++;
+    });
+    document.getElementById('st-total').textContent = meetings.length;
+    document.getElementById('st-open').textContent = openActions;
+    document.getElementById('st-pushed').textContent = pushedActions;
+    document.getElementById('st-week').textContent = weekMeetings;
+  }
+
+  function renderOpenActions() {
+    var body = document.getElementById('open-actions-body');
+    var today = new Date(); today.setHours(0,0,0,0);
+    var open = [];
+    meetings.forEach(function(m, mi) {
+      (m.actions || []).forEach(function(a, ai) {
+        if (!a.done && !a.pushed) open.push({text:a.text,assignee:a.assignee,due:a.due,meetingTitle:m.title,mi:mi,ai:ai});
       });
     });
-    document.getElementById('open-actions-sub').textContent=open.length+' open';
-    if(!open.length){body.innerHTML='<div class="oac-empty">✓ No open action items — all clear!</div>';return;}
-    body.innerHTML=open.slice(0,8).map(a=>{
-      const overdue=a.due&&new Date(a.due)<today;
-      return `<div class="oac-item">
-        <div class="oac-dot${overdue?' ':(a.priority==='high'?'':' low')}"></div>
-        <span class="oac-text">${esc(a.text)}</span>
-        <div class="oac-meta">
-          ${a.assignee?`<span>${esc(a.assignee)}</span>`:''}
-          ${a.due?`<span class="${overdue?'oac-due-overdue':''}" style="${overdue?'color:var(--red);font-weight:700;':''}">${new Date(a.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
-          <span style="color:var(--purple);cursor:pointer;font-weight:700;" onclick="openMeetingByIdx(${a.mi})">→ ${esc(a.meetingTitle)}</span>
-        </div>
-      </div>`;
+    document.getElementById('open-actions-sub').textContent = open.length + ' open';
+    if (!open.length) { body.innerHTML = '<div class="oac-empty">&#10003; No open action items &mdash; all clear!</div>'; return; }
+    body.innerHTML = open.slice(0, 8).map(function(a) {
+      var overdue = a.due && new Date(a.due) < today;
+      return '<div class="oac-item">' +
+        '<div class="oac-dot' + (overdue ? '' : ' low') + '"></div>' +
+        '<span class="oac-text">' + esc(a.text) + '</span>' +
+        '<div class="oac-meta">' +
+          (a.assignee ? '<span>' + esc(a.assignee) + '</span>' : '') +
+          (a.due ? '<span style="' + (overdue ? 'color:var(--red);font-weight:700;' : '') + '">' + fmtDate(a.due) + '</span>' : '') +
+          '<span style="color:var(--purple);cursor:pointer;font-weight:700;" data-goto="' + a.mi + '">&rarr; ' + esc(a.meetingTitle) + '</span>' +
+        '</div></div>';
     }).join('');
+    body.querySelectorAll('[data-goto]').forEach(function(el) {
+      el.addEventListener('click', function() { selectMeeting(parseInt(this.getAttribute('data-goto'))); });
+    });
   }
 
-  // ── MEETING LIST ──
-  function setCatFilter(f,btn){catFilter=f;document.querySelectorAll('.mlp-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderMeetingList();}
+  function renderMeetingList() {
+    var list = document.getElementById('meeting-list');
+    var filtered = meetings.filter(function(m) {
+      var catOk = catFilter === 'all' || m.category === catFilter;
+      var qOk = !searchQ || (m.title||'').toLowerCase().includes(searchQ.toLowerCase());
+      return catOk && qOk;
+    }).sort(function(a,b){ return new Date(b.date||0) - new Date(a.date||0); });
 
-  function getFilteredMeetings(){
-    let m=[...meetings];
-    if(catFilter!=='all') m=m.filter(x=>x.category===catFilter);
-    if(searchQ) m=m.filter(x=>(x.title||'').toLowerCase().includes(searchQ.toLowerCase()));
-    return m.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
-  }
+    document.getElementById('meet-count').textContent = filtered.length;
+    if (!filtered.length) { list.innerHTML = '<div class="mlp-empty">No meetings found.</div>'; return; }
 
-  function renderMeetingList(){
-    const list=document.getElementById('meeting-list');
-    const filtered=getFilteredMeetings();
-    document.getElementById('meet-count').textContent=filtered.length;
-    if(!filtered.length){list.innerHTML='<div class="mlp-empty">No meetings yet.</div>';return;}
-    list.innerHTML=filtered.map(m=>{
-      const si=meetings.indexOf(m);
-      const openAI=(m.actions||[]).filter(a=>!a.done&&!a.pushed).length;
-      const allDone=(m.actions||[]).length>0&&(m.actions||[]).every(a=>a.done||a.pushed);
-      const dateStr=m.date?new Date(m.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'-';
-      return `<div class="meeting-item${si===activeMeetingIdx?' active':''}" onclick="selectMeeting(${si})">
-        <div class="mi-top">
-          <span class="mi-title">${esc(m.title||'Untitled')}</span>
-          <span class="mi-date">${dateStr}</span>
-        </div>
-        <div class="mi-meta">
-          <span class="badge ${CAT_BADGE_CLASS[m.category]||'b-general'}">${esc(m.category||'General')}</span>
-          ${openAI>0?`<span class="mi-action-count">${openAI} open</span>`:allDone&&(m.actions||[]).length>0?`<span class="mi-action-count done">✓ All done</span>`:''}
-        </div>
-      </div>`;
+    list.innerHTML = filtered.map(function(m) {
+      var si = meetings.indexOf(m);
+      var openAI = (m.actions||[]).filter(function(a){return !a.done&&!a.pushed;}).length;
+      var allDone = (m.actions||[]).length > 0 && (m.actions||[]).every(function(a){return a.done||a.pushed;});
+      var dateStr = m.date ? fmtDate(m.date) : '-';
+      return '<div class="meeting-item' + (si === activeMeetingIdx ? ' active' : '') + '" data-si="' + si + '">' +
+        '<div class="mi-top"><span class="mi-title">' + esc(m.title||'Untitled') + '</span><span class="mi-date">' + dateStr + '</span></div>' +
+        '<div class="mi-meta">' +
+          '<span class="badge ' + (CAT_BADGE[m.category]||'b-general') + '">' + esc(m.category||'General') + '</span>' +
+          (openAI > 0 ? '<span class="mi-action-count">' + openAI + ' open</span>' : '') +
+          (allDone ? '<span class="mi-action-count done">&#10003; Done</span>' : '') +
+        '</div></div>';
     }).join('');
+
+    list.querySelectorAll('.meeting-item').forEach(function(el) {
+      el.addEventListener('click', function() { selectMeeting(parseInt(this.getAttribute('data-si'))); });
+    });
   }
 
-  // ── SELECT MEETING ──
-  function selectMeeting(si){
-    activeMeetingIdx=si;
-    activeTab='notes';
+  function selectMeeting(si) {
+    activeMeetingIdx = si;
+    activeTab = 'notes';
     renderMeetingList();
     renderDetail();
-  }
-
-  function openMeetingByIdx(si){
-    selectMeeting(si);
     document.getElementById('meeting-detail').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // ── MEETING DETAIL ──
-  function renderDetail(){
-    const detail=document.getElementById('meeting-detail');
-    if(activeMeetingIdx===null){
-      detail.innerHTML=`<div class="md-empty"><div class="ei">🗒️</div><h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Select a meeting</h3><p style="font-size:13px;">Pick one from the list or create a new one.</p></div>`;
+  function renderDetail() {
+    var detail = document.getElementById('meeting-detail');
+    if (activeMeetingIdx === null || !meetings[activeMeetingIdx]) {
+      detail.innerHTML = '<div class="md-empty"><div class="ei">&#128221;</div><h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Select a meeting</h3><p style="font-size:13px;">Pick one or create a new one.</p></div>';
       return;
     }
-    const m=meetings[activeMeetingIdx];
-    const openAI=(m.actions||[]).filter(a=>!a.done&&!a.pushed).length;
-    detail.innerHTML=`
-      <div class="md-hdr">
-        <div class="md-hdr-left">
-          <input class="md-title-inp" id="md-title" value="${esc(m.title||'')}" placeholder="Meeting title..." onchange="meetings[${activeMeetingIdx}].title=this.value;" />
-          <div class="md-meta-row">
-            <input class="md-meta-inp" type="date" id="md-date" value="${m.date||''}" onchange="meetings[${activeMeetingIdx}].date=this.value;" />
-            <select class="md-meta-inp" id="md-cat" onchange="meetings[${activeMeetingIdx}].category=this.value;renderMeetingList();">
-              ${['General','AV','Venues','Sponsors','Budget','Content','Merch','Registration','Tasks','Timeline'].map(c=>`<option${m.category===c?' selected':''}>${c}</option>`).join('')}
-            </select>
-            <input class="md-meta-inp" id="md-location" value="${esc(m.location||'')}" placeholder="Location / call link" onchange="meetings[${activeMeetingIdx}].location=this.value;" style="min-width:160px;" />
-          </div>
-        </div>
-        <div class="md-hdr-actions">
-          <span class="saved-flash" id="flash-detail">✓ Saved</span>
-          <button class="btn-del-meet" onclick="deleteMeeting(${activeMeetingIdx})">🗑</button>
-          <button class="btn-save" onclick="saveMeeting()">💾 Save</button>
-        </div>
-      </div>
-      <div class="md-tabs">
-        <div class="md-tab${activeTab==='notes'?' active':''}" onclick="switchTab('notes',this)">📝 Notes</div>
-        <div class="md-tab${activeTab==='attendees'?' active':''}" onclick="switchTab('attendees',this)">👥 Attendees</div>
-        <div class="md-tab${activeTab==='actions'?' active':''}" onclick="switchTab('actions',this)">⚡ Action Items ${openAI>0?`<span style="background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;">${openAI}</span>`:''}</div>
-      </div>
-      <div class="md-body" id="md-body">${renderTabContent()}</div>`;
+    var m = meetings[activeMeetingIdx];
+    var openAI = (m.actions||[]).filter(function(a){return !a.done&&!a.pushed;}).length;
+    detail.innerHTML =
+      '<div class="md-hdr">' +
+        '<div class="md-hdr-left">' +
+          '<input class="md-title-inp" id="md-title" value="' + esc(m.title||'') + '" placeholder="Meeting title..." />' +
+          '<div class="md-meta-row">' +
+            '<input class="md-meta-inp" type="date" id="md-date" value="' + (m.date||'') + '" />' +
+            '<select class="md-meta-inp" id="md-cat">' +
+              ['General','AV','Venues','Sponsors','Budget','Content','Merch','Registration','Tasks','Timeline'].map(function(c){
+                return '<option' + (m.category===c?' selected':'') + '>' + c + '</option>';
+              }).join('') +
+            '</select>' +
+            '<input class="md-meta-inp" id="md-location" value="' + esc(m.location||'') + '" placeholder="Location / call link" style="min-width:160px;" />' +
+          '</div>' +
+        '</div>' +
+        '<div class="md-hdr-actions">' +
+          '<span class="saved-flash" id="flash-detail">&#10003; Saved</span>' +
+          '<button class="btn-del-meet" id="btn-del-meet">&#128465;</button>' +
+          '<button class="btn-save" id="btn-save-meet">&#128190; Save</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="md-tabs">' +
+        '<div class="md-tab' + (activeTab==='notes'?' active':'') + '" data-tab="notes">&#128221; Notes</div>' +
+        '<div class="md-tab' + (activeTab==='attendees'?' active':'') + '" data-tab="attendees">&#128101; Attendees</div>' +
+        '<div class="md-tab' + (activeTab==='actions'?' active':'') + '" data-tab="actions">&#9889; Action Items' + (openAI>0?' <span style="background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:8px;">'+openAI+'</span>':'') + '</div>' +
+      '</div>' +
+      '<div class="md-body" id="md-body">' + renderTabContent() + '</div>';
+
+    // Bind header buttons
+    document.getElementById('btn-save-meet').addEventListener('click', saveMeeting);
+    document.getElementById('btn-del-meet').addEventListener('click', function(){ deleteMeeting(activeMeetingIdx); });
+    document.querySelectorAll('.md-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        activeTab = this.getAttribute('data-tab');
+        document.querySelectorAll('.md-tab').forEach(function(t){t.classList.remove('active');});
+        this.classList.add('active');
+        document.getElementById('md-body').innerHTML = renderTabContent();
+        bindTabEvents();
+      });
+    });
+    bindTabEvents();
   }
 
-  function switchTab(tab,btn){
-    activeTab=tab;
-    document.querySelectorAll('.md-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('md-body').innerHTML=renderTabContent();
-  }
-
-  function renderTabContent(){
-    if(activeTab==='notes') return renderNotesTab();
-    if(activeTab==='attendees') return renderAttendeesTab();
-    if(activeTab==='actions') return renderActionsTab();
+  function renderTabContent() {
+    if (activeTab === 'notes') return renderNotesTab();
+    if (activeTab === 'attendees') return renderAttendeesTab();
+    if (activeTab === 'actions') return renderActionsTab();
     return '';
   }
 
-  // NOTES TAB
-  function renderNotesTab(){
-    const m=meetings[activeMeetingIdx];
-    return `
-      <div style="margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Agenda</div>
-        <textarea class="notes-ta" id="md-agenda" placeholder="What's on the agenda for this meeting?" style="min-height:80px;" onchange="meetings[${activeMeetingIdx}].agenda=this.value;">${esc(m.agenda||'')}</textarea>
-      </div>
-      <div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Notes</div>
-        </div>
-        <textarea class="notes-ta" id="md-notes" placeholder="Type your meeting notes here..." onchange="meetings[${activeMeetingIdx}].notes=this.value;">${esc(m.notes||'')}</textarea>
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px;">
-          <div class="notes-tip" style="margin:0;">💡 Explicitly label a section <strong>Action Items:</strong> or just write naturally — Claude will find them either way.</div>
-          <button class="btn-generate" id="btn-gen" onclick="generateActionItems()">✨ Generate Action Items</button>
-        </div>
-      </div>`;
+  function bindTabEvents() {
+    if (activeTab === 'notes') {
+      var ag = document.getElementById('md-agenda');
+      var nt = document.getElementById('md-notes');
+      if (ag) ag.addEventListener('input', function(){ meetings[activeMeetingIdx].agenda = this.value; });
+      if (nt) nt.addEventListener('input', function(){ meetings[activeMeetingIdx].notes = this.value; });
+      var bg = document.getElementById('btn-gen');
+      if (bg) bg.addEventListener('click', generateActionItems);
+    }
+    if (activeTab === 'attendees') {
+      var ai = document.getElementById('attendee-inp');
+      if (ai) ai.addEventListener('keydown', function(e){ if(e.key==='Enter') addAttendee(); });
+      var ab = document.getElementById('btn-add-attendee');
+      if (ab) ab.addEventListener('click', addAttendee);
+      document.querySelectorAll('.btn-rm-attendee').forEach(function(btn){
+        btn.addEventListener('click', function(){ removeAttendee(parseInt(this.getAttribute('data-i'))); });
+      });
+    }
+    if (activeTab === 'actions') {
+      document.querySelectorAll('.ai-filter').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          aiFilter = this.getAttribute('data-filter');
+          document.querySelectorAll('.ai-filter').forEach(function(b){b.classList.remove('active');});
+          this.classList.add('active');
+          document.getElementById('md-body').innerHTML = renderTabContent();
+          bindTabEvents();
+        });
+      });
+      document.querySelectorAll('.btn-check-action').forEach(function(btn){
+        btn.addEventListener('click', function(){ toggleAction(parseInt(this.getAttribute('data-i'))); });
+      });
+      document.querySelectorAll('.btn-push-task').forEach(function(btn){
+        btn.addEventListener('click', function(){ pushToTasks(parseInt(this.getAttribute('data-i'))); });
+      });
+      document.querySelectorAll('.btn-rm-action').forEach(function(btn){
+        btn.addEventListener('click', function(){ removeAction(parseInt(this.getAttribute('data-i'))); });
+      });
+      var aab = document.getElementById('btn-add-action');
+      if (aab) aab.addEventListener('click', addAction);
+      var ait = document.getElementById('ai-inp-text');
+      if (ait) ait.addEventListener('keydown', function(e){ if(e.key==='Enter') addAction(); });
+    }
   }
 
-  // ATTENDEES TAB
-  function renderAttendeesTab(){
-    const m=meetings[activeMeetingIdx];
-    const attendees=m.attendees||[];
-    return `
-      <div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Who was in the room (or on the call)?</div>
-      <div class="attendee-chips" id="attendee-chips">
-        ${attendees.map((a,i)=>`<div class="chip">${esc(a)}<button class="chip-rm" onclick="removeAttendee(${i})">✕</button></div>`).join('')}
-      </div>
-      <div class="attendee-add-row">
-        <input class="attendee-inp" id="attendee-inp" placeholder="Name or email..." onkeydown="if(event.key==='Enter')addAttendee()" />
-        <button class="btn-chip-add" onclick="addAttendee()">Add</button>
-      </div>`;
+  // ── NOTES TAB ──
+  function renderNotesTab() {
+    var m = meetings[activeMeetingIdx];
+    return '<div style="margin-bottom:14px;">' +
+      '<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Agenda</div>' +
+      '<textarea class="notes-ta" id="md-agenda" style="min-height:80px;" placeholder="What\'s on the agenda?">' + esc(m.agenda||'') + '</textarea>' +
+      '</div>' +
+      '<div>' +
+      '<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Notes</div>' +
+      '<textarea class="notes-ta" id="md-notes" placeholder="Type your meeting notes here...">' + esc(m.notes||'') + '</textarea>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px;">' +
+        '<div class="notes-tip">&#128161; Label a section <strong>Action Items:</strong> or just write naturally &mdash; Claude will find them.</div>' +
+        '<button class="btn-generate" id="btn-gen">&#10024; Generate Action Items</button>' +
+      '</div></div>';
   }
 
-  function addAttendee(){
-    const inp=document.getElementById('attendee-inp');
-    const val=inp.value.trim();if(!val)return;
-    if(!meetings[activeMeetingIdx].attendees) meetings[activeMeetingIdx].attendees=[];
+  // ── ATTENDEES TAB ──
+  function renderAttendeesTab() {
+    var m = meetings[activeMeetingIdx];
+    var attendees = m.attendees || [];
+    return '<div style="margin-bottom:12px;font-size:13px;color:var(--muted);">Who was in the room?</div>' +
+      '<div class="attendee-chips">' +
+        attendees.map(function(a,i){ return '<div class="chip">' + esc(a) + '<button class="chip-rm btn-rm-attendee" data-i="' + i + '">&#10005;</button></div>'; }).join('') +
+      '</div>' +
+      '<div class="attendee-add-row">' +
+        '<input class="attendee-inp" id="attendee-inp" placeholder="Name or email..." />' +
+        '<button class="btn-chip-add" id="btn-add-attendee">Add</button>' +
+      '</div>';
+  }
+
+  function addAttendee() {
+    var inp = document.getElementById('attendee-inp');
+    var val = inp.value.trim(); if (!val) return;
+    if (!meetings[activeMeetingIdx].attendees) meetings[activeMeetingIdx].attendees = [];
     meetings[activeMeetingIdx].attendees.push(val);
-    inp.value='';
-    persist(()=>{document.getElementById('md-body').innerHTML=renderTabContent();});
+    inp.value = '';
+    persist(function(){ document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); });
   }
 
-  function removeAttendee(i){
-    meetings[activeMeetingIdx].attendees.splice(i,1);
-    persist(()=>{document.getElementById('md-body').innerHTML=renderTabContent();});
+  function removeAttendee(i) {
+    meetings[activeMeetingIdx].attendees.splice(i, 1);
+    persist(function(){ document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); });
   }
 
-  // ACTIONS TAB
-  function renderActionsTab(){
-    const m=meetings[activeMeetingIdx];
-    const actions=m.actions||[];
-    const today=new Date();today.setHours(0,0,0,0);
-    let filtered=actions;
-    if(aiFilter==='open') filtered=actions.filter(a=>!a.done&&!a.pushed);
-    else if(aiFilter==='pushed') filtered=actions.filter(a=>a.pushed);
-    else if(aiFilter==='done') filtered=actions.filter(a=>a.done);
-
-    return `
-      <div class="ai-toolbar">
-        <div class="ai-filter-row">
-          <button class="ai-filter${aiFilter==='all'?' active':''}" onclick="setAIFilter('all',this)">All (${actions.length})</button>
-          <button class="ai-filter${aiFilter==='open'?' active':''}" onclick="setAIFilter('open',this)">Open (${actions.filter(a=>!a.done&&!a.pushed).length})</button>
-          <button class="ai-filter${aiFilter==='pushed'?' active':''}" onclick="setAIFilter('pushed',this)">Pushed (${actions.filter(a=>a.pushed).length})</button>
-          <button class="ai-filter${aiFilter==='done'?' active':''}" onclick="setAIFilter('done',this)">Done (${actions.filter(a=>a.done).length})</button>
-        </div>
-      </div>
-      <div id="ai-list">
-        ${filtered.length===0?`<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px;">No action items here yet.</div>`:''}
-        ${filtered.map(a=>{
-          const si=actions.indexOf(a);
-          const overdue=!a.done&&!a.pushed&&a.due&&new Date(a.due)<today;
-          return `<div class="ai-item${a.pushed?' pushed':''}">
-            <div class="ai-check${a.done?' done':''}" onclick="toggleAction(${si})">${a.done?'✓':''}</div>
-            <div class="ai-info">
-              <div class="ai-text${a.done?' done':''}">${esc(a.text)}</div>
-              <div class="ai-meta">
-                ${a.assignee?`<span class="ai-assignee">👤 ${esc(a.assignee)}</span>`:''}
-                ${a.due?`<span class="ai-due${overdue?' overdue':''}">${overdue?'⚠️ ':' 📅 '}${new Date(a.due+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
-                ${a.priority?`<span class="badge" style="background:${a.priority==='high'?'#fff0f0':a.priority==='medium'?'#fff8e0':'#e8f5ee'};color:${a.priority==='high'?'var(--red)':a.priority==='medium'?'#9a7000':'var(--green)'};">${a.priority}</span>`:''}
-                ${a.pushed?`<span class="pushed-lbl">✓ Pushed to Tasks</span>`:''}
-              </div>
-            </div>
-            ${!a.pushed&&!a.done?`<button class="btn-push" onclick="pushToTasks(${si})" title="Create task from this action item">→ Push to Tasks</button>`:''}
-            ${a.pushed?`<button class="btn-push pushed" disabled>✓ In Tasks</button>`:''}
-            <button class="btn-ai-rm" onclick="removeAction(${si})">✕</button>
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="ai-add-row">
-        <input class="ai-inp" id="ai-inp-text" placeholder="Action item..." onkeydown="if(event.key==='Enter')addAction()" />
-        <input class="ai-inp" id="ai-inp-assignee" placeholder="Owner" />
-        <input class="ai-inp" id="ai-inp-due" type="date" />
-        <select class="ai-inp" id="ai-inp-priority" style="width:auto;">
-          <option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option>
-        </select>
-        <button class="btn-ai-add" onclick="addAction()">+ Add</button>
-      </div>`;
-  }
-
-  function setAIFilter(f,btn){
-    aiFilter=f;
-    document.querySelectorAll('.ai-filter').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('md-body').innerHTML=renderTabContent();
-  }
-
-  function addAction(){
-    const text=document.getElementById('ai-inp-text').value.trim();
-    if(!text){showToast('Action item text required.','error');return;}
-    if(!meetings[activeMeetingIdx].actions) meetings[activeMeetingIdx].actions=[];
-    meetings[activeMeetingIdx].actions.push({
-      text,
-      assignee:document.getElementById('ai-inp-assignee').value.trim(),
-      due:document.getElementById('ai-inp-due').value,
-      priority:document.getElementById('ai-inp-priority').value,
-      done:false,pushed:false
+  // ── ACTIONS TAB ──
+  function renderActionsTab() {
+    var m = meetings[activeMeetingIdx];
+    var actions = m.actions || [];
+    var today = new Date(); today.setHours(0,0,0,0);
+    var filtered = actions.filter(function(a) {
+      if (aiFilter === 'open') return !a.done && !a.pushed;
+      if (aiFilter === 'pushed') return a.pushed;
+      if (aiFilter === 'done') return a.done;
+      return true;
     });
-    ['ai-inp-text','ai-inp-assignee','ai-inp-due'].forEach(id=>document.getElementById(id).value='');
-    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+    var openCount = actions.filter(function(a){return !a.done&&!a.pushed;}).length;
+    var pushedCount = actions.filter(function(a){return a.pushed;}).length;
+    var doneCount = actions.filter(function(a){return a.done;}).length;
+
+    var html = '<div class="ai-toolbar"><div class="ai-filter-row">' +
+      '<button class="ai-filter' + (aiFilter==='all'?' active':'') + '" data-filter="all">All (' + actions.length + ')</button>' +
+      '<button class="ai-filter' + (aiFilter==='open'?' active':'') + '" data-filter="open">Open (' + openCount + ')</button>' +
+      '<button class="ai-filter' + (aiFilter==='pushed'?' active':'') + '" data-filter="pushed">Pushed (' + pushedCount + ')</button>' +
+      '<button class="ai-filter' + (aiFilter==='done'?' active':'') + '" data-filter="done">Done (' + doneCount + ')</button>' +
+      '</div></div><div id="ai-list">';
+
+    if (!filtered.length) html += '<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px;">No action items here yet.</div>';
+
+    filtered.forEach(function(a) {
+      var si = actions.indexOf(a);
+      var overdue = !a.done && !a.pushed && a.due && new Date(a.due) < today;
+      var prioColor = a.priority==='high'?'var(--red)':a.priority==='low'?'var(--green)':'var(--orange)';
+      var prioBg = a.priority==='high'?'#fff0f0':a.priority==='low'?'#e8f5ee':'#fff8e0';
+      html += '<div class="ai-item' + (a.pushed?' pushed':'') + '">' +
+        '<div class="ai-check' + (a.done?' done':'') + ' btn-check-action" data-i="' + si + '">' + (a.done?'&#10003;':'') + '</div>' +
+        '<div class="ai-info">' +
+          '<div class="ai-text' + (a.done?' done':'') + '">' + esc(a.text) + (a.aiGenerated?' <span style="font-size:9px;background:#eef1fb;color:var(--purple);padding:1px 5px;border-radius:4px;font-weight:700;">AI</span>':'') + '</div>' +
+          '<div class="ai-meta">' +
+            (a.assignee?'<span class="ai-assignee">&#128100; ' + esc(a.assignee) + '</span>':'') +
+            (a.due?'<span class="ai-due' + (overdue?' overdue':'') + '">' + (overdue?'&#9888;&#65039; ':'&#128197; ') + fmtDate(a.due) + '</span>':'') +
+            (a.priority?'<span class="badge" style="background:' + prioBg + ';color:' + prioColor + ';">' + a.priority + '</span>':'') +
+            (a.pushed?'<span class="pushed-lbl">&#10003; Pushed to Tasks</span>':'') +
+          '</div>' +
+        '</div>' +
+        (!a.pushed&&!a.done?'<button class="btn-push btn-push-task" data-i="' + si + '" title="Push to Tasks">&rarr; Tasks</button>':'') +
+        (a.pushed?'<button class="btn-push pushed" disabled>&#10003; In Tasks</button>':'') +
+        '<button class="btn-ai-rm btn-rm-action" data-i="' + si + '">&#10005;</button>' +
+      '</div>';
+    });
+
+    html += '</div>' +
+      '<div class="ai-add-row">' +
+        '<input class="ai-inp" id="ai-inp-text" placeholder="Action item..." />' +
+        '<input class="ai-inp" id="ai-inp-assignee" placeholder="Owner" />' +
+        '<input class="ai-inp" id="ai-inp-due" type="date" />' +
+        '<select class="ai-inp" id="ai-inp-priority" style="width:auto;">' +
+          '<option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option>' +
+        '</select>' +
+        '<button class="btn-ai-add" id="btn-add-action">+ Add</button>' +
+      '</div>';
+    return html;
   }
 
-  function toggleAction(ai){
-    meetings[activeMeetingIdx].actions[ai].done=!meetings[activeMeetingIdx].actions[ai].done;
-    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+  function addAction() {
+    var text = document.getElementById('ai-inp-text').value.trim();
+    if (!text) { showToast('Action item text required.', 'error'); return; }
+    if (!meetings[activeMeetingIdx].actions) meetings[activeMeetingIdx].actions = [];
+    meetings[activeMeetingIdx].actions.push({
+      text: text,
+      assignee: document.getElementById('ai-inp-assignee').value.trim(),
+      due: document.getElementById('ai-inp-due').value,
+      priority: document.getElementById('ai-inp-priority').value,
+      done: false, pushed: false
+    });
+    ['ai-inp-text','ai-inp-assignee','ai-inp-due'].forEach(function(id){ document.getElementById(id).value=''; });
+    persist(function(){ renderAll(); document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); });
   }
 
-  function removeAction(ai){
-    meetings[activeMeetingIdx].actions.splice(ai,1);
-    persist(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();});
+  function toggleAction(i) {
+    meetings[activeMeetingIdx].actions[i].done = !meetings[activeMeetingIdx].actions[i].done;
+    persist(function(){ renderAll(); document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); });
   }
 
-  // ── PUSH TO TASKS ──
-  function pushToTasks(ai){
-    const action=meetings[activeMeetingIdx].actions[ai];
-    const m=meetings[activeMeetingIdx];
-    const newTask={
-      title:action.text,
-      desc:`From meeting: ${m.title} (${m.date||'no date'})`,
-      status:'todo',
-      priority:action.priority||'medium',
-      assignee:action.assignee||'',
-      due:action.due||'',
-      category:m.category||'',
-      comments:[],
-      createdAt:new Date().toISOString(),
-      fromMeeting:true
-    };
-    tasks.push(newTask);
-    meetings[activeMeetingIdx].actions[ai].pushed=true;
-    // Save both meetings and tasks
+  function removeAction(i) {
+    meetings[activeMeetingIdx].actions.splice(i, 1);
+    persist(function(){ renderAll(); document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); });
+  }
+
+  function pushToTasks(ai) {
+    var action = meetings[activeMeetingIdx].actions[ai];
+    var m = meetings[activeMeetingIdx];
+    tasks.push({
+      title: action.text,
+      desc: 'From meeting: ' + (m.title||'') + ' (' + (m.date||'no date') + ')',
+      status: 'todo', priority: action.priority||'medium',
+      assignee: action.assignee||'', due: action.due||'',
+      category: m.category||'', comments: [],
+      createdAt: new Date().toISOString(), fromMeeting: true
+    });
+    meetings[activeMeetingIdx].actions[ai].pushed = true;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .set({meetings,tasks},{merge:true})
-      .then(()=>{renderAll();document.getElementById('md-body').innerHTML=renderTabContent();showToast('✓ Action item pushed to Tasks!','success');})
-      .catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({meetings: meetings, tasks: tasks}, {merge: true})
+      .then(function(){ renderAll(); document.getElementById('md-body').innerHTML = renderTabContent(); bindTabEvents(); showToast('Action pushed to Tasks!', 'success'); })
+      .catch(function(err){ showToast('Save failed: ' + err.message, 'error'); });
   }
 
   // ── SAVE MEETING ──
-  function saveMeeting(){
-    const mi=activeMeetingIdx;
-    // pull current textarea values into state
-    const agendaEl=document.getElementById('md-agenda');
-    const notesEl=document.getElementById('md-notes');
-    if(agendaEl) meetings[mi].agenda=agendaEl.value;
-    if(notesEl) meetings[mi].notes=notesEl.value;
-    meetings[mi].title=document.getElementById('md-title').value.trim();
-    meetings[mi].date=document.getElementById('md-date').value;
-    meetings[mi].category=document.getElementById('md-cat').value;
-    meetings[mi].location=document.getElementById('md-location').value.trim();
-    persist(()=>{flash('flash-detail');renderMeetingList();renderOpenActions();updateStats();showToast('✓ Meeting saved!','success');});
+  function saveMeeting() {
+    var mi = activeMeetingIdx;
+    var ag = document.getElementById('md-agenda');
+    var nt = document.getElementById('md-notes');
+    if (ag) meetings[mi].agenda = ag.value;
+    if (nt) meetings[mi].notes = nt.value;
+    meetings[mi].title = document.getElementById('md-title').value.trim();
+    meetings[mi].date = document.getElementById('md-date').value;
+    meetings[mi].category = document.getElementById('md-cat').value;
+    meetings[mi].location = document.getElementById('md-location').value.trim();
+    persist(function(){ flash('flash-detail'); renderMeetingList(); renderOpenActions(); updateStats(); showToast('Meeting saved!', 'success'); });
   }
 
-  function deleteMeeting(si){
-    if(!confirm(`Delete "${meetings[si].title}"?`))return;
-    meetings.splice(si,1);
-    activeMeetingIdx=null;
-    persist(()=>{renderAll();renderDetail();});
+  function deleteMeeting(si) {
+    if (!confirm('Delete "' + (meetings[si].title||'this meeting') + '"?')) return;
+    meetings.splice(si, 1);
+    activeMeetingIdx = null;
+    persist(function(){ renderAll(); renderDetail(); });
   }
 
   // ── NEW MEETING MODAL ──
-  function openNewMeetingModal(){
-    document.getElementById('nm-date').value=new Date().toISOString().split('T')[0];
-    document.getElementById('nm-title').value='';
+  document.getElementById('btn-new-meeting').addEventListener('click', function() {
+    document.getElementById('nm-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('nm-title').value = '';
     document.getElementById('new-meeting-modal').classList.add('open');
-    setTimeout(()=>document.getElementById('nm-title').focus(),100);
+    setTimeout(function(){ document.getElementById('nm-title').focus(); }, 100);
+  });
+  document.getElementById('btn-modal-cancel').addEventListener('click', function() {
+    document.getElementById('new-meeting-modal').classList.remove('open');
+  });
+  document.getElementById('btn-modal-create').addEventListener('click', function() {
+    var title = document.getElementById('nm-title').value.trim();
+    if (!title) { showToast('Title required.', 'error'); return; }
+    meetings.push({
+      title: title,
+      date: document.getElementById('nm-date').value,
+      category: document.getElementById('nm-cat').value,
+      location: '', agenda: '', notes: '',
+      attendees: [], actions: [],
+      createdAt: new Date().toISOString()
+    });
+    document.getElementById('new-meeting-modal').classList.remove('open');
+    persist(function(){ renderAll(); selectMeeting(meetings.length - 1); showToast('Meeting created!', 'success'); });
+  });
+
+  // Filter buttons
+  document.getElementById('mlp-filters').addEventListener('click', function(e) {
+    var btn = e.target.closest('.mlp-filter');
+    if (!btn) return;
+    catFilter = btn.getAttribute('data-cat');
+    document.querySelectorAll('.mlp-filter').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    renderMeetingList();
+  });
+
+  // Search
+  document.getElementById('mlp-search-inp').addEventListener('input', function() {
+    searchQ = this.value;
+    renderMeetingList();
+  });
+
+  // AI Review Modal buttons
+  document.getElementById('btn-review-cancel').addEventListener('click', function() {
+    document.getElementById('ai-review-modal').classList.remove('open');
+  });
+  document.getElementById('btn-toggle-all').addEventListener('click', function() {
+    allReviewSelected = !allReviewSelected;
+    reviewItems.forEach(function(it){ it.selected = allReviewSelected; });
+    this.textContent = allReviewSelected ? 'Deselect All' : 'Select All';
+    renderReviewList();
+  });
+  document.getElementById('btn-review-confirm').addEventListener('click', confirmReviewItems);
+
+  // ── AI GENERATE ACTION ITEMS ──
+  async function generateActionItems() {
+    var notesEl = document.getElementById('md-notes');
+    var agendaEl = document.getElementById('md-agenda');
+    var notes = (notesEl ? notesEl.value : '').trim();
+    var agenda = (agendaEl ? agendaEl.value : '').trim();
+    if (!notes && !agenda) { showToast('Add some notes first, then generate.', 'error'); return; }
+
+    var btn = document.getElementById('btn-gen');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin">&#9881;&#65039;</span> Analyzing...';
+
+    var m = meetings[activeMeetingIdx];
+    var prompt = 'You are an expert event production assistant. Analyze the following meeting notes and extract every action item — whether explicitly listed under "Action Items:" or implied through language like "John will...", "we need to...", "confirm by...", "follow up on...", etc.\n\n' +
+      'Meeting title: ' + (m.title||'Untitled') + '\n' +
+      'Category: ' + (m.category||'General') + '\n' +
+      (agenda ? 'Agenda:\n' + agenda + '\n' : '') +
+      'Notes:\n' + notes + '\n\n' +
+      'Return ONLY a valid JSON array. No markdown, no explanation, no extra text. Each object must have:\n' +
+      '- "text": string (concise imperative action, max 100 chars)\n' +
+      '- "assignee": string (name if mentioned, else "")\n' +
+      '- "due": string (YYYY-MM-DD if date implied, else "")\n' +
+      '- "priority": "high", "medium", or "low"\n\n' +
+      'If no action items exist, return [].';
+
+    try {
+      var resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      var data = await resp.json();
+      var raw = (data.content || []).map(function(c){ return c.text || ''; }).join('').trim();
+      var clean = raw.replace(/```json|```/g, '').trim();
+      var parsed;
+      try { parsed = JSON.parse(clean); } catch(e) {
+        showToast('Could not parse AI response. Try again.', 'error');
+        btn.disabled = false; btn.innerHTML = '&#10024; Generate Action Items'; return;
+      }
+      if (!Array.isArray(parsed) || !parsed.length) {
+        showToast('No action items found in these notes.', 'error');
+        btn.disabled = false; btn.innerHTML = '&#10024; Generate Action Items'; return;
+      }
+      reviewItems = parsed.map(function(item){ return Object.assign({}, item, {selected: true}); });
+      allReviewSelected = true;
+      document.getElementById('btn-toggle-all').textContent = 'Deselect All';
+      renderReviewList();
+      document.getElementById('ai-review-modal').classList.add('open');
+    } catch(err) {
+      showToast('AI error: ' + err.message, 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = '&#10024; Generate Action Items';
   }
-  function closeNewMeetingModal(){document.getElementById('new-meeting-modal').classList.remove('open');}
-  function createMeeting(){
-    const title=document.getElementById('nm-title').value.trim();
-    if(!title){showToast('Title required.','error');return;}
-    const m={title,date:document.getElementById('nm-date').value,category:document.getElementById('nm-cat').value,location:'',agenda:'',notes:'',attendees:[],actions:[],createdAt:new Date().toISOString()};
-    meetings.push(m);
-    closeNewMeetingModal();
-    persist(()=>{renderAll();selectMeeting(meetings.length-1);showToast('✓ Meeting created!','success');});
+
+  function renderReviewList() {
+    var list = document.getElementById('ai-review-list');
+    if (!reviewItems.length) { list.innerHTML = '<div class="ai-empty-review">No action items found.</div>'; return; }
+    list.innerHTML = reviewItems.map(function(item, i) {
+      return '<div class="ai-review-item ' + (item.selected ? 'selected' : 'deselected') + '">' +
+        '<div class="ai-review-hdr">' +
+          '<div class="ai-review-check ' + (item.selected?'on':'') + '" data-ri="' + i + '">' + (item.selected?'&#10003;':'') + '</div>' +
+          '<input class="ai-review-text-inp" value="' + esc(item.text) + '" data-ri="' + i + '" />' +
+        '</div>' +
+        '<div class="ai-review-meta">' +
+          '<input placeholder="Owner" value="' + esc(item.assignee||'') + '" data-field="assignee" data-ri="' + i + '" />' +
+          '<input type="date" value="' + (item.due||'') + '" data-field="due" data-ri="' + i + '" />' +
+          '<select data-field="priority" data-ri="' + i + '">' +
+            '<option value="high"' + (item.priority==='high'?' selected':'') + '>High</option>' +
+            '<option value="medium"' + (item.priority==='medium'?' selected':'') + '>Medium</option>' +
+            '<option value="low"' + (item.priority==='low'?' selected':'') + '>Low</option>' +
+          '</select>' +
+        '</div></div>';
+    }).join('');
+    // Bind events
+    list.querySelectorAll('.ai-review-check').forEach(function(el) {
+      el.addEventListener('click', function(){ var i=parseInt(this.getAttribute('data-ri')); reviewItems[i].selected=!reviewItems[i].selected; renderReviewList(); });
+    });
+    list.querySelectorAll('.ai-review-text-inp').forEach(function(el) {
+      el.addEventListener('input', function(){ reviewItems[parseInt(this.getAttribute('data-ri'))].text=this.value; });
+    });
+    list.querySelectorAll('[data-field]').forEach(function(el) {
+      el.addEventListener('input', function(){ reviewItems[parseInt(this.getAttribute('data-ri'))][this.getAttribute('data-field')]=this.value; });
+    });
+  }
+
+  function confirmReviewItems() {
+    var selected = reviewItems.filter(function(it){ return it.selected; });
+    if (!selected.length) { showToast('No items selected.', 'error'); return; }
+    if (!meetings[activeMeetingIdx].actions) meetings[activeMeetingIdx].actions = [];
+    selected.forEach(function(item) {
+      meetings[activeMeetingIdx].actions.push({
+        text: item.text, assignee: item.assignee||'', due: item.due||'',
+        priority: item.priority||'medium', done: false, pushed: false, aiGenerated: true
+      });
+    });
+    document.getElementById('ai-review-modal').classList.remove('open');
+    persist(function(){
+      renderAll();
+      activeTab = 'actions';
+      renderDetail();
+      showToast(selected.length + ' action item' + (selected.length!==1?'s':'') + ' added!', 'success');
+    });
   }
 
   // ── FIRESTORE ──
-  function persist(cb){
-    if(!currentUser||!activeEventId)return;
+  function persist(cb) {
+    if (!currentUser || !activeEventId) return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .set({meetings},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({meetings: meetings}, {merge: true})
+      .then(function(){ if (cb) cb(); })
+      .catch(function(err){ showToast('Save failed: ' + err.message, 'error'); });
   }
 
   // ── UTILS ──
-  function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
-  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  let tt;function showToast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3000);}
-  function logout(){auth.signOut().then(()=>{window.location.href='login.html';});}
-
-  // ── AI ACTION ITEM GENERATION ──
-  let reviewItems=[];
-
-  async function generateActionItems(){
-    const notesEl=document.getElementById('md-notes');
-    const agendaEl=document.getElementById('md-agenda');
-    const notes=(notesEl?notesEl.value:'').trim();
-    const agenda=(agendaEl?agendaEl.value:'').trim();
-
-    if(!notes&&!agenda){showToast('Add some notes first, then generate.','error');return;}
-
-    const btn=document.getElementById('btn-gen');
-    btn.disabled=true;
-    btn.innerHTML='<span class="spin">⚙️</span> Analyzing notes...';
-
-    const m=meetings[activeMeetingIdx];
-    const prompt=`You are an expert event production assistant. Analyze the following meeting notes and extract every action item — whether they are explicitly listed under "Action Items:" or implied through language like "John will...", "we need to...", "confirm by...", "follow up on...", etc.
-
-Meeting title: ${m.title||'Untitled'}
-Category: ${m.category||'General'}
-${agenda?'Agenda:
-'+agenda+'
-':''}
-Notes:
-${notes}
-
-Return ONLY a valid JSON array with no markdown, no explanation, no extra text. Each object must have:
-- "text": string — the action item (concise, imperative, max 100 chars)
-- "assignee": string — name if mentioned, otherwise ""
-- "due": string — ISO date (YYYY-MM-DD) if a date is mentioned or clearly implied, otherwise ""
-- "priority": string — "high", "medium", or "low" based on urgency/language
-
-Example: [{"text":"Confirm venue capacity with Sarah","assignee":"Sarah","due":"2026-03-15","priority":"high"}]
-
-If there are truly no action items in the notes, return an empty array: []`;
-
-    try{
-      const resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:1000,
-          messages:[{role:'user',content:prompt}]
-        })
-      });
-      const data=await resp.json();
-      const raw=data.content.map(c=>c.text||'').join('').trim();
-      let parsed;
-      try{
-        const clean=raw.replace(/```json|```/g,'').trim();
-        parsed=JSON.parse(clean);
-      }catch(e){
-        showToast('Could not parse response. Try again.','error');
-        btn.disabled=false;btn.innerHTML='✨ Generate Action Items';return;
-      }
-      if(!Array.isArray(parsed)||parsed.length===0){
-        showToast('No action items found in these notes.','error');
-        btn.disabled=false;btn.innerHTML='✨ Generate Action Items';return;
-      }
-      reviewItems=parsed.map(item=>({...item,selected:true}));
-      openReviewModal();
-    }catch(err){
-      showToast('Error calling AI: '+err.message,'error');
-    }
-    btn.disabled=false;btn.innerHTML='✨ Generate Action Items';
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fmtDate(d) { try { return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch(e){ return d; } }
+  function flash(id) { var el=document.getElementById(id); if(!el)return; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');},2200); }
+  var toastTimer;
+  function showToast(msg, type) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast ' + (type||'success') + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3200);
   }
+  function logout() { auth.signOut().then(function(){ window.location.href='login.html'; }); }
 
-  function openReviewModal(){
-    renderReviewList();
-    document.getElementById('ai-review-modal').classList.add('open');
-  }
-  function closeReviewModal(){document.getElementById('ai-review-modal').classList.remove('open');}
-
-  function renderReviewList(){
-    const list=document.getElementById('ai-review-list');
-    if(!reviewItems.length){list.innerHTML='<div class="ai-empty-review">No action items found.</div>';return;}
-    list.innerHTML=reviewItems.map((item,i)=>`
-      <div class="ai-review-item${item.selected?' selected':' deselected'}" id="review-item-${i}">
-        <div class="ai-review-hdr">
-          <div class="ai-review-check${item.selected?' on':''}" onclick="toggleReviewItem(${i})">${item.selected?'✓':''}</div>
-          <input class="ai-review-text-inp" value="${esc(item.text)}" oninput="reviewItems[${i}].text=this.value" />
-        </div>
-        <div class="ai-review-meta">
-          <input placeholder="Owner" value="${esc(item.assignee||'')}" oninput="reviewItems[${i}].assignee=this.value" />
-          <input type="date" value="${item.due||''}" oninput="reviewItems[${i}].due=this.value" />
-          <select oninput="reviewItems[${i}].priority=this.value">
-            <option value="high"${item.priority==='high'?' selected':''}>High</option>
-            <option value="medium"${item.priority==='medium'?' selected':''}>Medium</option>
-            <option value="low"${item.priority==='low'?' selected':''}>Low</option>
-          </select>
-        </div>
-      </div>`).join('');
-  }
-
-  function toggleReviewItem(i){
-    reviewItems[i].selected=!reviewItems[i].selected;
-    renderReviewList();
-  }
-
-  let allSelected=true;
-  function toggleAllReview(){
-    allSelected=!allSelected;
-    reviewItems.forEach(it=>it.selected=allSelected);
-    document.querySelector('.ai-select-all').textContent=allSelected?'Deselect All':'Select All';
-    renderReviewList();
-  }
-
-  function confirmReviewItems(){
-    const selected=reviewItems.filter(it=>it.selected);
-    if(!selected.length){showToast('No items selected.','error');return;}
-    if(!meetings[activeMeetingIdx].actions) meetings[activeMeetingIdx].actions=[];
-    selected.forEach(item=>{
-      meetings[activeMeetingIdx].actions.push({
-        text:item.text,assignee:item.assignee||'',due:item.due||'',
-        priority:item.priority||'medium',done:false,pushed:false,aiGenerated:true
-      });
-    });
-    closeReviewModal();
-    persist(()=>{
-      renderAll();
-      // Switch to actions tab to show results
-      activeTab='actions';
-      renderDetail();
-      showToast(`✓ ${selected.length} action item${selected.length!==1?'s':''} added!`,'success');
-    });
-  }
+})();
 </script>
 </body>
 </html>
