@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Archive | Digital Dashh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root{--navy:#1c1c3a;--yellow:#ffe066;--purple:#6c79db;--purple-light:#eef1fb;--green:#4caf82;--red:#e55a5a;--orange:#f5a623;--bg:#f0f4f8;--white:#fff;--muted:#7a7a9a;--border:#e4e4f0;--shadow:0 4px 16px rgba(28,28,58,0.07);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--navy);}
+    .header{background:var(--navy);color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .header-left{display:flex;align-items:center;gap:14px;}
+    .brand{font-size:18px;font-weight:900;}.brand span{color:var(--yellow);}
+    .btn-ghost{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.2);}
+    .header-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .nav{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:12px 14px;border-bottom:2px solid transparent;white-space:nowrap;transition:color 0.2s,border-color 0.2s;}
+    .nav a:hover,.nav a.active{color:var(--navy);border-bottom-color:var(--purple);}
+    .page{max-width:1100px;margin:0 auto;padding:28px 28px 60px;}
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-bottom:24px;}
+    .stat{background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);border-top:4px solid var(--border);}
+    .stat.c-purple{border-top-color:var(--purple);}.stat.c-red{border-top-color:var(--red);}.stat.c-orange{border-top-color:var(--orange);}.stat.c-green{border-top-color:var(--green);}
+    .stat-lbl{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+    .stat-val{font-size:22px;font-weight:900;}
+    .stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+    /* TOOLBAR */
+    .toolbar{background:var(--white);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow);margin-bottom:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .search-inp{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--navy);background:#fafafa;}
+    .search-inp:focus{outline:none;border-color:var(--purple);}
+    .type-filter{border:1.5px solid var(--border);color:var(--muted);background:var(--white);padding:6px 12px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+    .type-filter:hover{border-color:var(--purple);color:var(--navy);}
+    .type-filter.active{background:var(--purple);border-color:var(--purple);color:white;}
+    .btn-purge-all{background:none;border:1.5px solid var(--red);color:var(--red);padding:7px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-left:auto;white-space:nowrap;}
+    .btn-purge-all:hover{background:#fff0f0;}
+    /* GROUP */
+    .group{margin-bottom:28px;}
+    .group-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .group-title{font-size:14px;font-weight:800;letter-spacing:-0.01em;}
+    .group-count{font-size:11px;font-weight:700;background:var(--purple-light);color:var(--purple);padding:2px 8px;border-radius:10px;}
+    /* ARCHIVE ITEM */
+    .arch-item{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;transition:box-shadow 0.15s;}
+    .arch-item:hover{box-shadow:var(--shadow);}
+    .arch-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+    .arch-info{flex:1;min-width:0;}
+    .arch-title{font-size:14px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .arch-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .arch-meta-item{font-size:11px;color:var(--muted);font-weight:600;}
+    .arch-meta-item.exp-soon{color:var(--orange);font-weight:700;}
+    .arch-meta-item.exp-past{color:var(--red);font-weight:700;}
+    .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;}
+    .b-tasks{background:#f0f0fb;color:var(--purple);}.b-meetings{background:#e8fbf5;color:#2d8a60;}
+    .b-budget{background:#fff8e0;color:#9a7000;}.b-attendees{background:#fff0e8;color:#cc6600;}
+    .b-sponsors{background:#f0f4ff;color:#4060cc;}.b-merch{background:#fdf0f5;color:#cc3366;}
+    .b-timeline{background:#eef1fb;color:var(--purple);}.b-venues{background:#e8f5ee;color:var(--green);}
+    .b-files{background:#f4f4fb;color:var(--muted);}
+    .arch-actions{display:flex;gap:8px;flex-shrink:0;align-items:center;}
+    .btn-restore{background:var(--navy);color:var(--yellow);border:none;padding:7px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+    .btn-restore:hover{background:#2d2d5a;transform:translateY(-1px);}
+    .btn-perm-del{background:none;border:1.5px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+    .btn-perm-del:hover{border-color:var(--red);color:var(--red);}
+    /* EXPIRY BADGE */
+    .exp-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;white-space:nowrap;}
+    .exp-none{background:#f4f4fb;color:var(--muted);}
+    .exp-future{background:#e8f5ee;color:var(--green);}
+    .exp-soon{background:#fff8e0;color:#9a7000;}
+    .exp-past{background:#fff0f0;color:var(--red);}
+    /* EMPTY */
+    .empty-state{text-align:center;padding:72px 32px;color:var(--muted);}
+    .empty-state .ei{font-size:44px;margin-bottom:14px;}
+    /* LOADER */
+    #page-loader{display:flex;justify-content:center;align-items:center;height:60vh;color:var(--muted);font-size:15px;font-weight:600;flex-direction:column;gap:10px;}
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--navy);color:white;padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,0.15);transform:translateY(80px);opacity:0;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),opacity 0.3s;z-index:9999;display:flex;align-items:center;gap:12px;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast.success{border-left:4px solid var(--green);}.toast.error{border-left:4px solid var(--red);}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand">Digital <span>Dashh</span></div>
+    <a href="index.html" class="btn-ghost">&#8592; Dashboard</a>
+  </div>
+  <div class="header-right">
+    <span id="user-email" style="opacity:0.65;"></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="overview.html">Overview</a>
+  <a href="budget.html">Budget</a>
+  <a href="venues.html">Venues</a>
+  <a href="av.html">AV Production</a>
+  <a href="content.html">Creative Content</a>
+  <a href="tasks.html">Tasks</a>
+  <a href="timeline.html">Timeline</a>
+  <a href="sponsor-tracker.html">Sponsors</a>
+  <a href="merch-inventory.html">Merch</a>
+  <a href="registration.html">Registration</a>
+  <a href="meetings.html">Meetings</a>
+  <a href="archive.html" class="active">Archive</a>
+</nav>
+
+<div id="page-loader"><div style="font-size:36px;">&#128190;</div>Loading Archive...</div>
+
+<div class="page" id="page-content" style="display:none;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;">
+    <div>
+      <h1 style="font-size:26px;font-weight:900;letter-spacing:-0.02em;">Archive <span style="color:var(--purple);">&amp; Trash</span></h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:3px;" id="event-sub">—</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat c-purple"><div class="stat-lbl">Total Archived</div><div class="stat-val" id="st-total">0</div></div>
+    <div class="stat c-red"><div class="stat-lbl">Expiring Soon</div><div class="stat-val" id="st-soon">0</div><div class="stat-sub">within 7 days</div></div>
+    <div class="stat c-orange"><div class="stat-lbl">No Expiry Set</div><div class="stat-val" id="st-noexp">0</div><div class="stat-sub">kept forever</div></div>
+    <div class="stat c-green"><div class="stat-lbl">Types</div><div class="stat-val" id="st-types">0</div><div class="stat-sub">categories</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input class="search-inp" id="search-inp" placeholder="&#128269; Search archived items..." />
+    <button class="type-filter active" data-type="all">All</button>
+    <button class="type-filter" data-type="task">Tasks</button>
+    <button class="type-filter" data-type="meeting">Meetings</button>
+    <button class="type-filter" data-type="budget">Budget</button>
+    <button class="type-filter" data-type="attendee">Attendees</button>
+    <button class="type-filter" data-type="sponsor">Sponsors</button>
+    <button class="type-filter" data-type="merch">Merch</button>
+    <button class="type-filter" data-type="timeline">Timeline</button>
+    <button class="type-filter" data-type="venue">Venues</button>
+    <button class="type-filter" data-type="file">Files</button>
+    <button class="btn-purge-all" id="btn-purge-all">&#128465; Purge Expired</button>
+  </div>
+
+  <div id="archive-body"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var firebaseConfig={apiKey:"AIzaSyCPocwJXL0kXaQczyyTUEib0c8oVsP-x-c",authDomain:"digitaldashh.com",projectId:"quantum-beach-394503",storageBucket:"quantum-beach-394503.firebasestorage.app",messagingSenderId:"1002514430184",appId:"1:1002514430184:web:07ffbe7190df810494b15d"};
+  firebase.initializeApp(firebaseConfig);
+  var auth=firebase.auth(), db=firebase.firestore();
+  var currentUser=null, activeEventId=localStorage.getItem('activeEventId');
+  var trash=[], eventData={}, typeFilter='all', searchQ='';
+
+  var TYPE_META={
+    task:{label:'Task',icon:'&#9989;',badge:'b-tasks',field:'tasks'},
+    meeting:{label:'Meeting',icon:'&#128221;',badge:'b-meetings',field:'meetings'},
+    budget:{label:'Budget Item',icon:'&#128181;',badge:'b-budget',field:'budget'},
+    attendee:{label:'Attendee',icon:'&#127915;',badge:'b-attendees',field:'attendees'},
+    sponsor:{label:'Sponsor',icon:'&#129309;',badge:'b-sponsors',field:'sponsors'},
+    merch:{label:'Merch',icon:'&#128085;',badge:'b-merch',field:'merch'},
+    timeline:{label:'Timeline',icon:'&#128197;',badge:'b-timeline',field:'timeline'},
+    venue:{label:'Venue',icon:'&#128205;',badge:'b-venues',field:'venues'},
+    file:{label:'File',icon:'&#128193;',badge:'b-files',field:'files'}
+  };
+
+  auth.onAuthStateChanged(function(user){
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('user-email').textContent=user.email;
+    loadData();
+  });
+
+  function loadData(){
+    activeEventId=localStorage.getItem('activeEventId');
+    if(!activeEventId){showPage();showToast('No active event selected.','error');return;}
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId).get()
+      .then(function(doc){
+        showPage();
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        eventData=doc.data();
+        document.getElementById('event-sub').textContent=eventData.eventName||'Untitled Event';
+        trash=eventData.trash||[];
+        renderAll();
+      }).catch(function(err){showPage();showToast('Load error: '+err.message,'error');});
+  }
+
+  function showPage(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+
+  function renderAll(){updateStats();renderArchive();}
+
+  function updateStats(){
+    var now=new Date(); var soon=new Date(now.getTime()+7*86400000);
+    var expSoon=0, noExp=0, types=new Set();
+    trash.forEach(function(item){
+      types.add(item.type);
+      if(!item.expiresAt) noExp++;
+      else if(new Date(item.expiresAt)<=soon && new Date(item.expiresAt)>=now) expSoon++;
+    });
+    document.getElementById('st-total').textContent=trash.length;
+    document.getElementById('st-soon').textContent=expSoon;
+    document.getElementById('st-noexp').textContent=noExp;
+    document.getElementById('st-types').textContent=types.size;
+  }
+
+  function getFiltered(){
+    return trash.filter(function(item){
+      var typeOk=typeFilter==='all'||item.type===typeFilter;
+      var q=searchQ.toLowerCase();
+      var title=getItemTitle(item).toLowerCase();
+      var qOk=!searchQ||title.includes(q)||(item.type||'').includes(q);
+      return typeOk&&qOk;
+    }).sort(function(a,b){return new Date(b.deletedAt||0)-new Date(a.deletedAt||0);});
+  }
+
+  function getItemTitle(item){
+    var d=item.data||{};
+    if(item.type==='task') return d.title||'Untitled Task';
+    if(item.type==='meeting') return d.title||'Untitled Meeting';
+    if(item.type==='budget') return d.item||d.name||'Budget Item';
+    if(item.type==='attendee') return (d.firstName||'')+' '+(d.lastName||d.name||'');
+    if(item.type==='sponsor') return d.name||'Sponsor';
+    if(item.type==='merch') return d.name||'Merch Item';
+    if(item.type==='timeline') return d.title||d.milestone||'Timeline Item';
+    if(item.type==='venue') return d.name||'Venue';
+    if(item.type==='file') return d.name||'File';
+    return 'Item';
+  }
+
+  function getItemDetail(item){
+    var d=item.data||{};
+    if(item.type==='task') return (d.status||'')+(d.assignee?' · '+d.assignee:'')+(d.due?' · Due '+d.due:'');
+    if(item.type==='meeting') return (d.date||'')+(d.category?' · '+d.category:'');
+    if(item.type==='budget') return d.amount?'$'+d.amount:'';
+    if(item.type==='attendee') return d.company||d.email||'';
+    if(item.type==='sponsor') return d.tier?d.tier+' sponsor':'';
+    if(item.type==='merch') return d.category||'';
+    if(item.type==='timeline') return d.phase||d.section||'';
+    if(item.type==='venue') return d.address||'';
+    if(item.type==='file') return d.category||'';
+    return '';
+  }
+
+  function renderArchive(){
+    var body=document.getElementById('archive-body');
+    var filtered=getFiltered();
+    if(!filtered.length){
+      body.innerHTML='<div class="empty-state"><div class="ei">&#128190;</div><h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">Nothing archived yet</h3><p style="font-size:13px;">Items you delete from Tasks, Meetings, and other pages will appear here.</p></div>';
+      return;
+    }
+    // Group by type
+    var groups={};
+    filtered.forEach(function(item){
+      var t=item.type||'other';
+      if(!groups[t]) groups[t]=[];
+      groups[t].push(item);
+    });
+    var html='';
+    Object.keys(groups).forEach(function(type){
+      var meta=TYPE_META[type]||{label:type,icon:'&#128193;',badge:'b-files'};
+      var items=groups[type];
+      html+='<div class="group"><div class="group-hdr"><span style="font-size:18px;">'+meta.icon+'</span><span class="group-title">'+meta.label+'s</span><span class="group-count">'+items.length+'</span></div>';
+      items.forEach(function(item){
+        var idx=trash.indexOf(item);
+        var now=new Date();
+        var expClass='exp-none', expLabel='No expiry';
+        if(item.expiresAt){
+          var exp=new Date(item.expiresAt);
+          var diff=Math.ceil((exp-now)/86400000);
+          if(diff<0){expClass='exp-past';expLabel='Expired '+Math.abs(diff)+'d ago';}
+          else if(diff<=7){expClass='exp-soon';expLabel='Expires in '+diff+'d';}
+          else{expClass='exp-future';expLabel='Expires '+exp.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+        }
+        var deletedStr=item.deletedAt?new Date(item.deletedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+        var detail=getItemDetail(item);
+        html+='<div class="arch-item">'+
+          '<div class="arch-icon">'+meta.icon+'</div>'+
+          '<div class="arch-info">'+
+            '<div class="arch-title">'+esc(getItemTitle(item))+'</div>'+
+            '<div class="arch-meta">'+
+              '<span class="badge '+meta.badge+'">'+meta.label+'</span>'+
+              (detail?'<span class="arch-meta-item">'+esc(detail)+'</span>':'')+
+              (deletedStr?'<span class="arch-meta-item">Deleted '+deletedStr+'</span>':'')+
+              '<span class="exp-badge '+expClass+'">'+expLabel+'</span>'+
+            '</div>'+
+          '</div>'+
+          '<div class="arch-actions">'+
+            '<button class="btn-restore" data-idx="'+idx+'">&#8593; Restore</button>'+
+            '<button class="btn-perm-del" data-idx="'+idx+'">&#128465; Delete Forever</button>'+
+          '</div>'+
+        '</div>';
+      });
+      html+='</div>';
+    });
+    body.innerHTML=html;
+
+    // Bind buttons
+    body.querySelectorAll('.btn-restore').forEach(function(btn){
+      btn.addEventListener('click',function(){restoreItem(parseInt(this.getAttribute('data-idx')));});
+    });
+    body.querySelectorAll('.btn-perm-del').forEach(function(btn){
+      btn.addEventListener('click',function(){permanentDelete(parseInt(this.getAttribute('data-idx')));});
+    });
+  }
+
+  // ── RESTORE ──
+  function restoreItem(idx){
+    var item=trash[idx];
+    if(!item){showToast('Item not found.','error');return;}
+    var type=item.type;
+    var meta=TYPE_META[type];
+    if(!meta){showToast('Cannot restore this item type.','error');return;}
+
+    // Put back into the correct array
+    var field=meta.field;
+    if(type==='budget'){
+      // budget items live in budget.dollarRows or budget.hourRows
+      if(!eventData.budget) eventData.budget={};
+      var targetArr=item.budgetSection==='hours'?'hourRows':'dollarRows';
+      if(!eventData.budget[targetArr]) eventData.budget[targetArr]=[];
+      eventData.budget[targetArr].push(item.data);
+    } else if(type==='timeline'){
+      var section=item.timelineSection||'tlPre';
+      if(!eventData[section]) eventData[section]=[];
+      eventData[section].push(item.data);
+    } else {
+      if(!eventData[field]) eventData[field]=[];
+      eventData[field].push(item.data);
+    }
+
+    trash.splice(idx,1);
+    persist(function(){renderAll();showToast('&#8593; Item restored!','success');});
+  }
+
+  // ── PERMANENT DELETE ──
+  function permanentDelete(idx){
+    var item=trash[idx];
+    if(!confirm('Permanently delete "'+getItemTitle(item)+'"? This cannot be undone.'))return;
+    trash.splice(idx,1);
+    persist(function(){renderAll();showToast('&#128465; Permanently deleted.','success');});
+  }
+
+  // ── PURGE EXPIRED ──
+  document.getElementById('btn-purge-all').addEventListener('click',function(){
+    var now=new Date();
+    var expired=trash.filter(function(item){return item.expiresAt&&new Date(item.expiresAt)<now;});
+    if(!expired.length){showToast('No expired items to purge.','error');return;}
+    if(!confirm('Permanently delete '+expired.length+' expired item(s)? This cannot be undone.'))return;
+    trash=trash.filter(function(item){return !item.expiresAt||new Date(item.expiresAt)>=now;});
+    persist(function(){renderAll();showToast('&#128465; '+expired.length+' expired item(s) purged.','success');});
+  });
+
+  // ── FILTERS ──
+  document.querySelectorAll('.type-filter').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      typeFilter=this.getAttribute('data-type');
+      document.querySelectorAll('.type-filter').forEach(function(b){b.classList.remove('active');});
+      this.classList.add('active');
+      renderArchive();
+    });
+  });
+  document.getElementById('search-inp').addEventListener('input',function(){searchQ=this.value;renderArchive();});
+
+  // ── PERSIST ──
+  function persist(cb){
+    if(!currentUser||!activeEventId)return;
+    var saveData={trash:trash};
+    // Also save back any restored arrays
+    ['tasks','meetings','attendees','sponsors','merch','venues','files','budget','tlPre','tlDayof','tlMultiday'].forEach(function(f){
+      if(eventData[f]!==undefined) saveData[f]=eventData[f];
+    });
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .set(saveData,{merge:true})
+      .then(function(){if(cb)cb();})
+      .catch(function(err){showToast('Save failed: '+err.message,'error');});
+  }
+
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  var toastTimer;
+  function showToast(msg,type){var el=document.getElementById('toast');el.innerHTML=msg;el.className='toast '+(type||'success')+' show';clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},3500);}
+  function logout(){auth.signOut().then(function(){window.location.href='login.html';});}
+})();
+</script>
+</body>
+</html>
