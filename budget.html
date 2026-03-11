@@ -150,6 +150,7 @@
     <a href="merch-inventory.html">Merch</a>
     <a href="registration.html">Registration</a>
   <a href="meetings.html">Meetings</a>
+  <a href="archive.html">Archive</a>
   </nav>
 
   <div id="page-loader">
@@ -274,6 +275,7 @@
     let activeEventId = localStorage.getItem('activeEventId');
     let mode = 'dollars';
     let data = { totalBudget: 0, totalHours: 0, dollarRows: [], hourRows: [] };
+    let trash = [];
     let chartInst = null;
     let authDone = false;
 
@@ -411,9 +413,17 @@
     }
 
     function removeRow(type, i) {
-      if (type === 'd') { data.dollarRows.splice(i,1); renderDollars(); }
-      else { data.hourRows.splice(i,1); renderHours(); }
-      updateSummary(); renderChart();
+      var arr = type==='d' ? data.dollarRows : data.hourRows;
+      var item = arr[i];
+      var section = type==='d' ? 'dollars' : 'hours';
+      softDeleteItem('budget', item, function(tidx){
+        arr.splice(i,1);
+        persistWithTrash(function(){
+          if(type==='d'){renderDollars();}else{renderHours();}
+          updateSummary(); renderChart();
+          showUndoToast(tidx, function(d){ arr.push(d); if(type==='d'){renderDollars();}else{renderHours();} updateSummary(); persistWithTrash(function(){}); });
+        });
+      });
     }
 
     function saveTotalBudget() {
@@ -435,6 +445,12 @@
         'budget.hourRows': data.hourRows,
         'budget.spent': data.dollarRows.reduce((s,r)=>s+(r.actual||0),0)
       }).then(()=>{ if(cb) cb(); }).catch(err=>showToast('Save failed: '+err.message,'error'));
+    }
+
+    function persistWithTrash(cb) {
+      if (!currentUser || !activeEventId) return;
+      db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+        .set({trash:trash},{merge:true}).then(function(){persist(cb);}).catch(function(err){showToast('Save failed: '+err.message,'error');});
     }
 
     function updateSummary() {
@@ -514,6 +530,44 @@
       }
       const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([csv],{type:'text/csv'})), download: `budget-${mode}.csv` });
       a.click();
+    }
+
+
+    // ── SOFT DELETE HELPERS ──
+    function softDeleteItem(type, item, onConfirmed) {
+    var title = item.title||item.name||item.fname&&(item.fname+' '+item.lname)||'this item';
+    var exp = prompt('How long to keep "'+title+'" in the archive?\n\nEnter number of days (e.g. 30), or leave blank to keep forever.\nPress Cancel to cancel deletion.');
+    if (exp === null) return;
+    var expiresAt = '';
+    if (exp.trim() !== '') {
+      var days = parseInt(exp);
+      if (isNaN(days)||days<1) { showToast('Invalid number of days.','error'); return; }
+      var d = new Date(); d.setDate(d.getDate()+days);
+      expiresAt = d.toISOString();
+    }
+    var trashItem = { type:type, data:JSON.parse(JSON.stringify(item)), deletedAt:new Date().toISOString(), expiresAt:expiresAt };
+    trash.push(trashItem);
+    onConfirmed(trash.length-1);
+    }
+
+    function showUndoToast(trashIdx, restoreFn) {
+    var el = document.getElementById('toast');
+    window._undoRestoreFn = restoreFn;
+    window._undoTrashIdx = trashIdx;
+    el.innerHTML = '&#128465; Moved to archive. <button onclick="undoLastDelete()" style="background:var(--yellow);color:var(--navy);border:none;padding:3px 10px;border-radius:5px;font-family:Barlow,sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-left:8px;">Undo</button>';
+    el.className = 'toast success show';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(function(){ el.classList.remove('show'); }, 5000);
+    }
+
+    function undoLastDelete() {
+    if (window._undoTrashIdx === undefined) return;
+    var item = trash[window._undoTrashIdx];
+    if (!item) return;
+    trash.splice(window._undoTrashIdx, 1);
+    if (window._undoRestoreFn) window._undoRestoreFn(item.data);
+    window._undoTrashIdx = undefined;
+    window._undoRestoreFn = null;
     }
 
     function flash(id) { const el=document.getElementById(id); el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2000); }

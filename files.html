@@ -145,6 +145,7 @@
   <a href="merch-inventory.html">Merch</a>
   <a href="registration.html">Registration</a>
   <a href="meetings.html">Meetings</a>
+  <a href="archive.html">Archive</a>
   <a href="files.html" class="active">Files</a>
 </nav>
 
@@ -304,6 +305,7 @@
         const d=doc.data();
         document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
         files=d.files||[];
+        trash=d.trash||[];
         renderAll();
       }).catch(err=>{show();showToast('Error: '+err.message,'error');});
   }
@@ -436,16 +438,20 @@
 
   function deleteFile(){
     if(editingIdx===null)return;
-    if(!confirm(`Remove "${files[editingIdx].name}"?`))return;
-    files.splice(editingIdx,1);
-    closeModal();
-    persistFiles(()=>{renderAll();showToast('🗑 File removed.','success');});
+    var item=files[editingIdx];
+    softDeleteItem('file',item,function(tidx){
+      files.splice(editingIdx,1);
+      closeModal();
+      persistWithTrashFiles(()=>{renderAll();showUndoToast(tidx,function(d){files.push(d);persistWithTrashFiles(()=>renderAll());});});
+    });
   }
 
   function removeFile(si){
-    if(!confirm(`Remove "${files[si].name}"?`))return;
-    files.splice(si,1);
-    persistFiles(()=>renderAll());
+    var item=files[si];
+    softDeleteItem('file',item,function(tidx){
+      files.splice(si,1);
+      persistWithTrashFiles(()=>{renderAll();showUndoToast(tidx,function(d){files.push(d);persistWithTrashFiles(()=>renderAll());});});
+    });
   }
 
   // ── GOOGLE SHEET SYNC ──
@@ -480,7 +486,50 @@
   function persistFiles(cb){
     if(!currentUser||!activeEventId)return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .update({files}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({files},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+  function persistWithTrashFiles(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .set({files,trash},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  
+  // ── SOFT DELETE HELPERS ──
+  function softDeleteItem(type, item, onConfirmed) {
+    var title = item.title||item.name||item.fname&&(item.fname+' '+item.lname)||'this item';
+    var exp = prompt('How long to keep "'+title+'" in the archive?\n\nEnter number of days (e.g. 30), or leave blank to keep forever.\nPress Cancel to cancel deletion.');
+    if (exp === null) return;
+    var expiresAt = '';
+    if (exp.trim() !== '') {
+      var days = parseInt(exp);
+      if (isNaN(days)||days<1) { showToast('Invalid number of days.','error'); return; }
+      var d = new Date(); d.setDate(d.getDate()+days);
+      expiresAt = d.toISOString();
+    }
+    var trashItem = { type:type, data:JSON.parse(JSON.stringify(item)), deletedAt:new Date().toISOString(), expiresAt:expiresAt };
+    trash.push(trashItem);
+    onConfirmed(trash.length-1);
+  }
+
+  function showUndoToast(trashIdx, restoreFn) {
+    var el = document.getElementById('toast');
+    window._undoRestoreFn = restoreFn;
+    window._undoTrashIdx = trashIdx;
+    el.innerHTML = '&#128465; Moved to archive. <button onclick="undoLastDelete()" style="background:var(--yellow);color:var(--navy);border:none;padding:3px 10px;border-radius:5px;font-family:Barlow,sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-left:8px;">Undo</button>';
+    el.className = 'toast success show';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(function(){ el.classList.remove('show'); }, 5000);
+  }
+
+  function undoLastDelete() {
+    if (window._undoTrashIdx === undefined) return;
+    var item = trash[window._undoTrashIdx];
+    if (!item) return;
+    trash.splice(window._undoTrashIdx, 1);
+    if (window._undoRestoreFn) window._undoRestoreFn(item.data);
+    window._undoTrashIdx = undefined;
+    window._undoRestoreFn = null;
   }
 
   // ── UTILS ──

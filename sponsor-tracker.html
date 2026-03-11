@@ -167,6 +167,7 @@
   <a href="merch-inventory.html">Merch</a>
   <a href="registration.html">Registration</a>
   <a href="meetings.html">Meetings</a>
+  <a href="archive.html">Archive</a>
 </nav>
 
 <div id="page-loader"><div style="font-size:36px;">🤝</div>Loading Sponsors...</div>
@@ -264,7 +265,7 @@
   const auth=firebase.auth(), db=firebase.firestore();
 
   let currentUser=null, activeEventId=localStorage.getItem('activeEventId');
-  let sponsors=[], tiers=[], activeFilter='all', authDone=false;
+  let sponsors=[], tiers=[], trash=[], activeFilter='all', authDone=false;
 
   const DEFAULT_TIERS=[
     {name:'Title',value:'50000',color:'#f5a623'},
@@ -501,9 +502,11 @@
   }
 
   function deleteSponsor(si){
-    if(!confirm(`Delete "${sponsors[si].name}"?`))return;
-    sponsors.splice(si,1);
-    persistSponsors(()=>{renderAll();showToast('🗑 Sponsor removed.','success');});
+    var item=sponsors[si];
+    softDeleteItem('sponsor',item,function(tidx){
+      sponsors.splice(si,1);
+      persistWithTrashSponsors(()=>{updateStats();renderSponsors();showUndoToast(tidx,function(d){sponsors.push(d);persistWithTrashSponsors(()=>{updateStats();renderSponsors();});});});
+    });
   }
 
   // ── ADD SPONSOR MODAL ──
@@ -529,8 +532,52 @@
 
   // ── FIRESTORE ──
   function persistSponsors(cb){
+    if(!currentUser||!activeEventId)return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .update({sponsors}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({sponsors},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+  function persistWithTrashSponsors(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .set({sponsors,trash},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+
+  
+  // ── SOFT DELETE HELPERS ──
+  function softDeleteItem(type, item, onConfirmed) {
+    var title = item.title||item.name||item.fname&&(item.fname+' '+item.lname)||'this item';
+    var exp = prompt('How long to keep "'+title+'" in the archive?\n\nEnter number of days (e.g. 30), or leave blank to keep forever.\nPress Cancel to cancel deletion.');
+    if (exp === null) return;
+    var expiresAt = '';
+    if (exp.trim() !== '') {
+      var days = parseInt(exp);
+      if (isNaN(days)||days<1) { showToast('Invalid number of days.','error'); return; }
+      var d = new Date(); d.setDate(d.getDate()+days);
+      expiresAt = d.toISOString();
+    }
+    var trashItem = { type:type, data:JSON.parse(JSON.stringify(item)), deletedAt:new Date().toISOString(), expiresAt:expiresAt };
+    trash.push(trashItem);
+    onConfirmed(trash.length-1);
+  }
+
+  function showUndoToast(trashIdx, restoreFn) {
+    var el = document.getElementById('toast');
+    window._undoRestoreFn = restoreFn;
+    window._undoTrashIdx = trashIdx;
+    el.innerHTML = '&#128465; Moved to archive. <button onclick="undoLastDelete()" style="background:var(--yellow);color:var(--navy);border:none;padding:3px 10px;border-radius:5px;font-family:Barlow,sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-left:8px;">Undo</button>';
+    el.className = 'toast success show';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(function(){ el.classList.remove('show'); }, 5000);
+  }
+
+  function undoLastDelete() {
+    if (window._undoTrashIdx === undefined) return;
+    var item = trash[window._undoTrashIdx];
+    if (!item) return;
+    trash.splice(window._undoTrashIdx, 1);
+    if (window._undoRestoreFn) window._undoRestoreFn(item.data);
+    window._undoTrashIdx = undefined;
+    window._undoRestoreFn = null;
   }
 
   // ── UTILS ──
