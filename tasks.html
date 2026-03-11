@@ -156,6 +156,7 @@
   <a href="merch-inventory.html">Merch</a>
   <a href="registration.html">Registration</a>
   <a href="meetings.html">Meetings</a>
+  <a href="archive.html">Archive</a>
 </nav>
 
 <div id="page-loader"><div style="font-size:36px;">✅</div>Loading Tasks...</div>
@@ -292,7 +293,7 @@
   firebase.initializeApp(firebaseConfig);
   const auth=firebase.auth(),db=firebase.firestore();
   let currentUser=null,activeEventId=localStorage.getItem('activeEventId');
-  let tasks=[],activeFilter='all',activeView='list',searchQ='',editingIdx=null,authDone=false;
+  let tasks=[],trash=[],activeFilter='all',activeView='list',searchQ='',editingIdx=null,authDone=false;
 
   auth.onAuthStateChanged(user=>{
     if(!user){window.location.href='login.html';return;}
@@ -310,6 +311,7 @@
         const d=doc.data();
         document.getElementById('event-sub').textContent=d.eventName||'Untitled Event';
         tasks=d.tasks||[];
+        trash=d.trash||[];
         renderAll();
       }).catch(err=>{show();showToast('Error: '+err.message,'error');});
   }
@@ -490,15 +492,52 @@
 
   function deleteTask(){
     if(editingIdx===null)return;
-    if(!confirm(`Delete "${tasks[editingIdx].title}"?`))return;
-    tasks.splice(editingIdx,1);
-    closeModal();
-    persist(()=>{renderAll();showToast('🗑 Task deleted.','success');});
+    softDelete('task', editingIdx, tasks, function(){closeModal();renderAll();});
   }
 
   function removeTask(si){
-    tasks.splice(si,1);
-    persist(()=>renderAll());
+    softDelete('task', si, tasks, function(){renderAll();});
+  }
+
+  // ── SOFT DELETE ──
+  function softDelete(type, idx, arr, cb){
+    var item = arr[idx];
+    var title = item.title||item.name||'this item';
+    // Show expiry picker
+    var exp = prompt('How long to keep "'+title+'" in the archive?\n\nType a number of days (e.g. 30), or leave blank to keep forever.\nPress Cancel to cancel deletion.');
+    if(exp === null) return; // cancelled
+    var expiresAt = '';
+    if(exp.trim() !== ''){
+      var days = parseInt(exp);
+      if(isNaN(days)||days<1){ showToast('Invalid number of days.','error'); return; }
+      var d = new Date(); d.setDate(d.getDate()+days);
+      expiresAt = d.toISOString();
+    }
+    trash.push({
+      type: type,
+      data: JSON.parse(JSON.stringify(item)),
+      deletedAt: new Date().toISOString(),
+      expiresAt: expiresAt,
+      restoredFrom: type+'s'
+    });
+    arr.splice(idx, 1);
+    persistWithTrash(function(){if(cb)cb(); showUndoToast(trash.length-1);});
+  }
+
+  function showUndoToast(trashIdx){
+    var el=document.getElementById('toast');
+    el.innerHTML='&#128465; Moved to archive. <button onclick="undoDelete('+trashIdx+')" style="background:var(--yellow);color:var(--navy);border:none;padding:3px 10px;border-radius:5px;font-family:Barlow,sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-left:8px;">Undo</button>';
+    el.className='toast success show';
+    clearTimeout(window._tt);
+    window._tt=setTimeout(function(){el.classList.remove('show');},5000);
+  }
+
+  function undoDelete(trashIdx){
+    var item=trash[trashIdx];
+    if(!item){showToast('Nothing to undo.','error');return;}
+    tasks.push(item.data);
+    trash.splice(trashIdx,1);
+    persistWithTrash(function(){renderAll();showToast('&#8593; Restored!','success');});
   }
 
   // ── COMMENTS ──
@@ -529,7 +568,12 @@
   function persist(cb){
     if(!currentUser||!activeEventId)return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
-      .update({tasks}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+      .set({tasks},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
+  }
+  function persistWithTrash(cb){
+    if(!currentUser||!activeEventId)return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .set({tasks,trash},{merge:true}).then(()=>{if(cb)cb();}).catch(err=>showToast('Save failed: '+err.message,'error'));
   }
 
   // ── UTILS ──
