@@ -196,6 +196,7 @@
   <a href="merch-inventory.html">Merch</a>
   <a href="registration.html">Registration</a>
   <a href="meetings.html" class="active">Meetings</a>
+  <a href="archive.html">Archive</a>
 </nav>
 
 <div id="page-loader"><div style="font-size:36px;">&#128221;</div>Loading Meetings...</div>
@@ -320,6 +321,7 @@
   var activeEventId = localStorage.getItem('activeEventId');
   var meetings = [];
   var tasks = [];
+  var trash = [];
   var activeMeetingIdx = null;
   var activeTab = 'notes';
   var catFilter = 'all';
@@ -714,10 +716,36 @@
   }
 
   function deleteMeeting(si) {
-    if (!confirm('Delete "' + (meetings[si].title||'this meeting') + '"?')) return;
+    var item = meetings[si];
+    var exp = prompt('How long to keep "' + (item.title||'this meeting') + '" in the archive?\n\nType a number of days (e.g. 30), or leave blank to keep forever.\nPress Cancel to cancel deletion.');
+    if (exp === null) return;
+    var expiresAt = '';
+    if (exp.trim() !== '') {
+      var days = parseInt(exp);
+      if (isNaN(days)||days<1) { showToast('Invalid number of days.', 'error'); return; }
+      var d = new Date(); d.setDate(d.getDate()+days);
+      expiresAt = d.toISOString();
+    }
+    trash.push({ type:'meeting', data:JSON.parse(JSON.stringify(item)), deletedAt:new Date().toISOString(), expiresAt:expiresAt });
     meetings.splice(si, 1);
     activeMeetingIdx = null;
-    persist(function(){ renderAll(); renderDetail(); });
+    persistWithTrash(function(){ renderAll(); renderDetail(); showUndoToast(trash.length-1); });
+  }
+
+  function showUndoToast(trashIdx) {
+    var el = document.getElementById('toast');
+    el.innerHTML = '&#128465; Moved to archive. <button onclick="undoDelete('+trashIdx+')" style="background:var(--yellow);color:var(--navy);border:none;padding:3px 10px;border-radius:5px;font-family:Barlow,sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-left:8px;">Undo</button>';
+    el.className = 'toast success show';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(function(){ el.classList.remove('show'); }, 5000);
+  }
+
+  function undoDelete(trashIdx) {
+    var item = trash[trashIdx];
+    if (!item) { showToast('Nothing to undo.', 'error'); return; }
+    meetings.push(item.data);
+    trash.splice(trashIdx, 1);
+    persistWithTrash(function(){ renderAll(); showToast('&#8593; Restored!', 'success'); });
   }
 
   // ── NEW MEETING MODAL ──
@@ -890,6 +918,14 @@
     if (!currentUser || !activeEventId) return;
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
       .set({meetings: meetings}, {merge: true})
+      .then(function(){ if (cb) cb(); })
+      .catch(function(err){ showToast('Save failed: ' + err.message, 'error'); });
+  }
+
+  function persistWithTrash(cb) {
+    if (!currentUser || !activeEventId) return;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
+      .set({meetings: meetings, trash: trash}, {merge: true})
       .then(function(){ if (cb) cb(); })
       .catch(function(err){ showToast('Save failed: ' + err.message, 'error'); });
   }
