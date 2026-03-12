@@ -183,6 +183,7 @@
     <button class="section-tab active" onclick="switchSection('pre',this)">📋 Pre-Event</button>
     <button class="section-tab" onclick="switchSection('dayof',this)">🎬 Day-Of</button>
     <button class="section-tab" onclick="switchSection('multiday',this)">📆 Multi-Day</button>
+    <button class="section-tab" onclick="switchSection('workback',this)">⏪ Workback</button>
   </div>
 
   <!-- PROGRESS BANNER -->
@@ -276,6 +277,55 @@
   </div>
 </div>
 
+
+<!-- WORKBACK PANEL -->
+<div id="workback-panel" style="display:none;">
+  <div style="background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:24px 28px;margin-bottom:20px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:22px;">
+      <div>
+        <h2 style="font-size:18px;font-weight:900;margin-bottom:4px;">⏪ Workback Template</h2>
+        <p style="font-size:13px;color:var(--muted);">Pick your event type and date — we'll generate a backwards-planned schedule of milestones. Review and import any items directly into your Pre-Event timeline.</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.07em;">Event Type</label>
+        <select id="wb-type" class="fi" style="margin:0;width:100%;">
+          <option value="conference">Conference / Summit</option>
+          <option value="product_launch">Product Launch</option>
+          <option value="festival">Festival / Concert</option>
+          <option value="gala">Gala / Awards Night</option>
+          <option value="trade_show">Trade Show / Expo</option>
+          <option value="corporate">Corporate Meeting / Offsite</option>
+          <option value="sports">Sporting Event</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.07em;">Event Date</label>
+        <input id="wb-date" type="date" class="fi" style="margin:0;width:100%;" />
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button onclick="generateWorkback()" style="background:var(--navy);color:var(--yellow);border:none;padding:10px 22px;border-radius:9px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;width:100%;">⚡ Generate Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="wb-results" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <span style="font-size:15px;font-weight:800;" id="wb-results-title">Generated Schedule</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:8px;" id="wb-results-sub"></span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="selectAllWb(true)" style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Select All</button>
+        <button onclick="selectAllWb(false)" style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Deselect All</button>
+        <button onclick="importSelected()" style="background:var(--green);color:white;border:none;padding:7px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">&#8595; Import Selected to Pre-Event</button>
+      </div>
+    </div>
+    <div id="wb-items-list"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -309,7 +359,14 @@
       }).catch(err=>{show();showToast('Error: '+err.message,'error');});
   }
 
-  function show(){document.getElementById('page-loader').style.display='none';document.getElementById('page-content').style.display='block';}
+  function show(){
+    document.getElementById('page-loader').style.display='none';
+    document.getElementById('page-content').style.display='block';
+    if(window.location.hash==='#workback'){
+      var wbTab=document.querySelectorAll('.section-tab')[3];
+      if(wbTab) switchSection('workback',wbTab);
+    }
+  }
 
   function renderAll(){updateProgress();renderDayTabs();renderView();}
 
@@ -318,13 +375,19 @@
     activeSection=s;activeFilter='all';
     document.querySelectorAll('.section-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
+    var isWorkback=s==='workback';
+    document.getElementById('workback-panel').style.display=isWorkback?'block':'none';
+    document.getElementById('progress-banner').style.display=isWorkback?'none':'flex';
+    document.querySelector('.toolbar').style.display=isWorkback?'none':'flex';
     document.getElementById('day-tabs-row').style.display=s==='multiday'?'flex':'none';
-    // reset filter btns
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.filter-btn')[0].classList.add('active');
-    // update modal phase label
-    document.getElementById('i-phase-lbl').textContent=s==='pre'?'Phase / Group':s==='dayof'?'Room / Stage':'Day';
-    renderAll();
+    document.getElementById('timeline-view').style.display=isWorkback?'none':'block';
+    document.getElementById('table-view').style.display='none';
+    if(!isWorkback){
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn')[0].classList.add('active');
+      document.getElementById('i-phase-lbl').textContent=s==='pre'?'Phase / Group':s==='dayof'?'Room / Stage':'Day';
+      renderAll();
+    }
   }
 
   // ── FILTER ──
@@ -579,6 +642,185 @@
     const item=getItems()[si];
     item.status=item.status==='done'?'notstarted':'done';
     persist(()=>renderAll());
+  }
+
+
+  // ── WORKBACK TEMPLATES ──
+  var WB_TEMPLATES = {
+    conference: [
+      {weeks:16, title:'Lock venue & confirm date', phase:'Venue & Logistics', notes:'Sign contracts, confirm capacity and A/V requirements.'},
+      {weeks:14, title:'Finalize budget & sponsors', phase:'Finance', notes:'Get sign-off on overall budget. Confirm sponsor commitments.'},
+      {weeks:12, title:'Open speaker submissions / confirm keynotes', phase:'Programming', notes:'Send invitations to keynote speakers, set submission deadline.'},
+      {weeks:10, title:'Launch registration', phase:'Marketing', notes:'Go live with ticketing page. Begin email and social campaigns.'},
+      {weeks:8, title:'Finalize agenda & session list', phase:'Programming', notes:'Confirm all sessions, panels, and speaker bios.'},
+      {weeks:6, title:'Catering & F&B orders due', phase:'Venue & Logistics', notes:'Submit meal counts, dietary requirements, and break times.'},
+      {weeks:5, title:'Confirm A/V & production crew', phase:'Production', notes:'Finalize tech rider, stage layout, and run-of-show draft.'},
+      {weeks:4, title:'Send attendee communications', phase:'Marketing', notes:'Logistics email, hotel block info, parking, schedule preview.'},
+      {weeks:3, title:'Print materials to printer', phase:'Creative', notes:'Programs, signage, badges, lanyards, sponsor banners.'},
+      {weeks:2, title:'Final headcount to venue', phase:'Venue & Logistics', notes:'Confirm final numbers for seating and catering.'},
+      {weeks:1, title:'Rehearsals & tech check', phase:'Production', notes:'Walk through full run-of-show on site.'},
+      {weeks:0, title:'Event day — all hands', phase:'Day-Of', notes:'Brief all staff and volunteers. Doors open.'}
+    ],
+    product_launch: [
+      {weeks:12, title:'Lock product positioning & messaging', phase:'Strategy', notes:'Finalize value prop, target audience, key messages.'},
+      {weeks:10, title:'Confirm venue / livestream platform', phase:'Logistics', notes:'Book space or set up streaming infrastructure.'},
+      {weeks:8, title:'Creative brief to agency / design team', phase:'Creative', notes:'Kick off all creative assets: visuals, video, copy.'},
+      {weeks:6, title:'Press list & embargo strategy', phase:'PR', notes:'Identify target media. Draft embargo and press release.'},
+      {weeks:5, title:'Demo & product walkthrough rehearsal', phase:'Programming', notes:'Full run-through of product demo on actual hardware/software.'},
+      {weeks:4, title:'Influencer / partner outreach', phase:'Marketing', notes:'Send briefing docs to partners. Confirm social activation.'},
+      {weeks:3, title:'Final assets to production', phase:'Creative', notes:'Approve all video, slides, and marketing materials.'},
+      {weeks:2, title:'Embargo lift date confirmed', phase:'PR', notes:'Confirm time and date with all media contacts.'},
+      {weeks:1, title:'Full dress rehearsal', phase:'Production', notes:'Run complete show including transitions, video, and Q&A.'},
+      {weeks:0, title:'Launch day', phase:'Day-Of', notes:'All hands on deck. Monitor press coverage in real time.'}
+    ],
+    festival: [
+      {weeks:20, title:'Confirm headline acts & contracts', phase:'Talent', notes:'Execute artist contracts. Confirm technical riders.'},
+      {weeks:16, title:'Site plan & permit applications', phase:'Permits & Safety', notes:'Submit site plan to local authorities. Apply for all permits.'},
+      {weeks:14, title:'Ticket on-sale launch', phase:'Marketing', notes:'Go live with all ticket tiers. Launch marketing campaign.'},
+      {weeks:12, title:'Stage & production company confirmed', phase:'Production', notes:'Contracts signed for staging, lighting, sound vendors.'},
+      {weeks:10, title:'Vendor & food stall agreements signed', phase:'Operations', notes:'Confirm all F&B, merchandise, and activation vendors.'},
+      {weeks:8, title:'Security & medical plan submitted', phase:'Permits & Safety', notes:'Submit crowd management and medical response plans.'},
+      {weeks:6, title:'Artist logistics confirmed', phase:'Talent', notes:'Hotel, transport, hospitality riders for all acts.'},
+      {weeks:4, title:'Volunteer & staff scheduling', phase:'Operations', notes:'Assign shifts, briefing schedule, and site induction dates.'},
+      {weeks:3, title:'Final permit approvals received', phase:'Permits & Safety', notes:'Confirm all local council and event authority approvals.'},
+      {weeks:1, title:'Site build begins', phase:'Production', notes:'Staging, fencing, infrastructure build out on site.'},
+      {weeks:0, title:'Doors open', phase:'Day-Of', notes:'Final walk-through with department heads. Go-live.'}
+    ],
+    gala: [
+      {weeks:16, title:'Venue booked & date confirmed', phase:'Logistics', notes:'Sign venue contract. Set ticket price and table plan.'},
+      {weeks:12, title:'Invitations sent', phase:'Marketing', notes:'Physical invitations and digital RSVP link distributed.'},
+      {weeks:10, title:'Sponsor & table sales open', phase:'Sales', notes:'Outreach to corporate sponsors for table packages.'},
+      {weeks:8, title:'Entertainment & host confirmed', phase:'Programming', notes:'MC, live entertainment, and award presenters locked in.'},
+      {weeks:6, title:'Menu tasting & final catering brief', phase:'Catering', notes:'Sign off on menu, wines, and dietary options with caterer.'},
+      {weeks:4, title:'Award nominations close', phase:'Programming', notes:'Collect and review all award nominations.'},
+      {weeks:3, title:'Seating plan finalised', phase:'Logistics', notes:'Assign tables based on confirmed RSVPs.'},
+      {weeks:2, title:'Print: programs, menus, name cards', phase:'Creative', notes:'Send all print files to printer. Allow 5 days production.'},
+      {weeks:1, title:'Briefing with venue, caterer, AV team', phase:'Production', notes:'Full site walk-through and run-of-show review.'},
+      {weeks:0, title:'Gala night', phase:'Day-Of', notes:'Red carpet, reception, dinner, awards, entertainment.'}
+    ],
+    trade_show: [
+      {weeks:20, title:'Booth space confirmed & deposit paid', phase:'Logistics', notes:'Confirm booth dimensions, location, and power requirements.'},
+      {weeks:14, title:'Booth design brief to designer', phase:'Creative', notes:'Kick off booth design. Include brand guidelines and goals.'},
+      {weeks:10, title:'Staff roster & travel booked', phase:'Logistics', notes:'Confirm who is attending. Book flights and hotels.'},
+      {weeks:8, title:'Marketing collateral to printer', phase:'Creative', notes:'Brochures, flyers, business cards, pull-up banners.'},
+      {weeks:6, title:'Booth construction approved & ordered', phase:'Production', notes:'Sign off final design. Place order with booth builder.'},
+      {weeks:4, title:'Lead capture & CRM setup', phase:'Operations', notes:'Set up badge scanner or lead form. Brief staff on process.'},
+      {weeks:2, title:'Ship materials to venue', phase:'Logistics', notes:'Confirm delivery window. Pack and ship all collateral.'},
+      {weeks:1, title:'Staff briefing & pitch practice', phase:'Operations', notes:'Run through key messages, demos, and objection handling.'},
+      {weeks:0, title:'Show opens', phase:'Day-Of', notes:'Booth setup complete night before. All staff briefed and ready.'}
+    ],
+    corporate: [
+      {weeks:8, title:'Confirm location & accommodation', phase:'Logistics', notes:'Book venue, rooms, and all group meals.'},
+      {weeks:6, title:'Agenda drafted & approved', phase:'Programming', notes:'Circulate draft agenda to stakeholders for sign-off.'},
+      {weeks:5, title:'Facilitator / speaker briefed', phase:'Programming', notes:'Share agenda, goals, and background materials.'},
+      {weeks:4, title:'Travel & logistics confirmed for all attendees', phase:'Logistics', notes:'Send travel info, hotel details, and schedule to all.'},
+      {weeks:3, title:'Pre-read materials distributed', phase:'Programming', notes:'Send briefing docs, reports, or reading materials.'},
+      {weeks:2, title:'Catering & AV confirmed with venue', phase:'Logistics', notes:'Final headcount, dietary requirements, tech needs.'},
+      {weeks:1, title:'Final agenda & run-of-show sent', phase:'Production', notes:'Distribute final schedule. Confirm all presenter slots.'},
+      {weeks:0, title:'Offsite begins', phase:'Day-Of', notes:'Welcome session. Set context and goals for the day.'}
+    ],
+    sports: [
+      {weeks:20, title:'Venue & date confirmed with governing body', phase:'Logistics', notes:'Venue inspection, date lock-in, permits with federation.'},
+      {weeks:16, title:'Athlete/team registrations open', phase:'Operations', notes:'Launch registration portal. Set entry deadlines.'},
+      {weeks:12, title:'Broadcast & media rights confirmed', phase:'Media', notes:'Contracts with broadcast partners and credentialed press.'},
+      {weeks:10, title:'Sponsorship activations confirmed', phase:'Sponsorship', notes:'Confirm all sponsor deliverables, signage, and activations.'},
+      {weeks:8, title:'Technical officials & staffing locked', phase:'Operations', notes:'Confirm referees, timekeepers, medical, and volunteers.'},
+      {weeks:6, title:'Athlete logistics communicated', phase:'Logistics', notes:'Accreditation, transport, warm-up times, and schedule.'},
+      {weeks:4, title:'Security & emergency plan approved', phase:'Safety', notes:'Submit crowd safety and emergency response plans.'},
+      {weeks:2, title:'Final schedule & draw published', phase:'Operations', notes:'Publish full competition schedule and participant draw.'},
+      {weeks:1, title:'Venue setup & test events', phase:'Production', notes:'Equipment installation, test runs, and venue walk-throughs.'},
+      {weeks:0, title:'Competition day', phase:'Day-Of', notes:'Opening ceremony, competition begins.'}
+    ]
+  };
+
+  var wbGenerated = [];
+
+  function generateWorkback(){
+    var type = document.getElementById('wb-type').value;
+    var dateVal = document.getElementById('wb-date').value;
+    if(!dateVal){ showToast('Please select an event date.','error'); return; }
+    var eventDate = new Date(dateVal + 'T00:00:00');
+    var template = WB_TEMPLATES[type];
+    if(!template){ showToast('Template not found.','error'); return; }
+
+    wbGenerated = template.map(function(item){
+      var d = new Date(eventDate);
+      d.setDate(d.getDate() - (item.weeks * 7));
+      return {
+        title: item.title,
+        phase: item.phase,
+        notes: item.notes,
+        date: d.toISOString().split('T')[0],
+        weeksOut: item.weeks,
+        selected: true
+      };
+    });
+
+    var typeLabels = {conference:'Conference / Summit',product_launch:'Product Launch',festival:'Festival / Concert',gala:'Gala / Awards Night',trade_show:'Trade Show / Expo',corporate:'Corporate Offsite',sports:'Sporting Event'};
+    document.getElementById('wb-results-title').textContent = typeLabels[type] + ' Workback';
+    document.getElementById('wb-results-sub').textContent = wbGenerated.length + ' milestones · event date: ' + eventDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    renderWbItems();
+    document.getElementById('wb-results').style.display = 'block';
+  }
+
+  function renderWbItems(){
+    var html = '';
+    wbGenerated.forEach(function(item, i){
+      var d = new Date(item.date + 'T00:00:00');
+      var dStr = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+      var weeksLabel = item.weeksOut === 0 ? '🎯 Event day' : item.weeksOut + ' week' + (item.weeksOut===1?'':'s') + ' out';
+      html += '<div style="background:var(--white);border:2px solid '+(item.selected?'var(--purple)':'var(--border)')+';border-radius:12px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:border-color 0.15s;" onclick="toggleWbItem('+i+')" id="wb-item-'+i+'">' +
+        '<div style="margin-top:3px;font-size:18px;">' + (item.selected ? '☑' : '☐') + '</div>' +
+        '<div style="flex:1;">' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">' +
+            '<span style="font-size:14px;font-weight:800;">' + esc(item.title) + '</span>' +
+            '<span style="font-size:10px;font-weight:700;background:var(--purple-light);color:var(--purple);padding:2px 8px;border-radius:8px;">' + esc(item.phase) + '</span>' +
+          '</div>' +
+          '<div style="display:flex;gap:14px;flex-wrap:wrap;">' +
+            '<span style="font-size:12px;color:var(--muted);font-weight:600;">📅 ' + dStr + '</span>' +
+            '<span style="font-size:12px;color:var(--muted);font-weight:600;">⏱ ' + weeksLabel + '</span>' +
+          '</div>' +
+          (item.notes ? '<div style="font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;">' + esc(item.notes) + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    document.getElementById('wb-items-list').innerHTML = html;
+  }
+
+  function toggleWbItem(i){
+    wbGenerated[i].selected = !wbGenerated[i].selected;
+    renderWbItems();
+  }
+
+  function selectAllWb(val){
+    wbGenerated.forEach(function(item){ item.selected = val; });
+    renderWbItems();
+  }
+
+  function importSelected(){
+    var toImport = wbGenerated.filter(function(item){ return item.selected; });
+    if(!toImport.length){ showToast('No items selected.','error'); return; }
+    var alreadyExists = 0;
+    toImport.forEach(function(item){
+      var exists = tl.pre.some(function(existing){ return existing.title === item.title && existing.date === item.date; });
+      if(exists){ alreadyExists++; return; }
+      tl.pre.push({
+        title: item.title,
+        date: item.date,
+        time: '',
+        endtime: '',
+        phase: item.phase,
+        status: 'notstarted',
+        owner: '',
+        notes: item.notes
+      });
+    });
+    var imported = toImport.length - alreadyExists;
+    persistWithTrashTL(function(){
+      var msg = imported + ' item' + (imported===1?'':'s') + ' added to Pre-Event timeline';
+      if(alreadyExists) msg += ' (' + alreadyExists + ' duplicate' + (alreadyExists===1?'':'s') + ' skipped)';
+      showToast('✓ ' + msg + '!', 'success');
+    });
   }
 
   // ── FIRESTORE ──
