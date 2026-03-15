@@ -730,13 +730,18 @@
       const actualRem = total - spent;
 
       const fmt = n => {
-        if (n >= 1000000) {
-          const m = n / 1000000;
-          const decimals = n % 1000000 === 0 ? 0 : n % 100000 === 0 ? 1 : n % 10000 === 0 ? 2 : 3;
-          return '$' + m.toFixed(decimals) + 'M';
+        const neg = n < 0; const a = Math.round(Math.abs(n));
+        let s;
+        if (a >= 1000000) {
+          const m = a / 1000000;
+          const decimals = a % 1000000 === 0 ? 0 : a % 100000 === 0 ? 1 : 2;
+          s = '$' + m.toFixed(decimals) + 'M';
+        } else if (a >= 1000) {
+          s = '$' + a.toLocaleString('en-US');
+        } else {
+          s = '$' + a;
         }
-        if (n >= 1000) return '$' + (n/1000).toFixed(0) + 'k';
-        return '$' + n;
+        return neg ? '-' + s : s;
       };
 
       document.getElementById('budget-total').textContent = total > 0 ? fmt(total) : '—';
