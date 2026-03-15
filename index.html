@@ -727,7 +727,7 @@
       const spent = budget.spent || 0;
       const remaining = total - spent;
 
-      const fmt = n => n >= 1000 ? `$${(n/1000).toFixed(0)}k` : `$${n}`;
+      const fmt = n => n >= 1000000 ? `$${(n/1000000).toFixed(n % 1000000 === 0 ? 0 : 1)}M` : n >= 1000 ? `$${(n/1000).toFixed(0)}k` : `$${n}`;
 
       document.getElementById('budget-total').textContent = total > 0 ? fmt(total) : '—';
       document.getElementById('budget-sub').textContent = total > 0
