@@ -739,7 +739,7 @@
       // ── HOURS CARD ──
       const hourRows = budget.hourRows || [];
       const totalHours = parseFloat(budget.totalHours) || 0;
-      const usedHours = hourRows.reduce((sum, r) => sum + (parseFloat(r.hours) || 0), 0);
+      const usedHours = hourRows.reduce((sum, r) => sum + (parseFloat(r.logged) || 0), 0);
       const pct = totalHours > 0 ? Math.min(100, Math.round((usedHours / totalHours) * 100)) : 0;
       const remaining_h = Math.max(0, totalHours - usedHours);
       const fmtH = n => Number.isInteger(n) ? n + 'h' : n.toFixed(1) + 'h';
