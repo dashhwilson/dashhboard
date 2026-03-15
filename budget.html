@@ -204,7 +204,7 @@
         <div class="prog-bar"><div class="prog-fill" id="p-spent" style="width:0%;background:var(--orange);"></div></div>
       </div>
       <div class="stat c-green">
-        <div class="stat-lbl">Uncommitted</div><div class="stat-val" id="s-uncommitted">$0</div>
+        <div class="stat-lbl">Over / Under Allocated</div><div class="stat-val" id="s-uncommitted">$0</div>
         <div class="stat-sub" id="s-uncommitted-sub">Unallocated budget</div>
       </div>
       <div class="stat c-purple" style="border-top-color:#6c79db;">
@@ -475,7 +475,10 @@
         document.getElementById('s-spent').textContent = fd(spent);
         document.getElementById('s-uncommitted').textContent = fd(uncommitted);
         document.getElementById('s-uncommitted').style.color = uncommitted<0?'var(--red)':'var(--navy)';
-        document.getElementById('s-uncommitted-sub').textContent = budgetedPct+'% of budget allocated';
+        document.getElementById('s-uncommitted-sub').textContent = uncommitted < 0
+          ? Math.abs(budgetedPct - 100) + '% over-allocated'
+          : budgetedPct + '% of budget allocated';
+        document.getElementById('s-uncommitted').style.color = uncommitted < 0 ? 'var(--red)' : uncommitted === 0 ? 'var(--navy)' : 'var(--green)';
         document.getElementById('s-rem').textContent = fd(actualRem);
         document.getElementById('s-rem').style.color = actualRem<0?'var(--red)':'var(--navy)';
         document.getElementById('s-spent-pct').textContent = pct+'% of budget';
