@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Archive | Digital Dashh</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -70,7 +72,24 @@
     .exp-future{background:#e8f5ee;color:var(--green);}
     .exp-soon{background:#fff8e0;color:#9a7000;}
     .exp-past{background:#fff0f0;color:var(--red);}
-    /* EMPTY */
+    /* ARCHIVED EVENTS */
+  .ae-card{background:var(--white);border:1.5px solid var(--border);border-left:4px solid var(--purple);border-radius:12px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .ae-info{flex:1;}
+  .ae-name{font-size:15px;font-weight:800;margin-bottom:4px;}
+  .ae-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:600;}
+  .ae-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .btn-restore-ev{background:var(--navy);color:var(--yellow);border:none;padding:7px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-restore-ev:hover{background:#2d2d5a;}
+  .export-menu{position:relative;display:inline-block;}
+  .export-dropdown{display:none;position:absolute;right:0;top:110%;background:white;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);min-width:160px;z-index:100;overflow:hidden;}
+  .export-dropdown.open{display:block;}
+  .export-dropdown button{display:block;width:100%;text-align:left;padding:10px 16px;border:none;background:none;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;}
+  .export-dropdown button:hover{background:var(--purple-light);}
+  .btn-exp-ev{background:none;border:1.5px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-exp-ev:hover{border-color:var(--green);color:var(--green);}
+  .btn-del-ev{background:none;border:1.5px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+  .btn-del-ev:hover{border-color:var(--red);color:var(--red);}
+  /* EMPTY */
     .empty-state{text-align:center;padding:72px 32px;color:var(--muted);}
     .empty-state .ei{font-size:44px;margin-bottom:14px;}
     /* LOADER */
@@ -120,6 +139,16 @@
     </div>
   </div>
 
+  <div id="archived-events-section" style="display:none;margin-bottom:28px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <span style="font-size:20px;">📦</span>
+      <span style="font-size:15px;font-weight:800;">Archived Events</span>
+      <span id="ae-count" style="font-size:11px;font-weight:700;background:var(--purple-light);color:var(--purple);padding:2px 8px;border-radius:10px;">0</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:4px;">These events have been archived. Restore to make active again, or export before deleting permanently.</span>
+    </div>
+    <div id="ae-list"></div>
+  </div>
+
   <div class="stats-row">
     <div class="stat c-purple"><div class="stat-lbl">Total Archived</div><div class="stat-val" id="st-total">0</div></div>
     <div class="stat c-red"><div class="stat-lbl">Expiring Soon</div><div class="stat-val" id="st-soon">0</div><div class="stat-sub">within 7 days</div></div>
@@ -139,6 +168,8 @@
     <button class="type-filter" data-type="timeline">Timeline</button>
     <button class="type-filter" data-type="venue">Venues</button>
     <button class="type-filter" data-type="file">Files</button>
+    <button class="type-filter" data-type="av">AV Rooms</button>
+    <button class="type-filter" data-type="content">Content Sessions</button>
     <button class="btn-purge-all" id="btn-purge-all">&#128465; Purge Expired</button>
   </div>
 
@@ -154,6 +185,7 @@
   var auth=firebase.auth(), db=firebase.firestore();
   var currentUser=null, activeEventId=localStorage.getItem('activeEventId');
   var trash=[], eventData={}, typeFilter='all', searchQ='';
+  var archivedEvents=[];
 
   var TYPE_META={
     task:{label:'Task',icon:'&#9989;',badge:'b-tasks',field:'tasks'},
@@ -185,6 +217,7 @@
         document.getElementById('event-sub').textContent=eventData.eventName||'Untitled Event';
         trash=eventData.trash||[];
         renderAll();
+        loadArchivedEvents();
       }).catch(function(err){showPage();showToast('Load error: '+err.message,'error');});
   }
 
@@ -306,6 +339,185 @@
     });
   }
 
+  // ── ARCHIVED EVENTS ──
+  function loadArchivedEvents(){
+    db.collection('users').doc(currentUser.uid).collection('archivedEvents').get()
+      .then(function(snap){
+        archivedEvents=[];
+        snap.forEach(function(doc){ archivedEvents.push({id:doc.id,...doc.data()}); });
+        renderArchivedEvents();
+      }).catch(function(){});
+  }
+
+  function renderArchivedEvents(){
+    var sec=document.getElementById('archived-events-section');
+    var list=document.getElementById('ae-list');
+    document.getElementById('ae-count').textContent=archivedEvents.length;
+    sec.style.display=archivedEvents.length?'block':'none';
+    if(!archivedEvents.length){list.innerHTML='';return;}
+    list.innerHTML=archivedEvents.map(function(ev){
+      var dateStr=ev.eventDate?new Date(ev.eventDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date TBD';
+      var archStr=ev.archivedAt?new Date(ev.archivedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+      return '<div class="ae-card">'+
+        '<div class="ae-info">'+
+          '<div class="ae-name">'+esc(ev.eventName||'Untitled Event')+'</div>'+
+          '<div class="ae-meta">'+
+            (ev.eventLocation?'<span>📍 '+esc(ev.eventLocation)+'</span>':'')+
+            '<span>📅 '+dateStr+'</span>'+
+            (ev.eventType?'<span>🏷️ '+esc(ev.eventType)+'</span>':'')+
+            (archStr?'<span>📦 Archived '+archStr+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="ae-actions">'+
+          '<button class="btn-restore-ev" onclick="restoreArchivedEvent(''+ev.id+'')">↑ Restore</button>'+
+          '<div class="export-menu">'+
+            '<button class="btn-exp-ev" onclick="toggleAEExport(''+ev.id+'',event)">⬇ Export</button>'+
+            '<div class="export-dropdown" id="ae-exp-'+ev.id+'">'+
+              '<button onclick="exportArchived(''+ev.id+'','xlsx')">📊 Excel (.xlsx)</button>'+
+              '<button onclick="exportArchived(''+ev.id+'','csv')">📄 CSV files</button>'+
+              '<button onclick="exportArchived(''+ev.id+'','pdf')">📋 PDF report</button>'+
+            '</div>'+
+          '</div>'+
+          '<button class="btn-del-ev" onclick="permDeleteArchived(''+ev.id+'',''+esc(ev.eventName||'this event')+'')">🗑 Delete Forever</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function restoreArchivedEvent(eventId){
+    var ev=archivedEvents.find(function(e){return e.id===eventId;});
+    if(!ev)return;
+    var data=Object.assign({},ev); delete data.archivedAt;
+    db.collection('users').doc(currentUser.uid).collection('events').doc(eventId).set(data)
+      .then(function(){return db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId).delete();})
+      .then(function(){
+        archivedEvents=archivedEvents.filter(function(e){return e.id!==eventId;});
+        renderArchivedEvents();
+        showToast('↑ Event restored! Go to Events to activate it.','success');
+      }).catch(function(err){showToast('Restore failed: '+err.message,'error');});
+  }
+
+  function permDeleteArchived(eventId,eventName){
+    if(!confirm('Permanently delete "'+eventName+'"? This cannot be undone.'))return;
+    db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId).delete()
+      .then(function(){
+        archivedEvents=archivedEvents.filter(function(e){return e.id!==eventId;});
+        renderArchivedEvents();
+        showToast('🗑 Permanently deleted.','success');
+      }).catch(function(err){showToast('Failed: '+err.message,'error');});
+  }
+
+  function toggleAEExport(id,e){
+    e.stopPropagation();
+    var drop=document.getElementById('ae-exp-'+id);
+    document.querySelectorAll('.export-dropdown').forEach(function(d){if(d!==drop)d.classList.remove('open');});
+    drop.classList.toggle('open');
+  }
+  document.addEventListener('click',function(){document.querySelectorAll('.export-dropdown').forEach(function(d){d.classList.remove('open');});});
+
+  function exportArchived(eventId,format){
+    document.querySelectorAll('.export-dropdown').forEach(function(d){d.classList.remove('open');});
+    showToast('⏳ Preparing export...','success');
+    db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId).get()
+      .then(function(doc){
+        if(!doc.exists){showToast('Event not found.','error');return;}
+        runExport(doc.data(),format);
+      }).catch(function(err){showToast('Export failed: '+err.message,'error');});
+  }
+
+  function runExport(d,format){
+    var name=(d.eventName||'Event').replace(/[^a-z0-9]/gi,'_');
+    if(format==='xlsx') exportXLSX(d,name);
+    else if(format==='csv') exportCSV(d,name);
+    else if(format==='pdf') exportPDF(d,name);
+  }
+
+  function buildSheets(d){
+    return {
+      'Event Details':[['Field','Value'],['Event Name',d.eventName||''],['Location',d.eventLocation||''],['Date',d.eventDate||''],['Type',d.eventType||''],['Capacity',d.eventCapacity||''],['Notes',d.notes||'']],
+      'Budget - Dollars':[['Category','Vendor','Budgeted ($)','Actual ($)','Remaining ($)','Notes'],...((d.budget&&d.budget.dollarRows||[]).map(function(r){return[r.category||'',r.vendor||'',r.budgeted||0,r.actual||0,(r.budgeted||0)-(r.actual||0),r.notes||''];})),[],['TOTAL','',d.budget&&d.budget.total||0,d.budget&&d.budget.spent||0,(d.budget&&d.budget.total||0)-(d.budget&&d.budget.spent||0),'']],
+      'Budget - Hours':[['Role','Category','Budgeted (h)','Logged (h)','Remaining (h)','Notes'],...((d.budget&&d.budget.hourRows||[]).map(function(r){return[r.name||'',r.category||'',r.budgeted||0,r.logged||0,(r.budgeted||0)-(r.logged||0),r.notes||''];}))],
+      'Tasks':[['Title','Status','Assignee','Due','Priority','Notes'],...((d.tasks||[]).map(function(t){return[t.title||'',t.status||'',t.assignee||'',t.due||'',t.priority||'',t.notes||''];}))],
+      'Timeline - Pre-Event':[['Title','Date','Phase','Status','Owner','Notes'],...((d.tlPre||[]).map(function(t){return[t.title||'',t.date||'',t.phase||'',t.status||'',t.owner||'',t.notes||''];}))],
+      'Timeline - Day-Of':[['Title','Time','End Time','Phase','Owner'],...((d.tlDayof||[]).map(function(t){return[t.title||'',t.time||'',t.endtime||'',t.phase||'',t.owner||''];}))],
+      'Attendees':[['First Name','Last Name','Email','Company','Role','Checked In'],...((d.attendees||[]).map(function(a){return[a.fname||'',a.lname||'',a.email||'',a.company||'',a.role||'',a.checkedIn?'Yes':'No'];}))],
+      'Meetings':[['Title','Date','Category','Location','Agenda','Notes'],...((d.meetings||[]).map(function(m){return[m.title||'',m.date||'',m.category||'',m.location||'',m.agenda||'',m.notes||''];}))],
+      'Action Items':[['Meeting','Action','Assignee','Due','Done'],...((d.meetings||[]).reduce(function(acc,m){return acc.concat((m.actions||[]).map(function(a){return[m.title||'',a.text||'',a.assignee||'',a.due||'',a.done?'Yes':'No'];}));},[])) ],
+      'Sponsors':[['Name','Tier','Contact','Email','Amount'],...((d.sponsors||[]).map(function(s){return[s.name||'',s.tier||'',s.contact||'',s.email||'',s.amount||''];}))],
+      'Merch':[['Item','Category','SKU','Qty','Price'],...((d.merchInventory||[]).map(function(m){return[m.name||'',m.category||'',m.sku||'',m.qty||0,m.price||0];}))],
+      'Venues':[['Name','Address','Contact','Phone','Email'],...((d.venues||[]).map(function(v){return[v.name||'',v.address||'',v.contact||'',v.phone||'',v.email||''];}))],
+      'Files':[['Name','Category','URL','Notes'],...((d.files||[]).map(function(f){return[f.name||'',f.category||'',f.url||'',f.notes||''];}))]
+    };
+  }
+
+  function exportXLSX(d,name){
+    try{
+      var wb=XLSX.utils.book_new();
+      var sheets=buildSheets(d);
+      Object.keys(sheets).forEach(function(sn){
+        var rows=sheets[sn];
+        var ws=XLSX.utils.aoa_to_sheet(rows);
+        if(rows[0]) ws['!cols']=rows[0].map(function(_,i){return{wch:Math.min(40,Math.max(12,...rows.map(function(r){return String(r[i]||'').length;})))};});
+        XLSX.utils.book_append_sheet(wb,ws,sn.substring(0,31));
+      });
+      XLSX.writeFile(wb,name+'_export.xlsx');
+      showToast('✓ Excel downloaded!','success');
+    }catch(e){showToast('Export failed: '+e.message,'error');}
+  }
+
+  function exportCSV(d,name){
+    var sheets=buildSheets(d); var count=0;
+    Object.keys(sheets).forEach(function(sn){
+      var rows=sheets[sn];
+      if(rows.length<=1)return;
+      var csv=rows.map(function(row){return row.map(function(cell){var s=String(cell==null?'':cell);return s.includes(',')||s.includes('"')||s.includes('
+')?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('
+');
+      var blob=new Blob([csv],{type:'text/csv'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download=name+'_'+sn.replace(/[^a-z0-9]/gi,'_')+'.csv';
+      setTimeout(function(){a.click();},count*300); count++;
+    });
+    showToast('✓ '+count+' CSV files downloading...','success');
+  }
+
+  function exportPDF(d,name){
+    try{
+      var jsPDF=window.jspdf.jsPDF;
+      var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+      var navy=[28,28,58],purple=[108,121,219],muted=[122,122,154];
+      var pageW=210,margin=18,contentW=pageW-margin*2,y=margin;
+      function chk(n){if(y+n>280){doc.addPage();y=margin;}}
+      function secHdr(t){chk(12);doc.setFillColor(108,121,219);doc.rect(margin,y,contentW,8,'F');doc.setTextColor(255,255,255);doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text(t,margin+3,y+5.5);y+=11;doc.setTextColor(28,28,58);}
+      function lrow(l,v){chk(7);doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(122,122,154);doc.text(l,margin,y+4);doc.setFont('helvetica','normal');doc.setTextColor(28,28,58);var lines=doc.splitTextToSize(String(v||'—'),contentW-55);doc.text(lines,margin+55,y+4);y+=Math.max(6,lines.length*5);}
+      function tbl(hdrs,rows){
+        if(!rows.length){chk(7);doc.setFontSize(9);doc.setFont('helvetica','italic');doc.setTextColor(122,122,154);doc.text('No entries.',margin+3,y+4);y+=8;doc.setTextColor(28,28,58);return;}
+        var cw=contentW/hdrs.length;
+        chk(8);doc.setFillColor(235,237,250);doc.rect(margin,y,contentW,7,'F');doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(108,121,219);
+        hdrs.forEach(function(h,i){doc.text(String(h),margin+3+i*cw,y+5);});y+=8;
+        rows.forEach(function(r,ri){chk(6);if(ri%2===1){doc.setFillColor(248,249,252);doc.rect(margin,y,contentW,6,'F');}doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(28,28,58);r.forEach(function(cell,i){doc.text(String(cell==null?'':cell).substring(0,30),margin+3+i*cw,y+4);});y+=6;});y+=4;
+      }
+      // Cover
+      doc.setFillColor(28,28,58);doc.rect(0,0,210,50,'F');
+      doc.setTextColor(255,224,102);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('Digital Dashh',margin,22);
+      doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','normal');doc.text(d.eventName||'Event Export',margin,33);
+      doc.setFontSize(9);doc.setTextColor(180,180,210);doc.text('Exported '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),margin,42);
+      y=60;
+      secHdr('EVENT DETAILS');lrow('Event Name',d.eventName);lrow('Location',d.eventLocation);lrow('Date',d.eventDate);lrow('Type',d.eventType);lrow('Capacity',d.eventCapacity?d.eventCapacity+' people':'');y+=4;
+      secHdr('BUDGET');var b=d.budget||{};lrow('Total Budget','$'+(b.total||0).toLocaleString());lrow('Total Budgeted','$'+(b.budgeted||0).toLocaleString());lrow('Actuals Spent','$'+(b.spent||0).toLocaleString());lrow('Actual Remaining','$'+((b.total||0)-(b.spent||0)).toLocaleString());y+=2;
+      tbl(['Category','Vendor','Budgeted','Actual','Remaining'],(b.dollarRows||[]).map(function(r){return[r.category||'',r.vendor||'','$'+(r.budgeted||0).toLocaleString(),'$'+(r.actual||0).toLocaleString(),'$'+((r.budgeted||0)-(r.actual||0)).toLocaleString()];}));
+      secHdr('TASKS');tbl(['Title','Status','Assignee','Due','Priority'],(d.tasks||[]).map(function(t){return[t.title||'',t.status||'',t.assignee||'',t.due||'',t.priority||''];}));
+      secHdr('TIMELINE — PRE-EVENT');tbl(['Title','Date','Phase','Status','Owner'],(d.tlPre||[]).map(function(t){return[t.title||'',t.date||'',t.phase||'',t.status||'',t.owner||''];}));
+      secHdr('ATTENDEES');tbl(['First Name','Last Name','Email','Company','Checked In'],(d.attendees||[]).map(function(a){return[a.fname||'',a.lname||'',a.email||'',a.company||'',a.checkedIn?'Yes':'No'];}));
+      secHdr('SPONSORS');tbl(['Name','Tier','Contact','Email','Amount'],(d.sponsors||[]).map(function(s){return[s.name||'',s.tier||'',s.contact||'',s.email||'',s.amount||''];}));
+      secHdr('MEETINGS & ACTIONS');tbl(['Meeting','Action Item','Assignee','Due','Done'],(d.meetings||[]).reduce(function(acc,m){return acc.concat((m.actions||[]).map(function(a){return[m.title||'',a.text||'',a.assignee||'',a.due||'',a.done?'Yes':'No'];}));},[]));
+      var pc=doc.internal.getNumberOfPages();
+      for(var i=1;i<=pc;i++){doc.setPage(i);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(122,122,154);doc.text('Digital Dashh · '+(d.eventName||'')+' · Page '+i+' of '+pc,margin,292);}
+      doc.save(name+'_report.pdf');
+      showToast('✓ PDF downloaded!','success');
+    }catch(e){showToast('PDF failed: '+e.message,'error');}
+  }
+
   // ── RESTORE ──
   function restoreItem(idx){
     var item=trash[idx];
@@ -326,6 +538,12 @@
       var section=item.timelineSection||'tlPre';
       if(!eventData[section]) eventData[section]=[];
       eventData[section].push(item.data);
+    } else if(type==='av') {
+      if(!eventData.avRooms) eventData.avRooms=[];
+      eventData.avRooms.push(item.data);
+    } else if(type==='content') {
+      if(!eventData.contentSessions) eventData.contentSessions=[];
+      eventData.contentSessions.push(item.data);
     } else {
       if(!eventData[field]) eventData[field]=[];
       eventData[field].push(item.data);
@@ -369,7 +587,7 @@
     if(!currentUser||!activeEventId)return;
     var saveData={trash:trash};
     // Also save back any restored arrays
-    ['tasks','meetings','attendees','sponsors','merch','venues','files','budget','tlPre','tlDayof','tlMultiday'].forEach(function(f){
+    ['tasks','meetings','attendees','sponsors','merch','venues','files','budget','tlPre','tlDayof','tlMultiday','avRooms','contentSessions'].forEach(function(f){
       if(eventData[f]!==undefined) saveData[f]=eventData[f];
     });
     db.collection('users').doc(currentUser.uid).collection('events').doc(activeEventId)
