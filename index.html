@@ -205,6 +205,7 @@
     .summary-card.reg-card { border-top-color: #f5a623; }
     .summary-card.tasks-card { border-top-color: #e55a5a; }
     .summary-card.meetings-card { border-top-color: #6c79db; }
+    .summary-card.hours-card { border-top-color: #f5a623; }
 
     .summary-card h3 {
       font-size: 12px;
@@ -401,6 +402,17 @@
         <h3>💰 Budget</h3>
         <div class="highlight" id="budget-total">—</div>
         <div class="sub" id="budget-sub">Loading...</div>
+      </div>
+    </a>
+
+    <a href="budget.html" class="summary-link">
+      <div class="summary-card hours-card">
+        <h3>⏱ Project Hours</h3>
+        <div class="highlight" id="hours-used">—</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="hours-progress" style="width:0%;background:#f5a623;"></div>
+        </div>
+        <div class="sub" id="hours-sub">Loading...</div>
       </div>
     </a>
 
@@ -723,6 +735,21 @@
       document.getElementById('budget-sub').textContent = total > 0
         ? `Spent: ${fmt(spent)} · Left: ${fmt(remaining)}`
         : 'No budget set yet';
+
+      // ── HOURS CARD ──
+      const hourRows = budget.hourRows || [];
+      const totalHours = parseFloat(budget.totalHours) || 0;
+      const usedHours = hourRows.reduce((sum, r) => sum + (parseFloat(r.hours) || 0), 0);
+      const pct = totalHours > 0 ? Math.min(100, Math.round((usedHours / totalHours) * 100)) : 0;
+      const remaining_h = Math.max(0, totalHours - usedHours);
+      const fmtH = n => Number.isInteger(n) ? n + 'h' : n.toFixed(1) + 'h';
+
+      document.getElementById('hours-used').textContent = totalHours > 0 ? fmtH(usedHours) + ' / ' + fmtH(totalHours) : usedHours > 0 ? fmtH(usedHours) : '—';
+      document.getElementById('hours-progress').style.width = pct + '%';
+      document.getElementById('hours-progress').style.background = pct >= 90 ? '#e55a5a' : pct >= 70 ? '#f5a623' : '#f5a623';
+      document.getElementById('hours-sub').textContent = totalHours > 0
+        ? `${pct}% used · ${fmtH(remaining_h)} remaining`
+        : usedHours > 0 ? fmtH(usedHours) + ' logged · no budget set' : 'No hours logged yet';
     }
 
     // ── EVENT DETAILS ──
@@ -740,10 +767,10 @@
     function showNoEventState() {
       document.getElementById('no-event-banner').style.display = 'flex';
       document.getElementById('welcome-banner').innerHTML = '<span>No event selected</span>';
-      ['budget-total','days-remaining','reg-count','tasks-count','meetings-count'].forEach(id => {
+      ['budget-total','hours-used','days-remaining','reg-count','tasks-count','meetings-count'].forEach(id => {
         document.getElementById(id).textContent = '—';
       });
-      ['budget-sub','event-date-display','reg-percent','tasks-percent'].forEach(id => {
+      ['budget-sub','hours-sub','event-date-display','reg-percent','tasks-percent'].forEach(id => {
         document.getElementById(id).textContent = 'No event selected';
       });
     }
