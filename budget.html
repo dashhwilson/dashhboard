@@ -199,11 +199,18 @@
     <div class="summary-row" id="sum-dollars">
       <div class="stat c-purple"><div class="stat-lbl">Total Budget</div><div class="stat-val" id="s-total">$0</div><div class="stat-sub">Overall budget</div></div>
       <div class="stat c-orange">
-        <div class="stat-lbl">Spent</div><div class="stat-val" id="s-spent">$0</div>
+        <div class="stat-lbl">Actuals (Spent)</div><div class="stat-val" id="s-spent">$0</div>
         <div class="stat-sub" id="s-spent-pct">0% of budget</div>
         <div class="prog-bar"><div class="prog-fill" id="p-spent" style="width:0%;background:var(--orange);"></div></div>
       </div>
-      <div class="stat c-green"><div class="stat-lbl">Remaining</div><div class="stat-val" id="s-rem">$0</div><div class="stat-sub">Left to spend</div></div>
+      <div class="stat c-green">
+        <div class="stat-lbl">Uncommitted</div><div class="stat-val" id="s-uncommitted">$0</div>
+        <div class="stat-sub" id="s-uncommitted-sub">Unallocated budget</div>
+      </div>
+      <div class="stat c-purple" style="border-top-color:#6c79db;">
+        <div class="stat-lbl">Actual Remaining</div><div class="stat-val" id="s-rem">$0</div>
+        <div class="stat-sub">After invoices paid</div>
+      </div>
       <div class="stat c-red"><div class="stat-lbl">Overages</div><div class="stat-val" id="s-over">0</div><div class="stat-sub">Categories over budget</div></div>
     </div>
 
@@ -443,7 +450,8 @@
         'budget.totalHours': data.totalHours,
         'budget.dollarRows': data.dollarRows,
         'budget.hourRows': data.hourRows,
-        'budget.spent': data.dollarRows.reduce((s,r)=>s+(r.actual||0),0)
+        'budget.spent': data.dollarRows.reduce((s,r)=>s+(r.actual||0),0),
+        'budget.budgeted': data.dollarRows.reduce((s,r)=>s+(r.budgeted||0),0)
       }).then(()=>{ if(cb) cb(); }).catch(err=>showToast('Save failed: '+err.message,'error'));
     }
 
@@ -456,14 +464,20 @@
     function updateSummary() {
       if (mode === 'dollars') {
         const total = data.totalBudget;
+        const budgeted = data.dollarRows.reduce((s,r)=>s+(r.budgeted||0),0);
         const spent = data.dollarRows.reduce((s,r)=>s+(r.actual||0),0);
-        const rem = total - spent;
+        const uncommitted = total - budgeted;
+        const actualRem = total - spent;
         const pct = total>0 ? Math.min(Math.round(spent/total*100),100) : 0;
+        const budgetedPct = total>0 ? Math.min(Math.round(budgeted/total*100),100) : 0;
         const over = data.dollarRows.filter(r=>(r.actual||0)>(r.budgeted||0));
         document.getElementById('s-total').textContent = fd(total);
         document.getElementById('s-spent').textContent = fd(spent);
-        document.getElementById('s-rem').textContent = fd(rem);
-        document.getElementById('s-rem').style.color = rem<0?'var(--red)':'var(--navy)';
+        document.getElementById('s-uncommitted').textContent = fd(uncommitted);
+        document.getElementById('s-uncommitted').style.color = uncommitted<0?'var(--red)':'var(--navy)';
+        document.getElementById('s-uncommitted-sub').textContent = budgetedPct+'% of budget allocated';
+        document.getElementById('s-rem').textContent = fd(actualRem);
+        document.getElementById('s-rem').style.color = actualRem<0?'var(--red)':'var(--navy)';
         document.getElementById('s-spent-pct').textContent = pct+'% of budget';
         document.getElementById('p-spent').style.width = pct+'%';
         document.getElementById('s-over').textContent = over.length;
