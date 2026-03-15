@@ -746,7 +746,7 @@
 
       document.getElementById('budget-total').textContent = total > 0 ? fmt(total) : '—';
       document.getElementById('budget-sub').textContent = total > 0
-        ? `Uncommitted: ${fmt(uncommitted)} · Actuals left: ${fmt(actualRem)}`
+        ? `${uncommitted < 0 ? 'Over-allocated' : 'Unallocated'}: ${fmt(uncommitted)} · Actuals left: ${fmt(actualRem)}`
         : 'No budget set yet';
 
       // ── HOURS CARD ──
