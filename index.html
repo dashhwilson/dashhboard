@@ -395,6 +395,26 @@
     <a href="events.html">Go to Events →</a>
   </div>
 
+  <!-- BOTTOM INFO -->
+  <div class="dual-grid">
+    <div class="info-card">
+      <h3>Event Details</h3>
+      <ul id="event-details-list">
+        <li><span>Event</span><span id="detail-name" class="tag">—</span></li>
+        <li><span>Location</span><span id="detail-location" class="tag">—</span></li>
+        <li><span>Date</span><span id="detail-date" class="tag">—</span></li>
+        <li><span>Type</span><span id="detail-type" class="tag">—</span></li>
+        <li><span>Capacity</span><span id="detail-capacity" class="tag">—</span></li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>⏰ Upcoming Deadlines</h3>
+      <ul id="deadlines-list">
+        <li style="color:var(--text-muted);font-size:13px;">Loading...</li>
+      </ul>
+    </div>
+  </div>
+
   <!-- SUMMARY CARDS -->
   <div class="summary-grid">
     <a href="budget.html" class="summary-link">
@@ -526,27 +546,7 @@
     </div>
   </div>
 
-  <!-- BOTTOM INFO -->
-  <div class="dual-grid">
-    <div class="info-card">
-      <h3>Event Details</h3>
-      <ul id="event-details-list">
-        <li><span>Event</span><span id="detail-name" class="tag">—</span></li>
-        <li><span>Location</span><span id="detail-location" class="tag">—</span></li>
-        <li><span>Date</span><span id="detail-date" class="tag">—</span></li>
-        <li><span>Type</span><span id="detail-type" class="tag">—</span></li>
-        <li><span>Capacity</span><span id="detail-capacity" class="tag">—</span></li>
-      </ul>
-    </div>
-    <div class="info-card">
-      <h3>Upcoming Deadlines</h3>
-      <ul>
-        <li>🛠️ Final AV Order <span class="tag">Tomorrow</span></li>
-        <li>🪑 Furniture Layout <span class="tag">3 days</span></li>
-        <li>👥 Attendee Count <span class="tag">7 days</span></li>
-      </ul>
-    </div>
-  </div>
+
 
   <script>
     const firebaseConfig = {
@@ -645,6 +645,7 @@
         updateMeetingsCard(data);
           updateBudgetCard(data);
           updateEventDetails(data);
+          updateDeadlines(data);
         })
         .catch(err => {
           console.error('Error loading event data:', err);
@@ -752,6 +753,67 @@
         : usedHours > 0 ? fmtH(usedHours) + ' logged · no budget set' : 'No hours logged yet';
     }
 
+    // ── UPCOMING DEADLINES ──
+    function updateDeadlines(data) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const items = [];
+
+      // Tasks with due dates not yet done
+      (data.tasks || []).forEach(t => {
+        if (t.status === 'done' || !t.due) return;
+        items.push({ label: t.title, date: new Date(t.due + 'T00:00:00'), icon: '✅', source: 'Task' });
+      });
+
+      // Pre-event timeline items not done
+      (data.tlPre || []).forEach(t => {
+        if (t.status === 'done' || !t.date) return;
+        items.push({ label: t.title, date: new Date(t.date + 'T00:00:00'), icon: '🗓️', source: 'Timeline' });
+      });
+
+      // Meeting action items with due dates not done/pushed
+      (data.meetings || []).forEach(m => {
+        (m.actions || []).forEach(a => {
+          if (a.done || a.pushed || !a.due) return;
+          items.push({ label: a.text, date: new Date(a.due + 'T00:00:00'), icon: '⚡', source: 'Action' });
+        });
+      });
+
+      // Sort by date ascending, filter to upcoming (not past more than 1 day)
+      const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 1);
+      const sorted = items
+        .filter(i => i.date >= cutoff)
+        .sort((a, b) => a.date - b.date)
+        .slice(0, 6);
+
+      const list = document.getElementById('deadlines-list');
+      if (!sorted.length) {
+        list.innerHTML = '<li style="color:var(--text-muted);font-size:13px;">No upcoming deadlines 🎉</li>';
+        return;
+      }
+
+      list.innerHTML = sorted.map(item => {
+        const diff = Math.round((item.date - today) / 86400000);
+        let tag, tagStyle;
+        if (diff < 0) {
+          tag = `${Math.abs(diff)}d overdue`;
+          tagStyle = 'background:#fff0f0;color:#e55a5a;';
+        } else if (diff === 0) {
+          tag = 'Today';
+          tagStyle = 'background:#fff8e0;color:#9a7000;font-weight:800;';
+        } else if (diff === 1) {
+          tag = 'Tomorrow';
+          tagStyle = 'background:#fff8e0;color:#9a7000;';
+        } else if (diff <= 7) {
+          tag = diff + ' days';
+          tagStyle = '';
+        } else {
+          tag = item.date.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+          tagStyle = 'background:#f0f0fb;color:#6c79db;';
+        }
+        return `<li>${item.icon} ${item.label} <span class="tag" style="${tagStyle}">${tag}</span></li>`;
+      }).join('');
+    }
+
     // ── EVENT DETAILS ──
     function updateEventDetails(data) {
       document.getElementById('detail-name').textContent = data.eventName || '—';
@@ -773,6 +835,7 @@
       ['budget-sub','hours-sub','event-date-display','reg-percent','tasks-percent'].forEach(id => {
         document.getElementById(id).textContent = 'No event selected';
       });
+      document.getElementById('deadlines-list').innerHTML = '<li style="color:var(--text-muted);font-size:13px;">No event selected.</li>';
     }
 
     // ── VIEW FILTER ──
