@@ -11,6 +11,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
   <!-- Firebase SDKs - loaded early so they are available when scripts run -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAXGeIY4lyNHdhQVhBCwFIPiXSyKQJZJnU&libraries=places&callback=initAutocomplete" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -343,6 +344,13 @@
       background: white;
     }
     .form-group textarea { resize: vertical; min-height: 72px; }
+    .location-wrap { position: relative; }
+    .location-wrap .pac-container { border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; border: 1.5px solid var(--border) !important; font-family: 'Inter', sans-serif !important; margin-top: 4px; }
+    .location-wrap .pac-item { padding: 8px 14px !important; font-size: 13px !important; cursor: pointer; }
+    .location-wrap .pac-item:hover { background: var(--bg) !important; }
+    .location-wrap .pac-item-query { font-weight: 700 !important; color: var(--text-primary) !important; }
+    .location-coords { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: none; font-weight: 600; }
+    .location-coords.visible { display: block; }
 
     .form-row {
       display: grid;
@@ -559,7 +567,10 @@
 
         <div class="form-group">
           <label>Location</label>
-          <input type="text" id="new-location" placeholder="e.g. Austin, TX" />
+          <div class="location-wrap">
+            <input type="text" id="new-location" placeholder="Start typing a venue or address..." autocomplete="off" />
+            <div class="location-coords" id="location-coords">📍 —</div>
+          </div>
         </div>
 
         <div class="form-row">
@@ -637,6 +648,40 @@
     let pendingDeleteId = null;
     let archivedSectionOpen = false;
     let activeEventId = localStorage.getItem('activeEventId');
+
+    // ── GOOGLE PLACES AUTOCOMPLETE ──
+    window._selectedLat = null;
+    window._selectedLng = null;
+
+    function initAutocomplete() {
+      const input = document.getElementById('new-location');
+      if (!input) return;
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['establishment', 'geocode'],
+        fields: ['formatted_address', 'geometry', 'name']
+      });
+      autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) return;
+        // Use venue name + address if it's an establishment, otherwise just address
+        const loc = place.name && place.formatted_address && !place.formatted_address.startsWith(place.name)
+          ? place.name + ', ' + place.formatted_address
+          : place.formatted_address || place.name || '';
+        input.value = loc;
+        window._selectedLat = place.geometry.location.lat();
+        window._selectedLng = place.geometry.location.lng();
+        // Show coords confirmation
+        const coordEl = document.getElementById('location-coords');
+        coordEl.textContent = '📍 ' + window._selectedLat.toFixed(5) + ', ' + window._selectedLng.toFixed(5);
+        coordEl.className = 'location-coords visible';
+      });
+      // Clear stored coords if user manually edits after selecting
+      input.addEventListener('input', function() {
+        window._selectedLat = null;
+        window._selectedLng = null;
+        document.getElementById('location-coords').className = 'location-coords';
+      });
+    }
 
     // ── AUTH GUARD ──
     // Use a flag so loadEvents only ever runs once, even if
@@ -812,6 +857,8 @@
       const eventData = {
         eventName: name,
         eventLocation: document.getElementById('new-location').value.trim(),
+        eventLat: window._selectedLat || null,
+        eventLng: window._selectedLng || null,
         eventDate: document.getElementById('new-date').value || null,
         eventCapacity: parseInt(document.getElementById('new-capacity').value) || null,
         eventType: document.getElementById('new-type').value,
@@ -827,6 +874,8 @@
           activeEventId = docRef.id;
           localStorage.setItem('activeEventId', docRef.id);
 
+          window._selectedLat = null; window._selectedLng = null;
+          document.getElementById('location-coords').className = 'location-coords';
           ['new-name','new-location','new-date','new-capacity','new-notes'].forEach(id => {
             document.getElementById(id).value = '';
           });
