@@ -11,6 +11,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
   <!-- Firebase SDKs - loaded early so they are available when scripts run -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -239,6 +241,21 @@
       line-height: 1;
     }
     .btn-delete-event:hover { color: var(--danger); background: #fff0f0; }
+    .btn-archive-event { background: none; border: 1.5px solid var(--border); color: var(--text-muted); padding: 6px 10px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+    .btn-archive-event:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    .btn-export-event { background: none; border: 1.5px solid var(--border); color: var(--text-muted); padding: 6px 10px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+    .btn-export-event:hover { border-color: var(--green); color: var(--green); background: #edfaf3; }
+    .archived-section { margin-top: 28px; }
+    .archived-section-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer; user-select: none; }
+    .archived-section-hdr h3 { font-size: 14px; font-weight: 800; color: var(--text-muted); }
+    .archived-section-hdr .toggle-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+    .archived-section-hdr .count-badge { font-size: 11px; font-weight: 700; background: #f0f0fb; color: var(--purple); padding: 2px 8px; border-radius: 10px; }
+    .event-card.archived-card { opacity: 0.7; border-left: 3px solid var(--text-muted); }
+    .export-menu { position: relative; display: inline-block; }
+    .export-dropdown { display: none; position: absolute; right: 0; top: 110%; background: white; border: 1.5px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 160px; z-index: 100; overflow: hidden; }
+    .export-dropdown.open { display: block; }
+    .export-dropdown button { display: block; width: 100%; text-align: left; padding: 10px 16px; border: none; background: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: background 0.15s; }
+    .export-dropdown button:hover { background: var(--bg); }
 
     /* Empty state */
     .empty-state {
@@ -505,7 +522,7 @@
         <div class="active-banner-name" id="active-banner-name">—</div>
         <div class="active-banner-meta" id="active-banner-meta">—</div>
       </div>
-      <a href="index.html" class="btn-go-dashboard">Open Dashboard →</a>
+      <button class="btn-go-dashboard" onclick="window.location.href='index.html'">Open Dashboard →</button>
     </div>
 
     <div class="two-col">
@@ -518,6 +535,16 @@
             <div class="skeleton-line wide"></div>
             <div class="skeleton-line narrow"></div>
           </div>
+        </div>
+
+        <!-- ARCHIVED EVENTS -->
+        <div class="archived-section" id="archived-section" style="display:none;">
+          <div class="archived-section-hdr" onclick="toggleArchivedSection()">
+            <span class="toggle-arrow" id="archived-arrow">▶</span>
+            <h3>Archived Events</h3>
+            <span class="count-badge" id="archived-count">0</span>
+          </div>
+          <div id="archived-list" style="display:none;"></div>
         </div>
       </div>
 
@@ -606,7 +633,9 @@
 
     let currentUser = null;
     let userEvents = [];
+    let archivedEvents = [];
     let pendingDeleteId = null;
+    let archivedSectionOpen = false;
     let activeEventId = localStorage.getItem('activeEventId');
 
     // ── AUTH GUARD ──
@@ -641,12 +670,23 @@
           });
           renderEvents();
           updateActiveBanner();
+          loadArchivedEvents();
         })
         .catch(err => {
           console.error(err);
           document.getElementById('skeleton').remove();
           renderEvents(); // render empty state
         });
+    }
+
+    function loadArchivedEvents() {
+      db.collection('users').doc(currentUser.uid).collection('archivedEvents')
+        .get()
+        .then(snap => {
+          archivedEvents = [];
+          snap.forEach(doc => archivedEvents.push({ id: doc.id, ...doc.data() }));
+          renderArchivedEvents();
+        }).catch(() => {});
     }
 
     // ── RENDER EVENTS ──
@@ -689,6 +729,19 @@
               class="btn-select${isActive ? ' selected' : ''}"
               onclick="selectEvent('${event.id}')"
             >${isActive ? '✓ Active' : 'Open'}</button>
+            <button
+              class="btn-archive-event"
+              title="Archive event"
+              onclick="archiveEvent('${event.id}', '${escHtml(event.eventName || 'this event')}')"
+            >📦 Archive</button>
+            <div class="export-menu" id="exp-menu-${event.id}">
+              <button class="btn-export-event" onclick="toggleExportMenu('${event.id}', event)">⬇ Export</button>
+              <div class="export-dropdown" id="exp-drop-${event.id}">
+                <button onclick="exportEvent('${event.id}', 'xlsx')">📊 Excel (.xlsx)</button>
+                <button onclick="exportEvent('${event.id}', 'csv')">📄 CSV files</button>
+                <button onclick="exportEvent('${event.id}', 'pdf')">📋 PDF report</button>
+              </div>
+            </div>
             <button
               class="btn-delete-event"
               title="Delete event"
@@ -831,6 +884,407 @@
           console.error(err);
           showToast('❌ Failed to delete event.', 'error');
         });
+    }
+
+
+    // ── ARCHIVE EVENT ──
+    function archiveEvent(eventId, eventName) {
+      if (!confirm(`Archive "${eventName}"? It will be moved to the archived section and can be restored later.`)) return;
+      const event = userEvents.find(e => e.id === eventId);
+      if (!event) return;
+      const archiveData = { ...event, archivedAt: new Date().toISOString() };
+      db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId)
+        .set(archiveData)
+        .then(() => db.collection('users').doc(currentUser.uid).collection('events').doc(eventId).delete())
+        .then(() => {
+          archivedEvents.push(archiveData);
+          userEvents = userEvents.filter(e => e.id !== eventId);
+          if (activeEventId === eventId) { activeEventId = null; localStorage.removeItem('activeEventId'); }
+          renderEvents(); renderArchivedEvents(); updateActiveBanner();
+          showToast('📦 Event archived.', 'success');
+        }).catch(err => showToast('Failed to archive: ' + err.message, 'error'));
+    }
+
+    // ── RESTORE ARCHIVED EVENT ──
+    function restoreArchivedEvent(eventId) {
+      const event = archivedEvents.find(e => e.id === eventId);
+      if (!event) return;
+      const { archivedAt, ...restoreData } = event;
+      db.collection('users').doc(currentUser.uid).collection('events').doc(eventId)
+        .set(restoreData)
+        .then(() => db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId).delete())
+        .then(() => {
+          userEvents.push(restoreData);
+          archivedEvents = archivedEvents.filter(e => e.id !== eventId);
+          renderEvents(); renderArchivedEvents(); updateActiveBanner();
+          showToast('↑ Event restored!', 'success');
+        }).catch(err => showToast('Failed to restore: ' + err.message, 'error'));
+    }
+
+    // ── PERMANENTLY DELETE ARCHIVED EVENT ──
+    function deleteArchivedEvent(eventId, eventName) {
+      if (!confirm(`Permanently delete "${eventName}"? This cannot be undone.`)) return;
+      db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId)
+        .delete()
+        .then(() => {
+          archivedEvents = archivedEvents.filter(e => e.id !== eventId);
+          renderArchivedEvents();
+          showToast('🗑 Permanently deleted.', 'success');
+        }).catch(err => showToast('Failed: ' + err.message, 'error'));
+    }
+
+    // ── RENDER ARCHIVED EVENTS ──
+    function renderArchivedEvents() {
+      const section = document.getElementById('archived-section');
+      const list = document.getElementById('archived-list');
+      const countEl = document.getElementById('archived-count');
+      countEl.textContent = archivedEvents.length;
+      section.style.display = archivedEvents.length ? 'block' : 'none';
+      if (!archivedEvents.length) { list.innerHTML = ''; return; }
+      list.innerHTML = archivedEvents.map(event => {
+        const dateStr = event.eventDate
+          ? new Date(event.eventDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'Date TBD';
+        const archivedStr = event.archivedAt
+          ? new Date(event.archivedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : '';
+        return `<div class="event-card archived-card">
+          <div class="event-card-info">
+            <div class="event-card-name">${escHtml(event.eventName || 'Untitled')}</div>
+            <div class="event-card-meta">
+              ${event.eventLocation ? `<span>📍 ${escHtml(event.eventLocation)}</span>` : ''}
+              <span>📅 ${dateStr}</span>
+              ${archivedStr ? `<span>📦 Archived ${archivedStr}</span>` : ''}
+            </div>
+          </div>
+          <div class="event-card-badges">
+            <button class="btn-archive-event" style="border-color:var(--green);color:var(--green);" onclick="restoreArchivedEvent('${event.id}')">↑ Restore</button>
+            <div class="export-menu" id="exp-menu-arch-${event.id}">
+              <button class="btn-export-event" onclick="toggleExportMenu('arch-${event.id}', event)">⬇ Export</button>
+              <div class="export-dropdown" id="exp-drop-arch-${event.id}">
+                <button onclick="exportArchivedEvent('${event.id}', 'xlsx')">📊 Excel (.xlsx)</button>
+                <button onclick="exportArchivedEvent('${event.id}', 'csv')">📄 CSV files</button>
+                <button onclick="exportArchivedEvent('${event.id}', 'pdf')">📋 PDF report</button>
+              </div>
+            </div>
+            <button class="btn-delete-event" onclick="deleteArchivedEvent('${event.id}', '${escHtml(event.eventName || 'this event')}')">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function toggleArchivedSection() {
+      archivedSectionOpen = !archivedSectionOpen;
+      document.getElementById('archived-list').style.display = archivedSectionOpen ? 'block' : 'none';
+      document.getElementById('archived-arrow').style.transform = archivedSectionOpen ? 'rotate(90deg)' : '';
+    }
+
+    // ── EXPORT MENU TOGGLE ──
+    function toggleExportMenu(id, e) {
+      e.stopPropagation();
+      const drop = document.getElementById('exp-drop-' + id);
+      document.querySelectorAll('.export-dropdown').forEach(d => { if (d !== drop) d.classList.remove('open'); });
+      drop.classList.toggle('open');
+    }
+    document.addEventListener('click', () => document.querySelectorAll('.export-dropdown').forEach(d => d.classList.remove('open')));
+
+    // ── EXPORT ──
+    function exportEvent(eventId, format) {
+      document.querySelectorAll('.export-dropdown').forEach(d => d.classList.remove('open'));
+      showToast('⏳ Preparing export...', 'success');
+      db.collection('users').doc(currentUser.uid).collection('events').doc(eventId)
+        .get().then(doc => {
+          if (!doc.exists) { showToast('Event not found.', 'error'); return; }
+          runExport(doc.data(), format);
+        }).catch(err => showToast('Export failed: ' + err.message, 'error'));
+    }
+
+    function exportArchivedEvent(eventId, format) {
+      document.querySelectorAll('.export-dropdown').forEach(d => d.classList.remove('open'));
+      showToast('⏳ Preparing export...', 'success');
+      db.collection('users').doc(currentUser.uid).collection('archivedEvents').doc(eventId)
+        .get().then(doc => {
+          if (!doc.exists) { showToast('Event not found.', 'error'); return; }
+          runExport(doc.data(), format);
+        }).catch(err => showToast('Export failed: ' + err.message, 'error'));
+    }
+
+    function runExport(d, format) {
+      const name = (d.eventName || 'Event').replace(/[^a-z0-9]/gi, '_');
+      if (format === 'xlsx') exportXLSX(d, name);
+      else if (format === 'csv') exportCSV(d, name);
+      else if (format === 'pdf') exportPDF(d, name);
+    }
+
+    // ─── SHARED DATA BUILDERS ───
+    function buildSheets(d) {
+      const fmt = (n) => n != null ? Number(n) : 0;
+      return {
+        'Event Details': [
+          ['Field', 'Value'],
+          ['Event Name', d.eventName || ''],
+          ['Location', d.eventLocation || ''],
+          ['Date', d.eventDate || ''],
+          ['Type', d.eventType || ''],
+          ['Capacity', d.eventCapacity || ''],
+          ['Notes', d.notes || '']
+        ],
+        'Budget - Dollars': [
+          ['Category', 'Vendor', 'Budgeted ($)', 'Actual ($)', 'Remaining ($)', 'Notes'],
+          ...((d.budget?.dollarRows || []).map(r => [
+            r.category||'', r.vendor||'', fmt(r.budgeted), fmt(r.actual),
+            fmt(r.budgeted) - fmt(r.actual), r.notes||''
+          ])),
+          [],
+          ['TOTAL BUDGET', '', d.budget?.total || 0, d.budget?.spent || 0, (d.budget?.total||0)-(d.budget?.spent||0), '']
+        ],
+        'Budget - Hours': [
+          ['Role / Team Member', 'Category', 'Budgeted (h)', 'Logged (h)', 'Remaining (h)', 'Notes'],
+          ...((d.budget?.hourRows || []).map(r => [
+            r.name||'', r.category||'', fmt(r.budgeted), fmt(r.logged),
+            fmt(r.budgeted) - fmt(r.logged), r.notes||''
+          ])),
+          [],
+          ['TOTAL HOURS', '', d.budget?.totalHours || 0, (d.budget?.hourRows||[]).reduce((s,r)=>s+fmt(r.logged),0), '', '']
+        ],
+        'Tasks': [
+          ['Title', 'Status', 'Assignee', 'Due Date', 'Priority', 'Notes'],
+          ...((d.tasks || []).map(t => [t.title||'', t.status||'', t.assignee||'', t.due||'', t.priority||'', t.notes||'']))
+        ],
+        'Timeline - Pre-Event': [
+          ['Title', 'Date', 'Time', 'Phase', 'Status', 'Owner', 'Notes'],
+          ...((d.tlPre || []).map(t => [t.title||'', t.date||'', t.time||'', t.phase||'', t.status||'', t.owner||'', t.notes||'']))
+        ],
+        'Timeline - Day-Of': [
+          ['Title', 'Date', 'Time', 'End Time', 'Phase', 'Status', 'Owner', 'Notes'],
+          ...((d.tlDayof || []).map(t => [t.title||'', t.date||'', t.time||'', t.endtime||'', t.phase||'', t.status||'', t.owner||'', t.notes||'']))
+        ],
+        'Attendees': [
+          ['First Name', 'Last Name', 'Email', 'Company', 'Role', 'Checked In'],
+          ...((d.attendees || []).map(a => [a.fname||'', a.lname||'', a.email||'', a.company||'', a.role||'', a.checkedIn?'Yes':'No']))
+        ],
+        'Meetings': [
+          ['Title', 'Date', 'Category', 'Location', 'Agenda', 'Notes', 'Attendees'],
+          ...((d.meetings || []).map(m => [m.title||'', m.date||'', m.category||'', m.location||'', m.agenda||'', m.notes||'', (m.attendees||[]).join(', ')]))
+        ],
+        'Action Items': [
+          ['Meeting', 'Action', 'Assignee', 'Due', 'Priority', 'Done', 'Pushed to Tasks'],
+          ...((d.meetings || []).flatMap(m => (m.actions||[]).map(a => [m.title||'', a.text||'', a.assignee||'', a.due||'', a.priority||'', a.done?'Yes':'No', a.pushed?'Yes':'No'])))
+        ],
+        'Sponsors': [
+          ['Name', 'Tier', 'Contact', 'Email', 'Phone', 'Amount', 'Notes'],
+          ...((d.sponsors || []).map(s => [s.name||'', s.tier||'', s.contact||'', s.email||'', s.phone||'', s.amount||'', s.notes||'']))
+        ],
+        'Merch Inventory': [
+          ['Item', 'Category', 'SKU', 'Qty', 'Price', 'Notes'],
+          ...((d.merchInventory || []).map(m => [m.name||'', m.category||'', m.sku||'', m.qty||0, m.price||0, m.notes||'']))
+        ],
+        'Venues': [
+          ['Venue Name', 'Address', 'Contact', 'Phone', 'Email', 'Notes'],
+          ...((d.venues || []).map(v => [v.name||'', v.address||'', v.contact||'', v.phone||'', v.email||'', v.notes||'']))
+        ],
+        'Files': [
+          ['Name', 'Category', 'URL', 'Notes'],
+          ...((d.files || []).map(f => [f.name||'', f.category||'', f.url||'', f.notes||'']))
+        ]
+      };
+    }
+
+    // ─── XLSX EXPORT ───
+    function exportXLSX(d, name) {
+      try {
+        const wb = XLSX.utils.book_new();
+        const sheets = buildSheets(d);
+        Object.entries(sheets).forEach(([sheetName, rows]) => {
+          const ws = XLSX.utils.aoa_to_sheet(rows);
+          // Bold header row
+          const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+          for (let C = range.s.c; C <= range.e.c; C++) {
+            const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+            if (cell) { cell.s = { font: { bold: true } }; }
+          }
+          // Auto column widths
+          ws['!cols'] = rows[0] ? rows[0].map((_, i) => ({
+            wch: Math.min(40, Math.max(12, ...rows.map(r => String(r[i]||'').length)))
+          })) : [];
+          XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+        });
+        XLSX.writeFile(wb, name + '_export.xlsx');
+        showToast('✓ Excel file downloaded!', 'success');
+      } catch(e) { showToast('Export failed: ' + e.message, 'error'); }
+    }
+
+    // ─── CSV EXPORT (zip-less: downloads each file) ───
+    function exportCSV(d, name) {
+      const sheets = buildSheets(d);
+      let count = 0;
+      Object.entries(sheets).forEach(([sheetName, rows]) => {
+        if (rows.length <= 1) return; // skip empty (header only)
+        const csv = rows.map(row => row.map(cell => {
+          const s = String(cell == null ? '' : cell);
+          return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
+        }).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name + '_' + sheetName.replace(/[^a-z0-9]/gi, '_') + '.csv';
+        setTimeout(() => a.click(), count * 300); // stagger downloads
+        count++;
+      });
+      showToast('✓ ' + count + ' CSV files downloading...', 'success');
+    }
+
+    // ─── PDF EXPORT ───
+    function exportPDF(d, name) {
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const navy = [28, 28, 58], purple = [108, 121, 219], muted = [122, 122, 154], green = [76, 175, 130], red = [229, 90, 90];
+        const pageW = 210, margin = 18, contentW = pageW - margin * 2;
+        let y = margin;
+
+        function checkPage(needed) {
+          if (y + needed > 280) { doc.addPage(); y = margin; }
+        }
+
+        function sectionHeader(title) {
+          checkPage(12);
+          doc.setFillColor(...purple);
+          doc.rect(margin, y, contentW, 8, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+          doc.text(title, margin + 3, y + 5.5);
+          y += 11;
+          doc.setTextColor(...navy);
+        }
+
+        function row(label, value, indent) {
+          checkPage(7);
+          doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...muted);
+          doc.text(label, margin + (indent||0), y + 4);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...navy);
+          const lines = doc.splitTextToSize(String(value||'—'), contentW - 55);
+          doc.text(lines, margin + 55, y + 4);
+          y += Math.max(6, lines.length * 5);
+        }
+
+        function tableSection(headers, dataRows) {
+          if (!dataRows.length) {
+            checkPage(7);
+            doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(...muted);
+            doc.text('No entries.', margin + 3, y + 4); y += 8;
+            doc.setTextColor(...navy);
+            return;
+          }
+          const colW = contentW / headers.length;
+          // Header row
+          checkPage(8);
+          doc.setFillColor(235, 237, 250);
+          doc.rect(margin, y, contentW, 7, 'F');
+          doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...purple);
+          headers.forEach((h, i) => doc.text(String(h), margin + 3 + i * colW, y + 5));
+          y += 8;
+          // Data rows
+          dataRows.forEach((rowData, ri) => {
+            const rowH = 6;
+            checkPage(rowH);
+            if (ri % 2 === 1) { doc.setFillColor(248, 249, 252); doc.rect(margin, y, contentW, rowH, 'F'); }
+            doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...navy);
+            rowData.forEach((cell, i) => {
+              const text = doc.splitTextToSize(String(cell == null ? '' : cell), colW - 4);
+              doc.text(text[0] || '', margin + 3 + i * colW, y + 4);
+            });
+            y += rowH;
+          });
+          y += 4;
+        }
+
+        // ── COVER ──
+        doc.setFillColor(...navy);
+        doc.rect(0, 0, 210, 50, 'F');
+        doc.setTextColor(255, 224, 102);
+        doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+        doc.text('Digital Dashh', margin, 22);
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14); doc.setFont('helvetica', 'normal');
+        doc.text(d.eventName || 'Event Export', margin, 33);
+        doc.setFontSize(9); doc.setTextColor(180, 180, 210);
+        doc.text('Exported ' + new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}), margin, 42);
+        y = 60;
+
+        // ── EVENT DETAILS ──
+        sectionHeader('EVENT DETAILS');
+        row('Event Name', d.eventName);
+        row('Location', d.eventLocation);
+        row('Date', d.eventDate ? new Date(d.eventDate + 'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : '');
+        row('Type', d.eventType);
+        row('Capacity', d.eventCapacity ? d.eventCapacity + ' people' : '');
+        if (d.notes) row('Notes', d.notes);
+        y += 4;
+
+        // ── BUDGET ──
+        sectionHeader('BUDGET SUMMARY');
+        const b = d.budget || {};
+        const totalBudget = b.total || 0;
+        const totalSpent = b.spent || 0;
+        const totalBudgeted = b.budgeted || 0;
+        row('Total Budget', '$' + totalBudget.toLocaleString());
+        row('Total Budgeted', '$' + totalBudgeted.toLocaleString());
+        row('Actuals (Spent)', '$' + totalSpent.toLocaleString());
+        row('Uncommitted', '$' + (totalBudget - totalBudgeted).toLocaleString());
+        row('Actual Remaining', '$' + (totalBudget - totalSpent).toLocaleString());
+        y += 2;
+        tableSection(['Category','Vendor','Budgeted','Actual','Remaining'], (b.dollarRows||[]).map(r => [
+          r.category||'', r.vendor||'', '$'+(r.budgeted||0).toLocaleString(), '$'+(r.actual||0).toLocaleString(), '$'+((r.budgeted||0)-(r.actual||0)).toLocaleString()
+        ]));
+
+        // ── TASKS ──
+        sectionHeader('TASKS');
+        tableSection(['Title','Status','Assignee','Due Date','Priority'], (d.tasks||[]).map(t => [t.title||'', t.status||'', t.assignee||'', t.due||'', t.priority||'']));
+
+        // ── TIMELINE ──
+        sectionHeader('TIMELINE — PRE-EVENT');
+        tableSection(['Title','Date','Phase','Status','Owner'], (d.tlPre||[]).map(t => [t.title||'', t.date||'', t.phase||'', t.status||'', t.owner||'']));
+
+        sectionHeader('TIMELINE — DAY-OF');
+        tableSection(['Title','Time','End Time','Phase','Owner'], (d.tlDayof||[]).map(t => [t.title||'', t.time||'', t.endtime||'', t.phase||'', t.owner||'']));
+
+        // ── ATTENDEES ──
+        sectionHeader('ATTENDEES (' + (d.attendees||[]).length + ')');
+        tableSection(['First Name','Last Name','Email','Company','Checked In'], (d.attendees||[]).map(a => [a.fname||'', a.lname||'', a.email||'', a.company||'', a.checkedIn?'Yes':'No']));
+
+        // ── MEETINGS ──
+        sectionHeader('MEETINGS');
+        tableSection(['Title','Date','Category','Location'], (d.meetings||[]).map(m => [m.title||'', m.date||'', m.category||'', m.location||'']));
+
+        sectionHeader('ACTION ITEMS');
+        tableSection(['Meeting','Action','Assignee','Due','Done'], (d.meetings||[]).flatMap(m => (m.actions||[]).map(a => [m.title||'', a.text||'', a.assignee||'', a.due||'', a.done?'Yes':'No'])));
+
+        // ── SPONSORS ──
+        sectionHeader('SPONSORS');
+        tableSection(['Name','Tier','Contact','Email','Amount'], (d.sponsors||[]).map(s => [s.name||'', s.tier||'', s.contact||'', s.email||'', s.amount||'']));
+
+        // ── MERCH ──
+        sectionHeader('MERCH INVENTORY');
+        tableSection(['Item','Category','SKU','Qty','Price'], (d.merchInventory||[]).map(m => [m.name||'', m.category||'', m.sku||'', m.qty||0, '$'+(m.price||0)]));
+
+        // ── VENUES ──
+        sectionHeader('VENUES');
+        tableSection(['Name','Address','Contact','Phone','Email'], (d.venues||[]).map(v => [v.name||'', v.address||'', v.contact||'', v.phone||'', v.email||'']));
+
+        // ── PAGE NUMBERS ──
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          doc.setPage(i);
+          doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(...muted);
+          doc.text('Digital Dashh · ' + (d.eventName||'') + ' · Page ' + i + ' of ' + pageCount, margin, 292);
+        }
+
+        doc.save(name + '_report.pdf');
+        showToast('✓ PDF downloaded!', 'success');
+      } catch(e) { showToast('PDF failed: ' + e.message, 'error'); }
     }
 
     // ── STATUS BADGE ──
